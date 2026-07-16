@@ -1,8 +1,8 @@
 # SPARTA MOTORS — Website Redesign
-## Project Save-State Document
+## Project Save-State Document (v2)
 
-**Last updated:** July 15, 2026
-**Status:** Design phase in progress — Home page complete, Truck Detail page next
+**Last updated:** July 16, 2026
+**Status:** Design phase in progress — Home page and Truck Detail page complete. Inventory listing page next.
 
 ---
 
@@ -12,10 +12,10 @@
 1. Start a new conversation with Claude (Claude.ai — not Claude Code yet).
 2. Paste this entire document at the top of your first message.
 3. Add: *"This is my saved state for the Sparta Motors website redesign project. Read this document, then continue where we left off (see 'Where we left off' section at the bottom)."*
-4. Claude will pick up exactly where this chat ended.
+4. Claude will pick up exactly where the last session ended.
 
 **To hand off to Claude Code when the time comes:**
-This document becomes the foundation of the Claude Code build brief. Do not paste this directly into Claude Code yet — we finish the remaining design work first (Truck Detail, Inventory, admin, mobile), then produce a proper Claude Code build brief that combines this + those remaining decisions.
+This document becomes the foundation of the Claude Code build brief. Do not paste this directly into Claude Code yet — we finish the remaining design work first (Inventory, short content pages, admin, mobile), then produce a proper Claude Code build brief that combines this + those remaining decisions.
 
 ---
 
@@ -182,6 +182,7 @@ Company name, contact name, phone, email, fleet size, trucks needed, timeline, m
 - Iron: `#5F5E5A`
 - Concrete: `#B4B2A9`
 - Chalk: `#D3D1C7`
+- Warm Off-White: `#EEECE5` (secondary section backgrounds, breadcrumb bar)
 
 #### Tone of voice
 
@@ -260,7 +261,7 @@ Alternating dark/light gives visual rhythm without exhausting the eye. The dark 
 - Subtle "SPARTA" background watermark at very low opacity behind everything.
 
 **Assets required for build:**
-- 240-frame image sequence (1280×720 PNGs) — **project manager has these on their computer, not yet uploaded**. Depicts an Isuzu box truck fully assembled at frame 1, fully exploded/disassembled by frame 240. The image has a warm light-gray (`#EFEEEA`-ish) studio backdrop.
+- 240-frame image sequence (1280×720 PNGs) — project manager has these on their computer, not yet in the repo (too large for chat upload). Depicts an Isuzu box truck fully assembled at frame 1, fully exploded/disassembled by frame 240. The image has a warm light-gray (`#EFEEEA`-ish) studio backdrop.
 - At build time, these 240 PNGs get converted to a WebM video (~500KB-1MB total) using ffmpeg. Preserves quality, plays smoothly at 60fps, downloads fast even on 4G.
 
 ### 3.7 Motion & Interaction Palette ✅
@@ -296,6 +297,104 @@ Alternating dark/light gives visual rhythm without exhausting the eye. The dark 
 - Time-to-Interactive under 2.5s on 4G
 - Motion library size under 40kb gzipped (Framer Motion tree-shaken)
 
+### 3.8 Truck Detail Page ✅ (NEW)
+
+**The money page.** Approximately 80% of conversions happen here — this is where a customer decides to inquire about a specific truck. Every element is optimized for that decision.
+
+**Pattern reference:** Facebook Marketplace product listing (mobile-first, familiar, forgiving of variable phone-quality photos).
+
+**Page structure (top to bottom):**
+
+1. **Nav** (dark, sticky, same as Home)
+2. **Breadcrumb bar** — Home / Inventory / [Body Type] / [Truck Name]. Warm off-white background (`#EEECE5`).
+3. **Main content grid** (two columns on desktop, stacked on mobile):
+   - Left column (main): photos + all truck info
+   - Right column (sticky sidebar): lead form
+4. **Similar trucks section** (below main content, full width)
+5. **Footer** (matches Home)
+6. **Mobile sticky bar** at bottom of viewport (only appears below 900px width)
+
+**Left column contents (top to bottom):**
+
+**A) Photo gallery** — Marketplace-style:
+- Single large photo, 16:10 aspect ratio, fills the gallery frame
+- Prev / next arrow buttons (rounded, semi-transparent, hover to orange)
+- Photo counter in top-right ("3 / 12"), monospace, semi-transparent background
+- Body type badge in top-left (e.g., "BOX TRUCK")
+- Thumbnail strip below, horizontally scrollable, active thumb has orange border
+- Click thumb to jump; use arrow keys or click prev/next to cycle
+- Mobile: swipeable with touch (in real build); click for lightbox (in real build)
+
+**B) Title + Price block** (white card, 24px padding):
+- Left side: small mono year and make ("2019 · ISUZU"), big Barlow Condensed model name ("NPR-HD 16FT Box Truck"), badges below (body type filled dark, class + fuel as outline badges)
+- Right side, right-aligned: small "PRICE" label, big orange monospace amount ($34,900), small "OBO · Trade-ins welcome" note underneath
+- Bottom of card: Key Specs Bar (4 columns): Mileage / VIN / Condition / Stock #
+
+**C) Description block** (white card):
+- Section label: "◆ DESCRIPTION"
+- Section title: "About this truck"
+- 2-4 paragraphs in Sparta's voice — direct, spec-forward, mentions inspection status
+
+**D) Full spec table** (white card):
+- Section label: "◆ FULL SPECIFICATIONS"
+- Section title: "Technical details"
+- 16 fields in 2 columns: Year, Make, Model, Trim, Body Type, GVWR, Engine, Horsepower, Transmission, Drivetrain, Fuel Type, Fuel Capacity, Payload Class, Body Length, Cab, Exterior Color
+- Each row: label (mono, gray, small caps) on left, value (mono, black, medium weight) on right, thin bottom border
+
+**E) Spec sheet PDF download** (dark card, only if uploaded):
+- Left: PDF icon (orange outline), title "Spec sheet", filename + file size in mono
+- Right: orange "Download ↓" button
+
+**Right column: Sticky lead form (desktop, 380px wide):**
+
+- **Sticky positioning:** `top: 88px` (below nav)
+- **Header** (dark background, orange accent):
+  - Label: "◆ INQUIRE"
+  - Title: "Contact about this truck"
+  - Subtitle: "We usually reply within a few hours."
+- **Truck of interest tag** (orange background, prominent):
+  - Small "TRUCK OF INTEREST" label
+  - Bold truck name — auto-filled from the current listing, cannot be edited
+- **Form fields:**
+  1. Full name (text, required)
+  2. Phone (tel, required)
+  3. Email (email, required)
+  4. Message (textarea, optional)
+  5. Checkbox: "Interested in financing" + description "We'll connect you with a partner lender."
+  6. Checkbox: "Have a trade-in" + description "Trading in a truck? Tell us about it."
+     - **When checked, reveals 3 additional fields:** Year/Make/Model, Mileage, Condition (brief)
+  7. Submit button: orange, full-width, "Send inquiry →"
+- **Footer:** warm off-white background, "OR CALL DIRECTLY" label, phone number in mono
+
+**Mobile behavior (below 900px width):**
+- Two-column layout collapses to single column
+- Lead form moves below all truck content, no longer sticky
+- Key specs bar collapses from 4 columns to 2
+- Full spec table collapses to single column
+- **Sticky bottom bar appears** — fixed to bottom of viewport, dark background:
+  - Left button: "Call" — transparent with light border
+  - Right button: "Inquire →" — orange, primary
+  - Body padding-bottom is added so content doesn't hide behind the bar
+
+**Similar trucks section:**
+- Full-width section below main content, warm background
+- Section label: "◆ SIMILAR BOX TRUCKS"
+- Section title: "Others you might like"
+- 3 truck cards in a grid (same design as Home page featured inventory)
+- **Query logic:** same body type only (for launch). Same-make and price-range filters can be added later.
+
+**Hover states on this page:**
+- Truck cards (similar section): lift 2px, subtle shadow appears
+- Prev/next gallery buttons: background shifts to orange
+- Thumbnail: opacity 0.55 → 1 on hover
+- Submit button: subtle scale to 1.01
+- Form inputs: border color changes to orange on focus
+
+**Keyboard support:**
+- Arrow keys (← →) cycle through gallery photos
+- Tab navigation through form fields in logical order
+- Enter submits form
+
 ---
 
 ## 4. ASSETS ON HAND (Project Manager's Side)
@@ -325,15 +424,13 @@ Alternating dark/light gives visual rhythm without exhausting the eye. The dark 
 - Home page layout (Variation B)
 - Home page hero (scroll-driven disassembly)
 - Motion palette
+- **Truck Detail page** (NEW — full spec above)
 
 ### ⏳ Remaining design work (in priority order)
-1. **Truck Detail page** — the money page. Photo gallery, spec table, lead form with financing/trade-in checkboxes, sticky "Contact about this truck" on mobile, similar trucks section.
-2. **Inventory listing page** — the browse experience. Filter sidebar (body type, make, year, mileage, price, condition), sort options, grid of truck cards. Also serves as template for the six category pages.
-3. **Financing page** — content structure, form connection.
-4. **Fleet page** — content structure, fleet-specific inquiry form.
-5. **About + Contact pages** — short, functional. Small effort.
-6. **Admin dashboard preview** — show what the Payload admin will look like for employees and admin. Employee truck-creation form. Draft submission flow. Admin review/approval interface. Lead management screen.
-7. **Mobile mockups** — of Home, Truck Detail, and the admin. Most traffic and ALL employee admin usage happens on mobile.
+1. **Inventory listing page** — the browse experience. Filter sidebar (body type, make, year, mileage, price, condition), sort options, grid of truck cards. Also serves as template for the six category pages (`/inventory/box-trucks`, `/inventory/reefers`, etc.).
+2. **Financing / Fleet / About / Contact pages** — content-and-form pages, likely bundled into one design pass since they share layout patterns.
+3. **Admin dashboard preview** — Payload admin. Employee truck-creation form, draft submission flow, admin review/approval interface, lead management screen. Meaningful effort but critical.
+4. **Mobile mockups** — of Home, Truck Detail (mobile pattern already spec'd above), and admin. Most traffic and ALL employee admin usage will be here.
 
 ### 🔨 Then, when design is complete
 Write the **full Claude Code build brief** — a comprehensive document combining this save-state + all remaining design decisions. That document gets pasted into Claude Code to actually build the site.
@@ -359,6 +456,12 @@ Every other used truck dealer shows the shiny exterior. Sparta shows what's insi
 ### Why light hero (Variation B) beat dark
 Every truck dealer online defaults to dark and heavy. Going light in the hero is differentiating. The truck image sits on a light gray studio background naturally — so light hero blends seamlessly with the disassembly sequence. Dark supporting sections still deliver the industrial anchor.
 
+### Why the Truck Detail page uses the Marketplace pattern
+Familiar to every customer. Forgiving of variable phone-quality photos (only the currently-featured photo needs to be great). Mobile-first by design. Doesn't feel like a landing page — feels like a real listing where the buyer is here to inquire, not be sold to.
+
+### Why the lead form is sticky on desktop, sticky-bar on mobile
+The lead form is the whole point of the page. On desktop, sticky-sidebar keeps it always visible without stealing photo real estate. On mobile, a persistent sticky-bar with [Call] and [Inquire] preserves both conversion paths (Sparta customers skew phone-happy — small-business owners often prefer to call rather than fill a form).
+
 ### Why "Fleet" page is a sourcing partner, not a supplier
 Sparta doesn't manufacture, doesn't stock fleet inventory, can't promise "we'll deliver 20 box trucks next month." Honest positioning: "Tell us what you need, we'll source it as trucks come available." Captures the fleet lead without overpromising.
 
@@ -374,20 +477,17 @@ Business email SMTP works fine at low volume (~20 leads/day). Zero added cost. F
 
 ## 8. WHERE WE LEFT OFF
 
-**Last action:** Approved the scroll-driven hero (v2 — full-bleed truck image, edge-to-edge on desktop). Locked hero design. Image quality in the mockup was intentionally reduced for chat file-size reasons; real Claude Code build will use full 1280×720 frames via WebM video conversion, restoring native quality.
+**Last action:** Approved the Truck Detail page mockup. All Marketplace-style patterns, sticky sidebar form on desktop, sticky bottom bar on mobile, similar trucks section, and complete spec table are locked in.
 
-**Immediate next step:** Design the **Truck Detail page** — the highest-leverage remaining page. This is where leads actually convert. Same treatment as the Home page: a standalone HTML mockup that opens in a browser. Should include:
-- Large photo gallery (5-20 photos, mobile-swipeable)
-- Above-fold summary: year, make, model, mileage, price, VIN
-- Full spec table below
-- Description
-- Spec sheet PDF download (if uploaded)
-- Prominent lead form (name, phone, email, message, financing Y/N, trade-in Y/N + details, truck of interest auto-filled with VIN)
-- Similar trucks section at the bottom
-- Sticky "Contact about this truck" button on mobile
+**Immediate next step:** Design the **Inventory listing page** (`/inventory`). This is the third-most-important customer page and doubles as the template for the six category pages (`/inventory/box-trucks`, `/inventory/reefers`, `/inventory/day-cabs`, `/inventory/flat-beds`, `/inventory/dump-trucks`, `/inventory/tow-trucks`). Should include:
+- Filter sidebar (body type, make, year range, mileage range, price range, condition)
+- Sort options (newest, price low-to-high, price high-to-low, mileage)
+- Grid of truck cards (matching Home + Truck Detail card style)
+- Pagination or infinite scroll
+- Category-specific SEO copy at the top (short paragraph, 100-200 words) for the six body-type variants
 
 **How to resume:**
-Paste this document into a new Claude chat and say: *"This is my saved state for the Sparta Motors website redesign. Read this document. Ready to work on the Truck Detail page next — same treatment as the Home page (standalone HTML mockup)."*
+Paste this document into a new Claude chat and say: *"This is my saved state for the Sparta Motors website redesign. Read this document. Ready to work on the Inventory listing page next — same treatment as previous pages (standalone HTML mockup that opens in a browser at real desktop width)."*
 
 ---
 
@@ -398,7 +498,25 @@ Paste this document into a new Claude chat and say: *"This is my saved state for
 - Design iterations are cheap here; build iterations are expensive in Claude Code. Finish design cheap, build once.
 - Motion should serve the brand, not showcase itself. The reference to the 3D creator's portfolio was for FLAVOR, not for direct copying.
 - When quality-of-mockup issues come up, remember: the real build fixes preview artifacts. Don't over-iterate on things that will resolve themselves during actual construction.
+- Version-control every design milestone: after each page is approved, update this save-state doc AND commit the corresponding HTML mockup to the repo. Insurance against context loss.
 
 ---
 
-**End of save-state document.**
+## 10. REPO STRUCTURE (Suggested)
+
+Current suggested structure for the `sparta-motors` GitHub repo during the design phase:
+
+```
+sparta-motors/
+├── sparta-motors-save-state.md    (this document, updated after every milestone)
+├── mockups/
+│   ├── sparta-scroll-hero-v2.html    (Home page — scroll-driven hero)
+│   └── sparta-truck-detail.html       (Truck Detail page)
+└── (future: /code, /assets, /docs added when Claude Code takes over)
+```
+
+Once Claude Code takes over and starts building the real Next.js + Payload project, that codebase will live at the root of this repo alongside the design mockups. The mockups stay in the repo as reference — they're the "what we wanted it to look like" documentation.
+
+---
+
+**End of save-state document v2.**
