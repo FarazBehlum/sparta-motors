@@ -8,10 +8,17 @@ import { usePrefersReducedMotion } from '@/lib/use-reduced-motion'
  * The signature scroll-driven hero (build-brief/hero-video.md + pages/home.md).
  *
  * A 250vh section with a 100vh sticky viewport. As the user scrolls, the truck
- * video is scrubbed frame-by-frame (currentTime = progress × duration) and three
- * text phases fade in/out at scroll depths. Lightweight custom hook — no GSAP.
- * Reduced-motion users get the poster frame + instant text-phase swaps.
+ * disassembles: we draw an image sequence onto a <canvas>, one exact frame per
+ * scroll position. (Scrubbing a <video> via currentTime only lands on sparse
+ * keyframes, so the teardown appeared frozen — the canvas sequence fixes that.)
+ * Three text phases fade in/out at scroll depths. No GSAP.
+ * Reduced-motion users get the first (assembled) frame + instant phase swaps.
+ *
+ * Frames are built by scripts/build-hero-frames.mjs. Keep FRAME_COUNT in sync.
  */
+
+const FRAME_COUNT = 120
+const framePath = (i: number) => `/hero/frames/${String(i + 1).padStart(4, '0')}.webp`
 
 const PHASES = [
   {
@@ -59,19 +66,80 @@ function activePhase(p: number): number {
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const imagesRef = useRef<HTMLImageElement[]>([])
+  const loadedRef = useRef<boolean[]>([])
+  const drawnRef = useRef(-1)
   const progressRef = useRef(0)
   const [progress, setProgress] = useState(0)
   const reduce = usePrefersReducedMotion()
 
   useEffect(() => {
     const section = sectionRef.current
-    const video = videoRef.current
-    if (!section) return
+    const canvas = canvasRef.current
+    if (!section || !canvas) return
 
-    // Prime iOS/Safari decoding so scrubbed seeks paint frames without a gesture.
-    if (video && !reduce) {
-      video.play().then(() => video.pause()).catch(() => {})
+    const images: HTMLImageElement[] = new Array(FRAME_COUNT)
+    const loaded: boolean[] = new Array(FRAME_COUNT).fill(false)
+    imagesRef.current = images
+    loadedRef.current = loaded
+    drawnRef.current = -1
+
+    const frameForProgress = (p: number) => Math.round(p * (FRAME_COUNT - 1))
+
+    // Cover-fit the given (loaded) frame onto the canvas, honoring devicePixelRatio.
+    const drawFrame = (index: number) => {
+      const img = images[index]
+      if (!img || !loaded[index]) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      const dpr = window.devicePixelRatio || 1
+      const cw = canvas.clientWidth
+      const ch = canvas.clientHeight
+      if (cw === 0 || ch === 0) return
+      if (canvas.width !== Math.round(cw * dpr) || canvas.height !== Math.round(ch * dpr)) {
+        canvas.width = Math.round(cw * dpr)
+        canvas.height = Math.round(ch * dpr)
+      }
+      const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
+      const dw = img.naturalWidth * scale
+      const dh = img.naturalHeight * scale
+      const dx = (cw - dw) / 2
+      const dy = (ch - dh) * 0.55 // matches object-position: center 55%
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, cw, ch)
+      ctx.drawImage(img, dx, dy, dw, dh)
+      drawnRef.current = index
+    }
+
+    // If the exact target frame hasn't loaded yet, draw the closest one that has.
+    const drawNearest = (target: number) => {
+      if (loaded[target]) return drawFrame(target)
+      for (let d = 1; d < FRAME_COUNT; d++) {
+        if (target - d >= 0 && loaded[target - d]) return drawFrame(target - d)
+        if (target + d < FRAME_COUNT && loaded[target + d]) return drawFrame(target + d)
+      }
+    }
+
+    // Load frames. Frame 0 first (immediate paint / poster), then the rest.
+    const loadFrame = (i: number) => {
+      const img = new Image()
+      img.decoding = 'async'
+      img.onload = () => {
+        loaded[i] = true
+        const target = reduce ? 0 : frameForProgress(progressRef.current)
+        // Repaint if this frame is now the best available for where we are.
+        if (i === target || (drawnRef.current === -1 && i === 0)) drawNearest(target)
+      }
+      img.src = framePath(i)
+      images[i] = img
+    }
+
+    if (reduce) {
+      loadFrame(0) // assembled truck, no scrubbing
+    } else {
+      loadFrame(0)
+      for (let i = 1; i < FRAME_COUNT; i++) loadFrame(i)
     }
 
     let raf = 0
@@ -82,20 +150,25 @@ export function Hero() {
       const p = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0
       progressRef.current = p
       setProgress(p)
-      if (!reduce && video && video.duration) {
-        video.currentTime = p * video.duration
-      }
+      if (!reduce) drawNearest(frameForProgress(p))
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
     }
+    const onResize = () => {
+      // Force a redraw at the new size.
+      const idx = drawnRef.current
+      drawnRef.current = -1
+      if (idx >= 0) drawFrame(idx)
+      onScroll()
+    }
 
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
     return () => {
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
+      window.removeEventListener('resize', onResize)
       if (raf) cancelAnimationFrame(raf)
     }
   }, [reduce])
@@ -121,19 +194,19 @@ export function Hero() {
           Sparta
         </span>
 
-        {/* Scrubbed truck video */}
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          preload="auto"
-          poster="/hero/sparta-hero-poster.jpg"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: 'center 55%' }}
-        >
-          <source src="/hero/sparta-hero.webm" type="video/webm" />
-          <source src="/hero/sparta-hero.mp4" type="video/mp4" />
-        </video>
+        {/* Poster behind the canvas — shown instantly while frames load. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full bg-cover"
+          style={{ backgroundImage: 'url(/hero/poster.jpg)', backgroundPosition: 'center 55%' }}
+        />
+
+        {/* Scrubbed truck disassembly — one exact frame per scroll position. */}
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full"
+        />
 
         {/* Bottom fade for text legibility */}
         <div
