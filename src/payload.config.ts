@@ -25,6 +25,13 @@ export default buildConfig({
     meta: {
       titleSuffix: '· Sparta Motors',
     },
+    components: {
+      views: {
+        dashboard: {
+          Component: '/components/admin/Dashboard#default',
+        },
+      },
+    },
   },
   collections: [Users, Trucks, Leads, FleetInquiries, Media, Pages],
   globals: [Settings],

@@ -1,0 +1,36 @@
+/* ---------------------------------------------------------------------------
+   Sparta Motors — admin theme accents.
+   Payload's neutral scale is already near-black, which reads as Sparta Black.
+   These targeted overrides add the Safety Orange brand accent without
+   remapping Payload's internal elevation system (which would be risky).
+--------------------------------------------------------------------------- */
+
+$sparta-black: #1a1a1a;
+$sparta-orange: #f26b0f;
+$sparta-orange-dark: #d95c08;
+
+/* Primary actions (Save, Create) — Sparta Black at rest, orange on hover. */
+.btn--style-primary {
+  --bg-color: #{$sparta-black};
+  --hover-bg: #{$sparta-orange};
+  --hover-color: #fff;
+}
+
+/* Text selection in the Sparta orange. */
+::selection {
+  background: $sparta-orange;
+  color: #fff;
+}
+
+/* Orange focus outline on form controls for a branded, accessible focus state. */
+.field-type input:focus,
+.field-type textarea:focus,
+.field-type .rs__control--is-focused {
+  border-color: $sparta-orange !important;
+  box-shadow: 0 0 0 1px $sparta-orange !important;
+}
+
+/* Login screen: orange accent under the form. */
+.login__wrap .form-submit .btn--style-primary:hover {
+  --hover-bg: #{$sparta-orange-dark};
+}
