@@ -20,6 +20,12 @@ export function formatPhone(raw: string | null | undefined): string {
   return raw
 }
 
+/** `tel:` href with non-dial characters stripped, or null when no phone. */
+export function telHref(phone: string | null | undefined): string | null {
+  if (!phone) return null
+  return `tel:${phone.replace(/[^\d+]/g, '')}`
+}
+
 export function formatDateTime(date: string | Date | null | undefined): string {
   if (!date) return '—'
   return new Date(date).toLocaleString('en-US', {

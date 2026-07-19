@@ -2,6 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { getFeaturedTrucks, getPublishedTrucks, computeFacets } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
+import { organizationJsonLd } from '@/lib/structured-data'
 import { Hero } from '@/components/home/Hero'
 import { StatsBar, type Stat } from '@/components/home/StatsBar'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
@@ -44,7 +45,7 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(settings)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(settings)) }}
       />
       <Hero />
       <StatsBar stats={stats} />
@@ -54,57 +55,4 @@ export default async function HomePage() {
       <FleetCTA />
     </>
   )
-}
-
-/** Organization + AutoDealer (LocalBusiness) JSON-LD, built from Settings. */
-function structuredData(settings: Awaited<ReturnType<typeof getSettings>>) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  const a = settings.address
-  const address = a
-    ? {
-        '@type': 'PostalAddress',
-        streetAddress: [a.line1, a.line2].filter(Boolean).join(', ') || undefined,
-        addressLocality: a.city || undefined,
-        addressRegion: a.state || undefined,
-        postalCode: a.zip || undefined,
-        addressCountry: 'US',
-      }
-    : undefined
-  const geo =
-    a?.latitude != null && a?.longitude != null
-      ? { '@type': 'GeoCoordinates', latitude: a.latitude, longitude: a.longitude }
-      : undefined
-
-  const org = {
-    '@type': 'Organization',
-    '@id': `${siteUrl}/#organization`,
-    name: settings.siteName || 'Sparta Motors',
-    url: siteUrl,
-    telephone: settings.phone || undefined,
-    email: settings.email || undefined,
-    address,
-    sameAs: [settings.socialFacebook, settings.socialInstagram].filter(Boolean),
-  }
-
-  const dealer = {
-    '@type': 'AutoDealer',
-    '@id': `${siteUrl}/#dealer`,
-    name: settings.siteName || 'Sparta Motors',
-    url: siteUrl,
-    telephone: settings.phone || undefined,
-    email: settings.email || undefined,
-    address,
-    geo,
-    parentOrganization: { '@id': `${siteUrl}/#organization` },
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '08:00',
-        closes: '17:00',
-      },
-    ],
-  }
-
-  return { '@context': 'https://schema.org', '@graph': [org, dealer] }
 }
