@@ -75,7 +75,7 @@ Dark section.
 **Left side:**
 - Heading: `Fleet inquiry form`
 - Description: `Different from our standard lead form — this one captures fleet-specific info so we know exactly what to source. You'll hear back within a business day.`
-- Below: `Prefer to talk it through? Call us — (704) 555-0184.`
+- Below: `Prefer to talk it through? Call us — (864) 266-5347.`
 
 **Right side — the form (fleet-specific fields):**
 
@@ -108,8 +108,8 @@ Dark section.
 
 **Meta tags:**
 
-- Title: `Fleet Truck Sourcing — Sparta Motors, Charlotte NC`
-- Description: `Fleet and bulk sourcing for used commercial trucks. We source box trucks, day cabs, dump trucks, and more for growing businesses. Charlotte, NC.`
+- Title: `Fleet Truck Sourcing — Sparta Motors, Spartanburg NC`
+- Description: `Fleet and bulk sourcing for used commercial trucks. We source box trucks, day cabs, dump trucks, and more for growing businesses. Spartanburg, SC.`
 
 ## What good implementation looks like
 

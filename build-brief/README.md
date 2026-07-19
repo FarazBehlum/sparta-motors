@@ -1,6 +1,6 @@
 # Sparta Motors — Website Build Brief
 
-This is the complete build brief for the Sparta Motors website rebuild — a used commercial truck dealer in Charlotte, NC. It documents every technical, design, and workflow decision made during the design phase, and is intended to serve as the reference document for the actual build in Claude Code.
+This is the complete build brief for the Sparta Motors website rebuild — a used commercial truck dealer in Spartanburg, SC. It documents every technical, design, and workflow decision made during the design phase, and is intended to serve as the reference document for the actual build in Claude Code.
 
 The design phase happened as an extended collaboration between the project manager (business owner) and Claude. Every decision here has been reviewed and approved. No open questions remain that would block build.
 

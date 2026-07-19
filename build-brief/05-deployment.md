@@ -6,7 +6,7 @@ Deployment approach: single small VPS, Cloudflare in front, everything self-host
 
 ### Provider
 
-Hetzner CX22 (or DigitalOcean $6 droplet). See `01-tech-stack.md` for the comparison. Recommendation: Hetzner CX22, Ashburn (US East) location for proximity to Charlotte.
+Hetzner CX22 (or DigitalOcean $6 droplet). See `01-tech-stack.md` for the comparison. Recommendation: Hetzner CX22, Ashburn (US East) location for proximity to Spartanburg.
 
 **Specs:** 2 vCPU, 4GB RAM, 40GB SSD, 20TB transfer, Ubuntu 24.04 LTS.
 

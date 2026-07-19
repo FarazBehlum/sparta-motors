@@ -1,19 +1,22 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { PageStub } from '@/components/PageStub'
+import { InventoryView } from '@/components/inventory/InventoryView'
+import type { RawParams } from '@/lib/trucks'
 
 export const metadata: Metadata = {
-  title: 'Inventory',
+  title: 'Used Commercial Trucks for Sale',
   description:
-    'Browse used commercial trucks in stock — box trucks, reefers, day cabs, flatbeds, dump trucks, and tow trucks.',
+    'Browse used commercial trucks in Spartanburg, SC. Box trucks, reefers, day cabs, dump trucks, and more from Isuzu, Hino, Freightliner. Real mileage, honest specs, inspected.',
 }
 
-export default function InventoryPage() {
-  return (
-    <PageStub
-      label="Inventory"
-      title="On the lot now."
-      description="The full inventory browse — filters, category pages, and the truck grid — is built in the next phase."
-    />
-  )
+// URL-param driven — render on demand.
+export const dynamic = 'force-dynamic'
+
+export default async function InventoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<RawParams>
+}) {
+  const params = await searchParams
+  return <InventoryView params={params} />
 }

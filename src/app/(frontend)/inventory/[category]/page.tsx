@@ -1,12 +1,15 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { PageStub } from '@/components/PageStub'
+import { InventoryView } from '@/components/inventory/InventoryView'
 import { CATEGORY_TO_BODY_TYPE, bodyTypeLabel } from '@/lib/format'
+import type { RawParams } from '@/lib/trucks'
 
 type Params = { category: string }
 
-/** Pre-generate the six known category pages. */
+export const dynamic = 'force-dynamic'
+
+/** Pre-register the six known category slugs. */
 export function generateStaticParams(): Params[] {
   return Object.keys(CATEGORY_TO_BODY_TYPE).map((category) => ({ category }))
 }
@@ -19,19 +22,22 @@ export async function generateMetadata({
   const { category } = await params
   const bodyType = CATEGORY_TO_BODY_TYPE[category]
   if (!bodyType) return {}
-  return { title: `${bodyTypeLabel(bodyType)}s` }
+  const label = bodyTypeLabel(bodyType)
+  return {
+    title: `Used ${label}s for Sale`,
+    description: `Used ${label.toLowerCase()}s from Isuzu, Hino, Freightliner and more. Real mileage, inspected on the lot. Spartanburg, SC.`,
+  }
 }
 
-export default async function CategoryPage({ params }: { params: Promise<Params> }) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>
+  searchParams: Promise<RawParams>
+}) {
   const { category } = await params
-  const bodyType = CATEGORY_TO_BODY_TYPE[category]
-  if (!bodyType) notFound()
-
-  return (
-    <PageStub
-      label={`Inventory · ${bodyTypeLabel(bodyType)}`}
-      title={`${bodyTypeLabel(bodyType)}s.`}
-      description="Category browse pages share the inventory template with the body-type filter pre-applied. Built alongside the main inventory page."
-    />
-  )
+  if (!CATEGORY_TO_BODY_TYPE[category]) notFound()
+  const sp = await searchParams
+  return <InventoryView params={sp} category={category} />
 }

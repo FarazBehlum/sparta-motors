@@ -44,8 +44,8 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 /** Site-wide footer. Deep dark, 4-column, pulls contact details from Settings. */
 export async function Footer() {
   const settings = await getSettings()
-  const city = settings.address?.city ?? 'Charlotte'
-  const state = settings.address?.state ?? 'NC'
+  const city = settings.address?.city ?? 'Spartanburg'
+  const state = settings.address?.state ?? 'SC'
   const location = `${city}, ${state}`
   const phone = settings.phone
 

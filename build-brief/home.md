@@ -62,7 +62,7 @@ Site-wide component. Full spec in `04-design-system.md`. Recap:
 
 **Additional hero elements:**
 
-- Top-left: `EST. 2018 · CHARLOTTE, NC` in orange monospace, small
+- Top-left: `EST. 2018 · SPARTANBURG, SC` in orange monospace, small
 - Top-right: three phase-indicator dots; active phase shown in orange
 - Bottom-right: `SCROLL` indicator, fades out after user starts scrolling
 - Background: subtle "SPARTA" watermark at very low opacity behind everything
@@ -97,7 +97,7 @@ Below the hero. Horizontal band with 4 stats.
 | ON THE LOT | 22 | Trucks in stock |
 | BODY TYPES | 06 | Categories |
 | BRANDS | 08 | Isuzu, Hino, Freightliner + more |
-| EST. | 2018 | Charlotte, NC |
+| EST. | 2018 | Spartanburg, SC |
 
 ### 4. Shop by body type
 
@@ -175,8 +175,8 @@ The hero video is the biggest performance risk. See `integrations/hero-video.md`
 
 **Meta tags:**
 
-- Title: `Sparta Motors — Used Commercial Trucks in Charlotte, NC`
-- Description: `Used commercial trucks for working businesses. Box trucks, reefers, day cabs, dump trucks, tow rigs. Charlotte, NC. Est. 2018.`
+- Title: `Sparta Motors — Used Commercial Trucks in Spartanburg, SC`
+- Description: `Used commercial trucks for working businesses. Box trucks, reefers, day cabs, dump trucks, tow rigs. Spartanburg, SC. Est. 2018.`
 - Open Graph image: Sparta logo on branded background
 
 **Structured data (JSON-LD):**
@@ -199,7 +199,7 @@ Deep dark background (`#0F0F0F`). 4-column grid on desktop, stacked on mobile.
 
 **Column 1 (brand):**
 - Sparta logo mark + wordmark
-- Tagline: "Used commercial trucks for working businesses. Charlotte, NC · Est. 2018"
+- Tagline: "Used commercial trucks for working businesses. Spartanburg, SC · Est. 2018"
 - Phone number (mono, Bone color)
 
 **Column 2 (Inventory):**
@@ -218,7 +218,7 @@ Deep dark background (`#0F0F0F`). 4-column grid on desktop, stacked on mobile.
 **Bottom bar:**
 - Divided by horizontal line
 - Left: `© 2026 SPARTA MOTORS LLC` (mono, Iron)
-- Right: `CHARLOTTE, NC` (mono, Iron)
+- Right: `SPARTANBURG, SC` (mono, Iron)
 
 ## What good implementation looks like
 

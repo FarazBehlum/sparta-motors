@@ -1,18 +1,9 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Truck, Media } from '@/payload-types'
+import type { Truck } from '@/payload-types'
 import { bodyTypeLabel, formatMileage, formatPrice, makeLabel } from '@/lib/format'
-
-/** Pull the first usable photo (card-sized if available) from a truck. */
-function primaryPhoto(truck: Truck): { url: string; alt: string } | null {
-  const first = truck.photos?.[0]?.image
-  if (!first || typeof first !== 'object') return null
-  const media = first as Media
-  const url = media.sizes?.card?.url ?? media.url
-  if (!url) return null
-  return { url, alt: media.alt ?? `${truck.year} ${makeLabel(truck.make)} ${truck.model}` }
-}
+import { truckPrimaryPhoto } from '@/lib/media'
 
 /**
  * Truck card (grid view). Photo with body-type badge, year/make in mono caps,
@@ -20,7 +11,7 @@ function primaryPhoto(truck: Truck): { url: string; alt: string } | null {
  * (motion moment #6). See build-brief/04-design-system.md.
  */
 export function TruckCard({ truck }: { truck: Truck }) {
-  const photo = primaryPhoto(truck)
+  const photo = truckPrimaryPhoto(truck)
   const href = `/trucks/${truck.slug}`
 
   return (

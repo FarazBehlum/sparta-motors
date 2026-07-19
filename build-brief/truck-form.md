@@ -133,7 +133,7 @@ Header: "Description & Spec Sheet" + "STEP 5 OF 5".
 
 - Label: "Description" + helper: "(condition notes, history, anything the customer should know)"
 - Textarea, 4-6 rows minimum, resizable
-- Placeholder: "e.g., One-owner delivery route out of Charlotte. Runs strong, no known issues..."
+- Placeholder: "e.g., One-owner delivery route out of Spartanburg. Runs strong, no known issues..."
 
 **Spec sheet PDF:**
 

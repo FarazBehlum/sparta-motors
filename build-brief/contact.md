@@ -38,7 +38,7 @@ Each card: white background, 10px rounded, 1px Chalk border, padding 20-22px.
 
 **Card 1 — CALL:**
 - Label: `CALL` (mono orange)
-- Value: `(704) 555-0184` (Barlow Condensed 700, ~20px, dark)
+- Value: `(864) 266-5347` (Barlow Condensed 700, ~20px, dark)
 - Sub: `Fastest way to get an answer. Mon–Fri 8am–6pm.`
 - Phone number is a `tel:` link on mobile
 
@@ -50,7 +50,7 @@ Each card: white background, 10px rounded, 1px Chalk border, padding 20-22px.
 
 **Card 3 — VISIT:**
 - Label: `VISIT`
-- Value: address in two lines: `1234 Industrial Blvd / Charlotte, NC 28216`
+- Value: address in two lines: `1234 Industrial Blvd / Spartanburg, SC 28216`
 - Sub: `Off I-77. Plenty of room to walk the lot.`
 
 **Card 4 — HOURS:**
@@ -86,7 +86,7 @@ Warm off-white background.
 **Left column:**
 - Heading: `General contact form`
 - Description: `For truck-specific inquiries, use the inquiry form on the truck's listing — we can respond faster with the truck already flagged. For anything else, this form works great.`
-- Below: `Urgent? Call directly — (704) 555-0184.`
+- Below: `Urgent? Call directly — (864) 266-5347.`
 
 **Right column — the form:**
 
@@ -118,8 +118,8 @@ Warm off-white background.
 
 **Meta tags:**
 
-- Title: `Contact Sparta Motors — Charlotte NC`
-- Description: `Contact Sparta Motors — used commercial truck dealer in Charlotte, NC. Call (704) 555-0184 or email info@sparta-motors.com. Mon–Fri 8am–6pm.`
+- Title: `Contact Sparta Motors — Spartanburg NC`
+- Description: `Contact Sparta Motors — used commercial truck dealer in Spartanburg, SC. Call (864) 266-5347 or email info@sparta-motors.com. Mon–Fri 8am–6pm.`
 
 **Structured data:**
 

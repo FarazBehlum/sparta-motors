@@ -4,8 +4,9 @@ import config from '../payload.config'
 
 /**
  * Idempotent seed: admin user, Settings global, and the five editable Pages
- * with baseline hero copy. Business address/phone are placeholders until the
- * project manager supplies real details (see CLAUDE.md "Known gaps").
+ * with baseline hero copy. Business address/phone/hours are the real dealership
+ * details (890 S Irwin Ave, Spartanburg, SC). Map coordinates are approximate —
+ * verify before the Contact/About map ships.
  *
  * Run with: npm run seed
  * Admin credentials come from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD env vars,
@@ -44,38 +45,39 @@ async function seed() {
     payload.logger.info(`Admin user ${adminEmail} already exists — skipping`)
   }
 
-  // --- Settings global (placeholders) ---
+  // --- Settings global ---
   await payload.updateGlobal({
     slug: 'settings',
     data: {
       siteName: 'Sparta Motors',
-      phone: '(704) 555-0100', // PLACEHOLDER
+      phone: '(864) 266-5347',
       email: process.env.SMTP_FROM || 'info@sparta-motors.com',
       address: {
-        line1: '0000 Independence Blvd', // PLACEHOLDER
+        line1: '890 S Irwin Ave',
         line2: '',
-        city: 'Charlotte',
-        state: 'NC',
-        zip: '28200', // PLACEHOLDER
-        latitude: 35.2271,
-        longitude: -80.8431,
+        city: 'Spartanburg',
+        state: 'SC',
+        zip: '29306',
+        // Approximate — verify/geocode precisely before the Contact/About map ships.
+        latitude: 34.9377,
+        longitude: -81.9187,
       },
-      hoursMonFri: '8am – 6pm',
-      hoursSat: '9am – 3pm',
+      hoursMonFri: '8 AM – 5 PM',
+      hoursSat: 'By appointment',
       hoursSun: 'Closed',
     },
   })
-  payload.logger.info('Settings global seeded (placeholder address/phone)')
+  payload.logger.info('Settings global seeded')
 
   // --- Pages ---
   const pages: Array<{ slug: 'home' | 'about' | 'financing' | 'fleet' | 'contact'; title: string; heroLabel: string; heroTitle: string; heroSubtitle: string; metaDescription: string }> = [
     {
       slug: 'home',
-      title: 'Sparta Motors — Used Commercial Trucks in Charlotte, NC',
+      title: 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC',
       heroLabel: 'SPARTA MOTORS',
       heroTitle: 'Work trucks\nthat work.',
       heroSubtitle: 'Used medium- and heavy-duty commercial trucks. Honest specs, real photos, a phone that gets answered.',
-      metaDescription: 'Used commercial trucks for working businesses in Charlotte, NC. Box trucks, reefers, day cabs, flatbeds, dump trucks, and tow trucks.',
+      metaDescription: 'Used commercial trucks for working businesses in Spartanburg, SC. Box trucks, reefers, day cabs, flatbeds, dump trucks, and tow trucks.',
     },
     {
       slug: 'about',
@@ -83,7 +85,7 @@ async function seed() {
       heroLabel: 'ABOUT SPARTA MOTORS',
       heroTitle: 'A dealer built\nfor working businesses.',
       heroSubtitle: 'Established 2018. We sell trucks that earn their keep — and we tell you the truth about every one.',
-      metaDescription: 'Sparta Motors is a used commercial truck dealer in Charlotte, NC, serving small businesses since 2018.',
+      metaDescription: 'Sparta Motors is a used commercial truck dealer in Spartanburg, SC, serving small businesses since 2018.',
     },
     {
       slug: 'financing',
@@ -91,7 +93,7 @@ async function seed() {
       heroLabel: 'FINANCING',
       heroTitle: 'Financing that\nkeeps you working.',
       heroSubtitle: 'Get pre-qualified in minutes. We work with lenders who understand commercial vehicles.',
-      metaDescription: 'Commercial truck financing in Charlotte, NC. Get pre-qualified with Sparta Motors.',
+      metaDescription: 'Commercial truck financing in Spartanburg, SC. Get pre-qualified with Sparta Motors.',
     },
     {
       slug: 'fleet',
@@ -99,7 +101,7 @@ async function seed() {
       heroLabel: 'FLEET & BULK SOURCING',
       heroTitle: 'Growing your\nfleet? We source.',
       heroSubtitle: 'Tell us what you need. We find the right trucks at the right price for growing small fleets.',
-      metaDescription: 'Fleet and bulk truck sourcing for small businesses in Charlotte, NC.',
+      metaDescription: 'Fleet and bulk truck sourcing for small businesses in Spartanburg, SC.',
     },
     {
       slug: 'contact',
@@ -107,7 +109,7 @@ async function seed() {
       heroLabel: 'CONTACT',
       heroTitle: 'Come by the lot.\nOr call us.',
       heroSubtitle: 'We answer the phone. Stop by, call, or send a message and we will get right back to you.',
-      metaDescription: 'Contact Sparta Motors in Charlotte, NC. Address, hours, phone, and directions.',
+      metaDescription: 'Contact Sparta Motors in Spartanburg, SC. Address, hours, phone, and directions.',
     },
   ]
 

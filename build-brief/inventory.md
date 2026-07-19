@@ -49,7 +49,7 @@ Below the header. Full-width search input with orange submit button.
 Between the search bar and the main grid, on category pages only.
 
 - Short paragraph (100-200 words) explaining the category
-- Optimized for SEO — targeted at "used box trucks for sale Charlotte NC" and similar search queries
+- Optimized for SEO — targeted at "used box trucks for sale Spartanburg NC" and similar search queries
 - Content should be editable via Payload (add a `categoryDescriptions` field to the Pages global, keyed by category slug)
 
 **Example (Box Trucks):**
@@ -209,13 +209,13 @@ Full spec in `integrations/leaflet-map.md`.
 
 **Meta tags for main inventory:**
 
-- Title: `Used Commercial Trucks for Sale — Sparta Motors, Charlotte NC`
-- Description: `Browse used commercial trucks in Charlotte, NC. Box trucks, reefers, day cabs, dump trucks, and more from Isuzu, Hino, Freightliner. Real mileage, honest specs, inspected.`
+- Title: `Used Commercial Trucks for Sale — Sparta Motors, Spartanburg NC`
+- Description: `Browse used commercial trucks in Spartanburg, SC. Box trucks, reefers, day cabs, dump trucks, and more from Isuzu, Hino, Freightliner. Real mileage, honest specs, inspected.`
 
 **Meta tags for category pages** (example: box trucks):
 
-- Title: `Used Box Trucks for Sale — Sparta Motors, Charlotte NC`
-- Description: `Used box trucks from Isuzu, Hino, Freightliner. 14-26 foot models available. Real mileage, inspected on the lot. Charlotte, NC.`
+- Title: `Used Box Trucks for Sale — Sparta Motors, Spartanburg NC`
+- Description: `Used box trucks from Isuzu, Hino, Freightliner. 14-26 foot models available. Real mileage, inspected on the lot. Spartanburg, SC.`
 
 **Structured data:**
 

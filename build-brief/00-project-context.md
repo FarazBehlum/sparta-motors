@@ -2,7 +2,7 @@
 
 ## What Sparta Motors is
 
-Sparta Motors is a used commercial truck dealer based in Charlotte, NC. Established in 2018. The business sells medium- and heavy-duty commercial trucks — box trucks, refrigerated units (reefers), day cabs, flatbeds, dump trucks, and tow trucks — from brands including Isuzu, Hino, Freightliner, and Nissan. Typical inventory is around 20 trucks on the lot at any time.
+Sparta Motors is a used commercial truck dealer based in Spartanburg, SC. Established in 2018. The business sells medium- and heavy-duty commercial trucks — box trucks, refrigerated units (reefers), day cabs, flatbeds, dump trucks, and tow trucks — from brands including Isuzu, Hino, Freightliner, and Nissan. Typical inventory is around 20 trucks on the lot at any time.
 
 The business also operates a sister company, Sparta Parts, currently at a separate domain (sparta-parts.com) selling hundreds of truck parts SKUs. Sparta Parts is not part of Phase 1 of this rebuild but is architecturally accounted for.
 
@@ -72,7 +72,7 @@ Explicit business goals, in priority order:
 3. **Modern, trustworthy visual identity.** The current site looks dated and doesn't communicate that Sparta is a professional operation. The rebuild's "workhorse industrial" brand direction directly addresses this.
 4. **Simpler content management.** The current WordPress admin makes it hard to add trucks quickly. The rebuild's employee workflow (draft on phone → submit → admin publishes) should let a truck go from arrival on the lot to public listing in under an hour.
 5. **Foundation for Phase 2.** Parts will consolidate here later. The tech stack, design system, and information architecture must support that without a rewrite.
-6. **Better SEO.** The current site has no meaningful search presence. The rebuild should target commercial truck buyer search terms (e.g., "used Isuzu NPR for sale Charlotte", "box truck under 100k miles Charlotte NC").
+6. **Better SEO.** The current site has no meaningful search presence. The rebuild should target commercial truck buyer search terms (e.g., "used Isuzu NPR for sale Spartanburg", "box truck under 100k miles Spartanburg NC").
 
 ## Non-goals for Phase 1
 

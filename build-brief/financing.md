@@ -85,7 +85,7 @@ Dark section (`#1A1A1A`, Bone text).
 **Left side:**
 - Section heading: `Pre-qualification form`
 - Description: `This is our standard inquiry form with financing pre-checked. Same as the form on any truck listing — we just skip the "truck of interest" if you don't have one picked yet.`
-- Below: `Prefer to talk to a person first? Call us — (704) 555-0184.`
+- Below: `Prefer to talk to a person first? Call us — (864) 266-5347.`
 
 **Right side — the form:**
 
@@ -113,8 +113,8 @@ Fields:
 
 **Meta tags:**
 
-- Title: `Commercial Truck Financing — Sparta Motors, Charlotte NC`
-- Description: `Financing options for used commercial trucks. We connect small businesses with commercial lenders. Charlotte, NC.`
+- Title: `Commercial Truck Financing — Sparta Motors, Spartanburg NC`
+- Description: `Financing options for used commercial trucks. We connect small businesses with commercial lenders. Spartanburg, SC.`
 
 ## Accessibility
 

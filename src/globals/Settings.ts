@@ -43,8 +43,8 @@ export const Settings: GlobalConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'hoursMonFri', type: 'text', admin: { width: '33%' }, defaultValue: '8am – 6pm' },
-        { name: 'hoursSat', type: 'text', admin: { width: '33%' }, defaultValue: '9am – 3pm' },
+        { name: 'hoursMonFri', type: 'text', admin: { width: '33%' }, defaultValue: '8 AM – 5 PM' },
+        { name: 'hoursSat', type: 'text', admin: { width: '33%' }, defaultValue: 'By appointment' },
         { name: 'hoursSun', type: 'text', admin: { width: '34%' }, defaultValue: 'Closed' },
       ],
     },

@@ -1,6 +1,6 @@
 # Integration — Leaflet Map
 
-Interactive map showing Sparta Motors' Charlotte location. Used on Contact, About, and Inventory pages, plus the site footer.
+Interactive map showing Sparta Motors' Spartanburg location. Used on Contact, About, and Inventory pages, plus the site footer.
 
 **Mockup reference:** All content-page mockups in `/mockups/sparta-content-pages.html` show this map; also `/mockups/sparta-inventory.html`.
 
@@ -26,7 +26,7 @@ Positron gives a light, clean, muted look that matches Sparta's "workhorse indus
 
 From the Settings global:
 - `latitude` and `longitude` — the actual coordinates
-- Placeholder for development: `35.2650, -80.8500` (approximate North Charlotte industrial area)
+- Placeholder for development: `35.2650, -80.8500` (approximate North Spartanburg industrial area)
 - Real coordinates will be filled in via the Settings global before launch
 
 ## Custom marker

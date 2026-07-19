@@ -102,7 +102,7 @@ White card. Uses the standard section pattern.
 
 **Example copy (auto-generated from Payload rich text):**
 
-> 2019 Isuzu NPR-HD with 87,432 miles. One-owner delivery route out of Charlotte. 16-foot aluminum box body with roll-up door, ready to work.
+> 2019 Isuzu NPR-HD with 87,432 miles. One-owner delivery route out of Spartanburg. 16-foot aluminum box body with roll-up door, ready to work.
 >
 > Truck has been inspected on the lot. Runs strong, no known issues. New brakes and tires installed last month. Documented service history available.
 
@@ -232,7 +232,7 @@ Full width, below main content.
 **Meta tags:**
 
 - Title: `{year} {make} {model} — Sparta Motors`
-- Description: `{year} {make} {model}. {mileage} miles. {body type}. {price}. Charlotte, NC.`
+- Description: `{year} {make} {model}. {mileage} miles. {body type}. {price}. Spartanburg, SC.`
 
 **Structured data (JSON-LD):**
 

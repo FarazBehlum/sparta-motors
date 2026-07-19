@@ -7,7 +7,7 @@ Short and functional. Sparta doesn't need a founder story or team photos — it 
 ## Positioning and copy tone
 
 - Family-run business, not a corporate dealer
-- Established (Est. 2018, ~7 years in Charlotte)
+- Established (Est. 2018, ~7 years in Spartanburg)
 - Serves working small businesses
 - Direct and functional — no long-winded copy
 
@@ -35,7 +35,7 @@ Light background. Container narrower than other sections (`max-w: 900px`).
 
 Copy (should be editable via Payload):
 
-> Sparta Motors is a family-run used commercial truck dealer based in Charlotte, NC. We opened our doors in 2018 and have spent every year since building a reputation for straight talk, honest specs, and trucks that show up to work. We sell to landscapers, delivery operators, tow companies, contractors, and any small business that needs a truck that runs when they turn the key.
+> Sparta Motors is a family-run used commercial truck dealer based in Spartanburg, SC. We opened our doors in 2018 and have spent every year since building a reputation for straight talk, honest specs, and trucks that show up to work. We sell to landscapers, delivery operators, tow companies, contractors, and any small business that needs a truck that runs when they turn the key.
 
 ## Stats strip
 
@@ -48,7 +48,7 @@ Below the intro paragraph, before the callout. Bordered top and bottom.
 
 | Label | Value | Description |
 |---|---|---|
-| EST. | 2018 | Charlotte, NC |
+| EST. | 2018 | Spartanburg, SC |
 | TRUCKS SOLD | 400+ | Small businesses served |
 | BODY TYPES | 06 | Box, reefer, day cab, dump, tow, flatbed |
 | BRANDS | 08 | Isuzu, Hino, Freightliner, Nissan + more |
@@ -68,7 +68,7 @@ Warm off-white background.
 
 - Label: `◆ FIND US`
 - Title: `Come see the trucks.`
-- Lead: `We're on Industrial Blvd in North Charlotte. Easy off I-77, plenty of room to walk the lot.`
+- Lead: `We're on Industrial Blvd in North Spartanburg. Easy off I-77, plenty of room to walk the lot.`
 
 **Below the lead:** two-column layout (single column on mobile).
 
@@ -98,8 +98,8 @@ Address, hours, phone all come from the Settings global.
 
 **Meta tags:**
 
-- Title: `About Sparta Motors — Used Commercial Trucks in Charlotte NC`
-- Description: `Family-run used commercial truck dealer in Charlotte, NC. Serving small businesses since 2018.`
+- Title: `About Sparta Motors — Used Commercial Trucks in Spartanburg NC`
+- Description: `Family-run used commercial truck dealer in Spartanburg, SC. Serving small businesses since 2018.`
 
 **Structured data:**
 
