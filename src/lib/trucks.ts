@@ -36,6 +36,17 @@ export async function queryInventory(filters: TruckFilters) {
 // parseFilters is re-exported above; kept here for symmetry of server imports.
 export { parseFilters }
 
+/**
+ * Up to `limit` trucks for the home "Featured inventory" strip: featured ones
+ * first (newest within), then filled out with the most recently published.
+ */
+export async function getFeaturedTrucks(limit = 6): Promise<Truck[]> {
+  const all = await getPublishedTrucks() // already sorted -publishedAt
+  const featured = all.filter((t) => t.featured)
+  const rest = all.filter((t) => !t.featured)
+  return [...featured, ...rest].slice(0, limit)
+}
+
 /** Single published truck by slug (or null). */
 export const getTruckBySlug = cache(async (slug: string): Promise<Truck | null> => {
   const payload = await getPayloadClient()
