@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+
+# Payload
+media/
+
+# Env
+.env
+.env*.local
+.env.production
+
+# Misc
+.DS_Store
+*.pem
+.idea/
+.vercel
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Raw hero-video source material (not final assets — see integrations/hero-video.md)
+/Start.jpeg
+/End.jpeg
+/Video.mp4
+/_MConverter.eu_Video/
+/_MConverter.eu_Video.zip

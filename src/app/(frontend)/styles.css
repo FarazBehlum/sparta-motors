@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Sparta Motors design system — tokens from build-brief/04-design-system.md
+--------------------------------------------------------------------------- */
+@theme {
+  /* Colors */
+  --color-sparta-black: #1a1a1a;
+  --color-bone: #f5f3f0;
+  --color-hero-warm: #efeeea;
+  --color-orange: #f26b0f;
+  --color-amber: #f5a623;
+  --color-charcoal: #2c2c2a;
+  --color-iron: #5f5e5a;
+  --color-concrete: #b4b2a9;
+  --color-chalk: #d3d1c7;
+  --color-warm-white: #eeece5;
+  --color-success: #16803b;
+  --color-success-light: #eaf3de;
+  --color-danger: #b91c1c;
+  --color-warning-soft: #fdf3eb;
+  --color-warning-dark: #b84a2f;
+
+  /* Fonts — wired to next/font CSS variables */
+  --font-barlow: var(--font-barlow), 'Barlow Condensed', sans-serif;
+  --font-inter: var(--font-inter), 'Inter', sans-serif;
+  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+
+  /* Container widths */
+  --container-content: 1280px;
+  --container-wide: 1400px;
+  --container-prose: 900px;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bone);
+    color: var(--color-sparta-black);
+    font-family: var(--font-inter);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-barlow);
+    font-weight: 800;
+    line-height: 1;
+    margin: 0;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  svg {
+    vertical-align: middle;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reusable component-level utilities
+--------------------------------------------------------------------------- */
+@layer components {
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--color-orange);
+    text-transform: uppercase;
+  }
+
+  .display-title {
+    font-family: var(--font-barlow);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Respect reduced-motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
