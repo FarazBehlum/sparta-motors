@@ -93,6 +93,8 @@ export function Hero() {
       if (!img || !loaded[index]) return
       const ctx = canvas.getContext('2d')
       if (!ctx) return
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
       const dpr = window.devicePixelRatio || 1
       const cw = canvas.clientWidth
       const ch = canvas.clientHeight

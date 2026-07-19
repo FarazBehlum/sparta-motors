@@ -5,25 +5,32 @@
  * Video seeking (video.currentTime) can only land on sparse keyframes, so the
  * disassembly appeared frozen — a canvas sequence draws every frame exactly.
  *
- * Reads the 240 source PNGs in _MConverter.eu_Video/ (gitignored raw material),
- * samples them down to FRAME_COUNT evenly-spaced frames, and writes optimized
- * WebP frames to public/hero/frames/0001.webp … plus a poster.
+ * Reads a folder of sequentially-numbered source frames (PNG or JPG), samples
+ * them down to FRAME_COUNT evenly-spaced frames, and writes optimized WebP
+ * frames to public/hero/frames/0001.webp … plus a poster from the first frame.
  *
- * Re-run after replacing the source render:  node scripts/build-hero-frames.mjs
+ * The frame sequence can show anything — the hero scrubs it one frame per scroll
+ * position. Number the source frames in playback order (first = start of motion).
+ *
+ * Usage:
+ *   node scripts/build-hero-frames.mjs [sourceDir]
+ * Defaults to _MConverter.eu_Video/ (the original gitignored raw material).
  */
 import sharp from 'sharp'
 import { mkdir, rm, readdir } from 'node:fs/promises'
 import path from 'node:path'
 
-const SRC_DIR = '_MConverter.eu_Video'
+const SRC_DIR = process.argv[2] || process.env.HERO_SRC_DIR || '_MConverter.eu_Video'
 const OUT_DIR = 'public/hero/frames'
 const FRAME_COUNT = 120
-const WIDTH = 1100
-const QUALITY = 68
+// Cap at the source width — upscaling only softens. q82 avoids visible banding
+// on smooth gradients (q68 was too low for a photographic sunset).
+const WIDTH = 1280
+const QUALITY = 82
 
 async function main() {
   const files = (await readdir(SRC_DIR))
-    .filter((f) => /\.png$/i.test(f))
+    .filter((f) => /\.(png|jpe?g)$/i.test(f))
     .sort()
   if (files.length === 0) throw new Error(`No PNG frames found in ${SRC_DIR}`)
   console.log(`Source frames: ${files.length}`)
@@ -38,8 +45,8 @@ async function main() {
     const srcIdx = Math.round((i * last) / (FRAME_COUNT - 1))
     const outName = String(i + 1).padStart(4, '0') + '.webp'
     const info = await sharp(path.join(SRC_DIR, files[srcIdx]))
-      .resize({ width: WIDTH })
-      .webp({ quality: QUALITY, effort: 5 })
+      .resize({ width: WIDTH, withoutEnlargement: true })
+      .webp({ quality: QUALITY, effort: 5, smartSubsample: true })
       .toFile(path.join(OUT_DIR, outName))
     total += info.size
   }
