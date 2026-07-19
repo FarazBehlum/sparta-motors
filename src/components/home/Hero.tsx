@@ -17,7 +17,7 @@ import { usePrefersReducedMotion } from '@/lib/use-reduced-motion'
  * Frames are built by scripts/build-hero-frames.mjs. Keep FRAME_COUNT in sync.
  */
 
-const FRAME_COUNT = 120
+const FRAME_COUNT = 160
 const framePath = (i: number) => `/hero/frames/${String(i + 1).padStart(4, '0')}.webp`
 
 const PHASES = [
@@ -184,7 +184,7 @@ export function Hero() {
       ref={sectionRef}
       aria-label="Sparta Motors"
       className="relative bg-hero-warm"
-      style={{ height: '250vh' }}
+      style={{ height: '300vh' }}
     >
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* SPARTA watermark, very low opacity, behind everything */}

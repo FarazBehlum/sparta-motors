@@ -22,11 +22,12 @@ import path from 'node:path'
 
 const SRC_DIR = process.argv[2] || process.env.HERO_SRC_DIR || '_MConverter.eu_Video'
 const OUT_DIR = 'public/hero/frames'
-const FRAME_COUNT = 120
-// Cap at the source width — upscaling only softens. q82 avoids visible banding
-// on smooth gradients (q68 was too low for a photographic sunset).
+// More frames = smoother scrub (Apple-style). Kept in sync with Hero.tsx.
+const FRAME_COUNT = 160
+// Cap at the source width — upscaling only softens. q80 avoids visible banding
+// on smooth gradients while keeping the sequence from getting too heavy.
 const WIDTH = 1280
-const QUALITY = 82
+const QUALITY = 80
 
 async function main() {
   const files = (await readdir(SRC_DIR))
