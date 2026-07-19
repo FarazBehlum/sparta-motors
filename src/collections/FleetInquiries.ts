@@ -3,6 +3,7 @@ import { anyone, isAdmin, isAdminOrEmployee } from '../access'
 import { HEARD_ABOUT_US_OPTIONS } from '../lib/options'
 import { sendEmail } from '../lib/email/mailer'
 import { newFleetInquiryEmail } from '../lib/email/lead-templates'
+import { enforcePublicSubmitLimit } from '../lib/rate-limit'
 
 export const FleetInquiries: CollectionConfig = {
   slug: 'fleet-inquiries',
@@ -86,6 +87,11 @@ export const FleetInquiries: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeValidate: [
+      ({ req, operation }) => {
+        if (operation === 'create') enforcePublicSubmitLimit(req, 'fleet-inquiries')
+      },
+    ],
     afterChange: [
       async ({ doc, operation }) => {
         if (operation !== 'create') return

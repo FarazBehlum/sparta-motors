@@ -26,6 +26,7 @@ export async function login({
 
   await page.waitForURL(`${serverURL}/admin`)
 
-  const dashboardArtifact = page.locator('span[title="Dashboard"]')
+  // Custom Sparta dashboard renders an <h1>Dashboard.</h1>
+  const dashboardArtifact = page.getByRole('heading', { name: 'Dashboard.' })
   await expect(dashboardArtifact).toBeVisible()
 }

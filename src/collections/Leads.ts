@@ -4,6 +4,7 @@ import { HEARD_ABOUT_US_OPTIONS } from '../lib/options'
 import { sendEmail } from '../lib/email/mailer'
 import { newLeadEmail } from '../lib/email/lead-templates'
 import { leadsToCsv } from '../lib/leads-csv'
+import { enforcePublicSubmitLimit } from '../lib/rate-limit'
 
 /** GET /api/leads/export-csv?status=new&days=7 — staff-only CSV of leads. */
 async function exportCsvHandler(req: PayloadRequest): Promise<Response> {
@@ -128,6 +129,11 @@ export const Leads: CollectionConfig = {
     { name: 'closedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },
   ],
   hooks: {
+    beforeValidate: [
+      ({ req, operation }) => {
+        if (operation === 'create') enforcePublicSubmitLimit(req, 'leads')
+      },
+    ],
     beforeChange: [
       ({ data, originalDoc, operation }) => {
         const prev = operation === 'update' ? originalDoc?.status : undefined

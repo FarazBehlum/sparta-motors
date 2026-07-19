@@ -26,6 +26,7 @@ export async function generateMetadata({
   return {
     title: `Used ${label}s for Sale`,
     description: `Used ${label.toLowerCase()}s from Isuzu, Hino, Freightliner and more. Real mileage, inspected on the lot. Spartanburg, SC.`,
+    alternates: { canonical: `/inventory/${category}` },
   }
 }
 

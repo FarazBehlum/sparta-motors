@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Used Commercial Trucks for Sale',
   description:
     'Browse used commercial trucks in Spartanburg, SC. Box trucks, reefers, day cabs, dump trucks, and more from Isuzu, Hino, Freightliner. Real mileage, honest specs, inspected.',
+  alternates: { canonical: '/inventory' },
 }
 
 // URL-param driven — render on demand.

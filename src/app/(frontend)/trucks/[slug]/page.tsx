@@ -44,6 +44,7 @@ export async function generateMetadata({
   return {
     title: `${name} — Sparta Motors`,
     description: `${name}. ${formatMileage(truck.mileage)}. ${bodyTypeLabel(truck.bodyType)}. ${formatPrice(truck.price)}. Spartanburg, SC.`,
+    alternates: { canonical: `/trucks/${slug}` },
   }
 }
 
