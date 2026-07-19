@@ -1,19 +1,26 @@
 /* ---------------------------------------------------------------------------
    Sparta Motors — admin theme accents.
-   Payload's neutral scale is already near-black, which reads as Sparta Black.
-   These targeted overrides add the Safety Orange brand accent without
-   remapping Payload's internal elevation system (which would be risky).
+   Uses Safety Orange for primary actions so the main CTA is always visible in
+   BOTH light and dark admin themes (a black button disappears on the dark
+   background). Hover lightens so buttons clearly read as interactive.
 --------------------------------------------------------------------------- */
 
-$sparta-black: #1a1a1a;
 $sparta-orange: #f26b0f;
-$sparta-orange-dark: #d95c08;
+$sparta-orange-light: #f5843a;
 
-/* Primary actions (Save, Create) — Sparta Black at rest, orange on hover. */
+/* Primary actions (Save, Create, Publish) — Safety Orange, lighter on hover. */
 .btn--style-primary {
-  --bg-color: #{$sparta-black};
-  --hover-bg: #{$sparta-orange};
+  --color: #fff;
+  --bg-color: #{$sparta-orange};
+  --hover-bg: #{$sparta-orange-light};
   --hover-color: #fff;
+}
+
+/* Secondary / pill buttons: keep Payload's theme-aware colors but lighten on
+   hover so every button gives the same "I'm interactive" feedback. */
+.btn--style-secondary:not(:disabled):hover,
+.btn--style-pill:not(:disabled):hover {
+  filter: brightness(1.18);
 }
 
 /* Text selection in the Sparta orange. */
@@ -28,9 +35,4 @@ $sparta-orange-dark: #d95c08;
 .field-type .rs__control--is-focused {
   border-color: $sparta-orange !important;
   box-shadow: 0 0 0 1px $sparta-orange !important;
-}
-
-/* Login screen: orange accent under the form. */
-.login__wrap .form-submit .btn--style-primary:hover {
-  --hover-bg: #{$sparta-orange-dark};
 }
