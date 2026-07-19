@@ -1,6 +1,6 @@
 # Sparta Motors — Website Redesign
 
-Rebuild of [sparta-motors.com](https://sparta-motors.com), a used commercial truck dealer in Charlotte, NC. This repo contains the full design phase output — build brief, mockups, and architecture decisions — for a rebuild currently entering the build phase.
+Rebuild of [sparta-motors.com](https://sparta-motors.com), a used commercial truck dealer in Spartanburg, SC. This repo contains the full design phase output — build brief, mockups, and architecture decisions — for a rebuild currently entering the build phase.
 
 **Status:** Design phase complete. Build phase beginning.
 
