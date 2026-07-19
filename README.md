@@ -1,6 +1,6 @@
 # Sparta Motors — Website Redesign
 
-Rebuild of [sparta-motors.com](https://sparta-motors.com), a used commercial truck dealer in Spartanburg, SC. This repo contains the full design phase output — build brief, mockups, and architecture decisions — for a rebuild currently entering the build phase.
+Rebuild of [sparta-motors.com](https://sparta-motors.com), a used commercial truck dealer in Spartanburg, SC. This repo contains the full design phase output — build brief and architecture decisions — for a rebuild currently entering the build phase.
 
 **Status:** Design phase complete. Build phase beginning.
 
@@ -23,17 +23,6 @@ Highlights:
 - **[Page specs](./build-brief/pages/)** — One doc per public page
 - **[Admin workflow](./build-brief/admin/)** — Employee draft → admin review → publish
 - **[Integrations](./build-brief/integrations/)** — Scroll-driven hero video, Leaflet map, SMTP email
-
-### 🎨 `/mockups/`
-
-Standalone HTML mockups produced during the design phase. Open any file in a browser to see the actual design intent — every design decision in the build brief has a corresponding visual here.
-
-- `sparta-scroll-hero-v2.html` — Home page with scroll-driven truck disassembly hero
-- `sparta-truck-detail.html` — Truck detail page (Facebook Marketplace pattern)
-- `sparta-inventory.html` — Inventory browse with Leaflet map
-- `sparta-content-pages.html` — Financing, Fleet, About, Contact
-- `sparta-admin.html` — Admin dashboard (4 screens with working navigation)
-- `sparta-mobile.html` — Mobile mockups: Home, Truck Detail, Admin form
 
 ---
 
@@ -58,6 +47,10 @@ The rebuild targets:
 
 Design phase used a Delegation & Description model: the project manager described intent, Claude proposed options with tradeoffs, project manager selected, Claude executed. The same model continues in Claude Code for the build phase.
 
+## What's coming
+
+Once Phase 1 is built and launched, this repo will include screenshots and live links alongside the design brief — showing the finished product against the specs that produced it.
+
 ## Credits
 
-Design phase produced collaboratively between the project manager (business decisions) and Claude (architecture, design proposals, mockups). All decisions documented in `/build-brief/`.
+Design phase produced collaboratively between the project manager (business decisions) and Claude (architecture, design proposals). All decisions documented in `/build-brief/`.
