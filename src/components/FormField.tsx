@@ -3,7 +3,7 @@
 import React, { forwardRef } from 'react'
 
 const CONTROL =
-  'w-full rounded border border-chalk bg-white px-3 py-2.5 font-inter text-sm text-sparta-black placeholder:text-concrete transition-colors focus:border-orange focus:outline-none aria-[invalid=true]:border-danger'
+  'w-full rounded border border-chalk bg-white px-3 py-2.5 font-inter text-sm text-sparta-black placeholder:text-concrete transition-colors focus:border-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange aria-[invalid=true]:border-danger'
 
 const LABEL = 'font-mono text-[10px] uppercase tracking-wide text-iron'
 
@@ -35,7 +35,11 @@ function FieldWrap({
         {label}
       </Label>
       {children}
-      {error && <span className="font-inter text-xs text-danger">{error}</span>}
+      {error && (
+        <span id={`${id}-error`} role="alert" className="font-inter text-xs text-danger">
+          {error}
+        </span>
+      )}
     </div>
   )
 }
@@ -57,6 +61,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function
         id={id}
         required={required}
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         className={`${CONTROL} ${className}`}
         {...rest}
       />
@@ -77,6 +82,7 @@ export const TextareaField = forwardRef<HTMLTextAreaElement, TextareaFieldProps>
           rows={rows}
           required={required}
           aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
           className={`${CONTROL} resize-y ${className}`}
           {...rest}
         />
@@ -103,6 +109,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(funct
         id={id}
         required={required}
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : undefined}
         className={`${CONTROL} ${className}`}
         defaultValue={rest.defaultValue ?? ''}
         {...rest}

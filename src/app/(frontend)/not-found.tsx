@@ -9,7 +9,7 @@ export default function NotFound() {
       <div className="w-full max-w-lg text-center">
         <Logo tone="dark" href={null} />
         <div className="mt-8">
-          <SectionLabel className="justify-center">Error 404</SectionLabel>
+          <SectionLabel tone="dark" className="justify-center">Error 404</SectionLabel>
         </div>
         <h1 className="mt-3 font-barlow text-6xl font-extrabold uppercase leading-none tracking-tight text-bone">
           Not found.

@@ -18,15 +18,6 @@ export function Gallery({ photos, badge }: { photos: Photo[]; badge: string }) {
     [count],
   )
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') go(-1)
-      else if (e.key === 'ArrowRight') go(1)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [go])
-
   // Touch swipe
   const [touchX, setTouchX] = useState<number | null>(null)
   const onTouchEnd = (endX: number) => {
@@ -35,6 +26,33 @@ export function Gallery({ photos, badge }: { photos: Photo[]; badge: string }) {
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
     setTouchX(null)
   }
+
+  // Hover-zoom (desktop): magnify into the area under the cursor.
+  const [zoom, setZoom] = useState(false)
+  const [origin, setOrigin] = useState({ x: 50, y: 50 })
+  const onZoomMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    setOrigin({ x, y })
+  }
+
+  // While the pointer is over the gallery, let ← / → arrow keys change photos
+  // (scoped to hover so it never hijacks arrow-key scrolling elsewhere).
+  useEffect(() => {
+    if (!zoom || count < 2) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        go(-1)
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        go(1)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [zoom, count, go])
 
   if (!count) {
     return (
@@ -50,8 +68,26 @@ export function Gallery({ photos, badge }: { photos: Photo[]; badge: string }) {
     <div>
       <div
         className="relative aspect-[16/10] overflow-hidden rounded-[10px] bg-warm-white"
+        role="group"
+        aria-roledescription="carousel"
+        aria-label={`Truck photos — ${count} total. Use arrow keys to navigate.`}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          // Scoped to the gallery (was a global window listener that hijacked
+          // arrow keys anywhere on the page).
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault()
+            go(-1)
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault()
+            go(1)
+          }
+        }}
         onTouchStart={(e) => setTouchX(e.touches[0].clientX)}
         onTouchEnd={(e) => onTouchEnd(e.changedTouches[0].clientX)}
+        onMouseEnter={() => setZoom(true)}
+        onMouseLeave={() => setZoom(false)}
+        onMouseMove={onZoomMove}
       >
         <Image
           key={active.url}
@@ -60,7 +96,12 @@ export function Gallery({ photos, badge }: { photos: Photo[]; badge: string }) {
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 60vw"
-          className="object-cover"
+          className="object-cover transition-transform duration-200 ease-out will-change-transform"
+          style={{
+            transform: zoom ? 'scale(2)' : 'scale(1)',
+            transformOrigin: `${origin.x}% ${origin.y}%`,
+            cursor: zoom ? 'zoom-in' : undefined,
+          }}
         />
         <span className="absolute left-3 top-3 rounded bg-sparta-black/85 px-2.5 py-1 font-barlow text-xs font-bold uppercase tracking-wider text-bone">
           {badge}

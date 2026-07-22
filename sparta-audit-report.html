@@ -1,0 +1,697 @@
+<title>Sparta Motors — Production Readiness Audit</title>
+<style>
+  :root {
+    --ground: #f5f3f0;
+    --surface: #ffffff;
+    --surface-2: #efeee9;
+    --ink: #1a1a1a;
+    --ink-2: #5f5e5a;
+    --ink-3: #86847d;
+    --line: #dcdad1;
+    --line-strong: #cbc9be;
+    --accent: #f26b0f;      /* large / bold / on-dark only */
+    --accent-ink: #b4530a;  /* small text on light (issue #4 fix, applied here) */
+    --crit: #b91c1c;
+    --crit-soft: #fbeaea;
+    --high: #c2410c;
+    --high-soft: #fbeee6;
+    --med: #b45309;
+    --med-soft: #fbf3e3;
+    --good: #15803d;
+    --good-soft: #e7f2ea;
+    --header-bg: #161513;
+    --header-ink: #f5f3f0;
+    --header-ink-2: #b4b2a9;
+
+    --font-display: "Barlow Condensed", "Oswald", "Arial Narrow", system-ui, sans-serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif;
+    --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+    --maxw: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #141412;
+      --surface: #1e1d1b;
+      --surface-2: #242320;
+      --ink: #f2f0ec;
+      --ink-2: #b4b2a9;
+      --ink-3: #86847d;
+      --line: #322f2a;
+      --line-strong: #3d3a34;
+      --accent: #f26b0f;
+      --accent-ink: #f4832f;
+      --crit: #f0736b;
+      --crit-soft: #2a1a18;
+      --high: #f0894f;
+      --high-soft: #2a1d15;
+      --med: #e0a24a;
+      --med-soft: #2a2214;
+      --good: #5cc281;
+      --good-soft: #16241b;
+      --header-bg: #0e0d0c;
+      --header-ink: #f5f3f0;
+      --header-ink-2: #a8a69d;
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #f5f3f0; --surface: #ffffff; --surface-2: #efeee9;
+    --ink: #1a1a1a; --ink-2: #5f5e5a; --ink-3: #86847d;
+    --line: #dcdad1; --line-strong: #cbc9be;
+    --accent: #f26b0f; --accent-ink: #b4530a;
+    --crit: #b91c1c; --crit-soft: #fbeaea; --high: #c2410c; --high-soft: #fbeee6;
+    --med: #b45309; --med-soft: #fbf3e3; --good: #15803d; --good-soft: #e7f2ea;
+    --header-bg: #161513; --header-ink: #f5f3f0; --header-ink-2: #b4b2a9;
+  }
+  :root[data-theme="dark"] {
+    --ground: #141412; --surface: #1e1d1b; --surface-2: #242320;
+    --ink: #f2f0ec; --ink-2: #b4b2a9; --ink-3: #86847d;
+    --line: #322f2a; --line-strong: #3d3a34;
+    --accent: #f26b0f; --accent-ink: #f4832f;
+    --crit: #f0736b; --crit-soft: #2a1a18; --high: #f0894f; --high-soft: #2a1d15;
+    --med: #e0a24a; --med-soft: #2a2214; --good: #5cc281; --good-soft: #16241b;
+    --header-bg: #0e0d0c; --header-ink: #f5f3f0; --header-ink-2: #a8a69d;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0;
+  }
+  .display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    line-height: 0.95;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    background: var(--header-bg);
+    color: var(--header-ink);
+    border-bottom: 3px solid var(--accent);
+  }
+  .hero-inner { padding: 44px 0 40px; }
+  .hero .eyebrow { color: var(--accent); }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    margin: 12px 0 0;
+  }
+  .hero h1 .sub { display: block; color: var(--header-ink-2); font-size: 0.42em; letter-spacing: 0.04em; margin-top: 10px; font-weight: 700; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--header-ink-2);
+    margin-top: 22px;
+  }
+  .meta-row span b { color: var(--header-ink); font-weight: 600; }
+
+  /* score block */
+  .scoreblock {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 26px;
+    align-items: center;
+  }
+  .bigscore { display: flex; align-items: baseline; gap: 2px; font-family: var(--font-mono); }
+  .bigscore .n { font-size: clamp(3.4rem, 11vw, 5.4rem); font-weight: 700; line-height: 0.85; color: var(--header-ink); }
+  .bigscore .d { font-size: 1.3rem; color: var(--header-ink-2); font-weight: 500; }
+  .verdict { font-family: var(--font-display); text-transform: uppercase; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.02em; color: #f2a25a; }
+  .verdict small { display:block; font-family: var(--font-body); text-transform: none; font-weight: 400; letter-spacing: 0; font-size: 0.82rem; color: var(--header-ink-2); margin-top: 6px; line-height: 1.5; max-width: 46ch; }
+
+  .meter { margin-top: 6px; }
+  .meter-track {
+    position: relative; height: 12px; border-radius: 6px; overflow: hidden;
+    background: linear-gradient(90deg, #b91c1c 0%, #b91c1c 70%, #d08a1e 70%, #d08a1e 85%, #2e7d43 85%, #2e7d43 100%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  .meter-needle {
+    position: absolute; top: -4px; bottom: -4px; width: 3px; left: 79%;
+    background: var(--header-ink); border-radius: 2px;
+    box-shadow: 0 0 0 2px var(--header-bg);
+  }
+  .meter-scale { display: flex; justify-content: space-between; margin-top: 7px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--header-ink-2); }
+
+  /* ---------- Summary counts ---------- */
+  .counts {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin: 28px 0 8px;
+  }
+  .count {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 16px 14px; border-top: 3px solid var(--line);
+  }
+  .count[data-sev="crit"] { border-top-color: var(--crit); }
+  .count[data-sev="high"] { border-top-color: var(--high); }
+  .count[data-sev="med"] { border-top-color: var(--med); }
+  .count[data-sev="win"] { border-top-color: var(--good); }
+  .count .num { font-family: var(--font-mono); font-weight: 700; font-size: 2.1rem; line-height: 1; }
+  .count[data-sev="crit"] .num { color: var(--crit); }
+  .count[data-sev="high"] .num { color: var(--high); }
+  .count[data-sev="med"] .num { color: var(--med); }
+  .count[data-sev="win"] .num { color: var(--good); }
+  .count .lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2); margin-top: 8px; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 40px 0; border-top: 1px solid var(--line); }
+  section:first-of-type { border-top: none; }
+  .sec-head { margin-bottom: 22px; }
+  .sec-head h2 {
+    font-family: var(--font-display); text-transform: uppercase; font-weight: 800;
+    letter-spacing: 0.01em; line-height: 1; font-size: clamp(1.7rem, 4vw, 2.4rem);
+    margin: 8px 0 0;
+  }
+  .sec-head p { color: var(--ink-2); margin: 10px 0 0; max-width: 62ch; font-size: 0.96rem; }
+
+  /* ---------- Category grid ---------- */
+  .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .cat {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 15px 16px 16px;
+  }
+  .cat-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .cat-name { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+  .cat-score { font-family: var(--font-mono); font-weight: 700; font-size: 1.5rem; line-height: 1; }
+  .cat-bar { height: 6px; border-radius: 4px; background: var(--surface-2); margin-top: 12px; overflow: hidden; }
+  .cat-bar > i { display: block; height: 100%; border-radius: 4px; }
+  .g-good  .cat-score { color: var(--good); }  .g-good  .cat-bar > i { background: var(--good); }
+  .g-mid   .cat-score { color: var(--med); }   .g-mid   .cat-bar > i { background: var(--med); }
+  .g-low   .cat-score { color: var(--crit); }  .g-low   .cat-bar > i { background: var(--crit); }
+  .cat-note { font-size: 0.82rem; color: var(--ink-3); margin-top: 11px; line-height: 1.45; }
+
+  /* ---------- Issues ---------- */
+  .grp-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-2); margin: 26px 0 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .grp-label::before { content: ""; width: 12px; height: 12px; border-radius: 3px; }
+  .grp-label.crit::before { background: var(--crit); }
+  .grp-label.high::before { background: var(--high); }
+  .grp-label.med::before { background: var(--med); }
+  .grp-label:first-child { margin-top: 0; }
+
+  .issues { display: flex; flex-direction: column; gap: 12px; }
+  .issue {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    border-left: 4px solid var(--line-strong); padding: 16px 18px; overflow: hidden;
+  }
+  .issue.crit { border-left-color: var(--crit); }
+  .issue.high { border-left-color: var(--high); }
+  .issue.med { border-left-color: var(--med); }
+  .issue-head { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; padding: 4px 8px; border-radius: 5px; white-space: nowrap;
+  }
+  .chip.crit { background: var(--crit-soft); color: var(--crit); }
+  .chip.high { background: var(--high-soft); color: var(--high); }
+  .chip.med  { background: var(--med-soft); color: var(--med); }
+  .issue-num { font-family: var(--font-mono); font-weight: 700; color: var(--ink-3); font-size: 0.95rem; }
+  .issue-title {
+    font-family: var(--font-display); text-transform: uppercase; font-weight: 700;
+    font-size: 1.18rem; line-height: 1.05; letter-spacing: 0.01em; flex: 1 1 240px; min-width: 0;
+  }
+  .prio {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-2); border: 1px solid var(--line-strong); border-radius: 5px; padding: 4px 7px; white-space: nowrap;
+  }
+  .prio.now { color: var(--crit); border-color: var(--crit); }
+  .loc {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--accent-ink);
+    margin-top: 10px; word-break: break-word; overflow-wrap: anywhere;
+  }
+  .body-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 26px; margin-top: 12px; }
+  .body-grid > div { min-width: 0; }
+  .body-grid .k {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 3px;
+  }
+  .body-grid .v { font-size: 0.9rem; color: var(--ink-2); line-height: 1.5; }
+  .body-grid .v code {
+    font-family: var(--font-mono); font-size: 0.85em; background: var(--surface-2);
+    padding: 1px 5px; border-radius: 4px; color: var(--ink); overflow-wrap: anywhere;
+  }
+
+  /* ---------- Quick wins ---------- */
+  .wins { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+  .win {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 13px 15px;
+  }
+  .win .t { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--good); background: var(--good-soft); border-radius: 5px; padding: 3px 7px; white-space: nowrap; }
+  .win .txt { font-size: 0.9rem; line-height: 1.45; }
+  .win .txt b { color: var(--ink); }
+  .win .ref { color: var(--ink-3); font-family: var(--font-mono); font-size: 0.8em; }
+
+  /* ---------- Checklist ---------- */
+  .progress-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .progress-track { flex: 1 1 200px; height: 8px; border-radius: 5px; background: var(--surface-2); overflow: hidden; min-width: 160px; }
+  .progress-fill { height: 100%; width: 0%; background: var(--good); border-radius: 5px; transition: width 0.35s ease; }
+  .progress-num { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; color: var(--ink-2); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+
+  .checks { display: flex; flex-direction: column; gap: 2px; }
+  .check {
+    display: flex; gap: 13px; align-items: flex-start;
+    padding: 13px 14px; border: 1px solid var(--line); border-radius: 9px;
+    background: var(--surface); cursor: pointer; user-select: none;
+  }
+  .check + .check { margin-top: 8px; }
+  .check input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .box {
+    flex: 0 0 auto; width: 20px; height: 20px; border-radius: 5px; margin-top: 1px;
+    border: 2px solid var(--line-strong); display: grid; place-items: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .box svg { width: 12px; height: 12px; opacity: 0; transform: scale(0.6); transition: opacity 0.15s, transform 0.15s; }
+  .check input:checked + .box { background: var(--good); border-color: var(--good); }
+  .check input:checked + .box svg { opacity: 1; transform: scale(1); }
+  .check input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .check .ctxt { font-size: 0.92rem; line-height: 1.45; }
+  .check .ctxt b { font-weight: 600; }
+  .check .ctxt .tag { font-family: var(--font-mono); font-size: 0.75em; color: var(--ink-3); letter-spacing: 0.06em; }
+  .check input:checked ~ .ctxt { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+  @media (prefers-reduced-motion: reduce) { .box, .box svg { transition: none; } }
+
+  /* ---------- Strengths ---------- */
+  .strengths { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .str {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px;
+    border-top: 3px solid var(--good);
+  }
+  .str h4 { font-family: var(--font-display); text-transform: uppercase; font-weight: 700; letter-spacing: 0.01em; font-size: 1.05rem; margin: 0; }
+  .str p { margin: 7px 0 0; font-size: 0.86rem; color: var(--ink-2); line-height: 1.5; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--line); padding: 30px 0 60px; }
+  footer .note { font-size: 0.86rem; color: var(--ink-2); max-width: 68ch; line-height: 1.6; }
+  footer .note b { color: var(--ink); }
+  footer .sig { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-top: 20px; }
+
+  /* theme toggle */
+  .toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 20;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--surface); color: var(--ink-2); border: 1px solid var(--line);
+    border-radius: 7px; padding: 7px 10px; cursor: pointer;
+  }
+  .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (max-width: 620px) {
+    .counts { grid-template-columns: repeat(2, 1fr); }
+    .scoreblock { grid-template-columns: 1fr; gap: 18px; }
+    .body-grid { grid-template-columns: 1fr; gap: 12px; }
+    .hero-inner { padding: 40px 0 34px; }
+  }
+</style>
+
+<button class="toggle" id="themeToggle" type="button" aria-label="Toggle light or dark theme">◑ Theme</button>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Production Readiness Audit</p>
+    <h1>Sparta Motors<span class="sub">Senior engineering · UX · SEO · accessibility · performance review</span></h1>
+    <div class="meta-row">
+      <span>Branch <b>build/frontend-foundation</b></span>
+      <span>Stack <b>Next.js 16 · Payload 3 · Postgres</b></span>
+      <span>Scope <b>Full codebase · ~9,000 LOC</b></span>
+      <span>Reviewed <b>Jul 2026</b></span>
+    </div>
+
+    <div class="scoreblock">
+      <div class="bigscore tnum"><span class="n">79</span><span class="d">/100</span></div>
+      <div>
+        <div class="verdict">Strong build — not launch-ready
+          <small>A B+ codebase held back by ~6 concrete blockers — mostly dev-mode configuration plus one systemic contrast issue. No re-architecture required; roughly one to two focused days of work.</small>
+        </div>
+        <div class="meter">
+          <div class="meter-track" role="img" aria-label="Overall readiness 79 out of 100, in the 'nearly ready' band">
+            <div class="meter-needle"></div>
+          </div>
+          <div class="meter-scale"><span>0 · At risk</span><span>70</span><span>85</span><span>100 · Ready</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="counts">
+    <div class="count" data-sev="crit"><div class="num tnum">3</div><div class="lbl">Critical blockers</div></div>
+    <div class="count" data-sev="high"><div class="num tnum">7</div><div class="lbl">High priority</div></div>
+    <div class="count" data-sev="med"><div class="num tnum">10</div><div class="lbl">Medium</div></div>
+    <div class="count" data-sev="win"><div class="num tnum">10</div><div class="lbl">Quick wins &lt; 1hr</div></div>
+  </div>
+
+  <!-- CATEGORY SCORES -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Scorecard</p>
+      <h2>Category Scores</h2>
+      <p>Where the build is strong and where it needs attention before go-live. Accessibility and performance carry the most risk today.</p>
+    </div>
+    <div class="cats">
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">Architecture</span><span class="cat-score tnum">90</span></div><div class="cat-bar"><i style="width:90%"></i></div><div class="cat-note">Clean client/server split, App Router used correctly.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">Code Quality</span><span class="cat-score tnum">89</span></div><div class="cat-bar"><i style="width:89%"></i></div><div class="cat-note">Consistent, well-commented, strongly typed.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">UI Design</span><span class="cat-score tnum">88</span></div><div class="cat-bar"><i style="width:88%"></i></div><div class="cat-note">Distinctive, cohesive, un-templated brand system.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">Maintainability</span><span class="cat-score tnum">88</span></div><div class="cat-bar"><i style="width:88%"></i></div><div class="cat-note">Great docs and build brief; minor repetition.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">Mobile</span><span class="cat-score tnum">86</span></div><div class="cat-bar"><i style="width:86%"></i></div><div class="cat-note">Responsive throughout; overlay nav, sticky CTA.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">UX</span><span class="cat-score tnum">84</span></div><div class="cat-bar"><i style="width:84%"></i></div><div class="cat-note">Strong flows; missing loading feedback.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">Security</span><span class="cat-score tnum">83</span></div><div class="cat-bar"><i style="width:83%"></i></div><div class="cat-note">Proper RBAC + rate-limiting; config gaps.</div></div>
+      <div class="cat g-good"><div class="cat-top"><span class="cat-name">SEO</span><span class="cat-score tnum">80</span></div><div class="cat-bar"><i style="width:80%"></i></div><div class="cat-note">Excellent scaffolding; no social images.</div></div>
+      <div class="cat g-mid"><div class="cat-top"><span class="cat-name">Performance</span><span class="cat-score tnum">72</span></div><div class="cat-bar"><i style="width:72%"></i></div><div class="cat-note">Hero loads 160 frames (6.2 MB) on home.</div></div>
+      <div class="cat g-low"><div class="cat-top"><span class="cat-name">Accessibility</span><span class="cat-score tnum">66</span></div><div class="cat-bar"><i style="width:66%"></i></div><div class="cat-note">Good intent, but orange-on-light fails AA.</div></div>
+    </div>
+  </section>
+
+  <!-- TOP ISSUES -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Findings · ranked by launch impact</p>
+      <h2>Top 20 Priority Issues</h2>
+      <p>Each finding lists where it lives, why it matters, the recommended fix, and when it needs to happen.</p>
+    </div>
+
+    <div class="grp-label crit">Critical · Blockers</div>
+    <div class="issues">
+
+      <div class="issue crit">
+        <div class="issue-head"><span class="chip crit">Critical</span><span class="issue-num">01</span><span class="issue-title">CORS &amp; CSRF hardcoded to localhost</span><span class="prio now">Immediate</span></div>
+        <div class="loc">src/payload.config.ts:46–47</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Only <code>localhost</code> + a LAN IP are allowed. On the real domain, admin login and every authenticated API call fail on CSRF rejection.</div></div>
+          <div><div class="k">Fix</div><div class="v">Drive both from an env var, e.g. <code>cors: [SITE_URL]</code>; include localhost only outside production.</div></div>
+        </div>
+      </div>
+
+      <div class="issue crit">
+        <div class="issue-head"><span class="chip crit">Critical</span><span class="issue-num">02</span><span class="issue-title">Placeholder phone baked into SEO metadata</span><span class="prio now">Immediate</span></div>
+        <div class="loc">src/app/(frontend)/contact/page.tsx:19 · src/seed/index.ts:53</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">The contact page hardcodes <code>(864) 266-5347</code> into search snippets. The brief flags phone as pending — a wrong number ships to Google and duplicates the Settings source of truth.</div></div>
+          <div><div class="k">Fix</div><div class="v">Confirm the real number, then build the meta description from Settings rather than a literal.</div></div>
+        </div>
+      </div>
+
+      <div class="issue crit">
+        <div class="issue-head"><span class="chip crit">Critical</span><span class="issue-num">03</span><span class="issue-title">No production image host whitelisted</span><span class="prio">Before launch · verify</span></div>
+        <div class="loc">next.config.ts:15–21</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Only a local media path is allowed. If production photos are served from any other origin (CDN / object storage), every truck image throws a runtime error.</div></div>
+          <div><div class="k">Fix</div><div class="v">Confirm the deploy's media strategy and add the production host to <code>images.remotePatterns</code>.</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grp-label high">High Priority</div>
+    <div class="issues">
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">04</span><span class="issue-title">Safety Orange fails AA as text on light</span><span class="prio">Before launch</span></div>
+        <div class="loc">Design token · src/app/(frontend)/styles.css:11 · pervasive</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Measured <code>#F26B0F</code> on bone = <b>2.75:1</b> (needs 4.5:1). Affects section labels, inline links, hover states across nearly every page.</div></div>
+          <div><div class="k">Fix</div><div class="v">Add a darker "orange-ink" (~<code>#B4530A</code>) for small text on light; keep bright orange for large display + on-dark. <em>(Applied in this report.)</em></div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">05</span><span class="issue-title">Hero downloads 160 frames (6.2 MB) on load</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/components/home/Hero.tsx:153–156</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">160 image requests fire on mount, competing with LCP and hammering mobile connections and the bandwidth budget.</div></div>
+          <div><div class="k">Fix</div><div class="v">Load progressively — frame 0, then a coarse subset, then backfill; or throttle concurrency to ~6; or cut to ~90 frames.</div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">06</span><span class="issue-title">No error boundaries anywhere</span><span class="prio">Before launch</span></div>
+        <div class="loc">Missing error.tsx / global-error.tsx</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Any server-render error shows users the raw Next.js crash screen instead of a branded fallback.</div></div>
+          <div><div class="k">Fix</div><div class="v">Add a branded <code>error.tsx</code> (retry) plus a root <code>global-error.tsx</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">07</span><span class="issue-title">No social-share images (OpenGraph / Twitter)</span><span class="prio">Before launch</span></div>
+        <div class="loc">Site-wide · truck detail especially</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Sharing any link — especially a truck — shows a bare card with no photo. A real conversion loss for a visual product.</div></div>
+          <div><div class="k">Fix</div><div class="v">Static OG image site-wide + dynamic per-truck image from its primary photo; add <code>twitter: summary_large_image</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">08</span><span class="issue-title">Public forms have no spam protection</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/collections/Leads.ts · FleetInquiries.ts</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Open create with only per-process IP rate-limiting won't stop bot spam polluting the lead inbox this business runs on.</div></div>
+          <div><div class="k">Fix</div><div class="v">Add a hidden honeypot + minimum time-to-submit check. Free, no third party.</div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">09</span><span class="issue-title">Public API can inject internal lead fields</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/collections/Leads.ts:108–129</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Open create with no field-level access lets a crafted request set <code>status</code>, <code>internalNotes</code>, timestamps — corrupting the sales pipeline.</div></div>
+          <div><div class="k">Fix</div><div class="v">Field-level create access for staff-only fields, or strip them on public creates.</div></div>
+        </div>
+      </div>
+
+      <div class="issue high">
+        <div class="issue-head"><span class="chip high">High</span><span class="issue-num">10</span><span class="issue-title">Multiple &lt;h1&gt; on the homepage</span><span class="prio">Before launch · quick</span></div>
+        <div class="loc">src/components/home/Hero.tsx:291</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Three scroll phases each render an <code>&lt;h1&gt;</code>. Screen readers and SEO both expect exactly one.</div></div>
+          <div><div class="k">Fix</div><div class="v">Keep one persistent <code>&lt;h1&gt;</code> whose text swaps, or demote phases 2–3 to styled paragraphs.</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grp-label med">Medium Priority</div>
+    <div class="issues">
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">11</span><span class="issue-title">No loading state for dynamic inventory</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/app/(frontend)/inventory/page.tsx:14</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Force-dynamic routes block on the database with zero visual feedback during navigation.</div></div>
+          <div><div class="k">Fix</div><div class="v">Add a skeleton <code>loading.tsx</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">12</span><span class="issue-title">Weak, inconsistent focus indicators</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/components/FormField.tsx:6</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v"><code>focus:outline-none</code> + a faint border fails WCAG 2.2 visible-focus; search input does it right, forms don't.</div></div>
+          <div><div class="k">Fix</div><div class="v">Standardize a visible <code>focus-visible</code> ring across inputs, buttons, links.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">13</span><span class="issue-title">Mobile nav overlay has no focus trap</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/components/nav/NavBar.tsx:108–152</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Opening the menu doesn't move or trap focus, and Escape doesn't close it — keyboard users tab behind it.</div></div>
+          <div><div class="k">Fix</div><div class="v">Focus the close button on open, trap focus, close on Escape.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">14</span><span class="issue-title">Form errors not linked to inputs</span><span class="prio">Before launch</span></div>
+        <div class="loc">src/components/FormField.tsx:38–60</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v"><code>aria-invalid</code> is set but the error text has no id and no <code>aria-describedby</code>, so screen readers skip the message.</div></div>
+          <div><div class="k">Fix</div><div class="v">Give the error an id and wire <code>aria-describedby</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">15</span><span class="issue-title">No BreadcrumbList structured data</span><span class="prio">Nice to have</span></div>
+        <div class="loc">Truck detail · inventory</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Visual breadcrumbs exist but aren't marked up, forgoing breadcrumb rich results.</div></div>
+          <div><div class="k">Fix</div><div class="v">Emit <code>BreadcrumbList</code> JSON-LD alongside the Product schema.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">16</span><span class="issue-title">Stock-number race + double DB scan</span><span class="prio">Nice to have</span></div>
+        <div class="loc">src/collections/Trucks.ts:34–61</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Two full-collection reads (one redundant) and non-transactional — concurrent creates can collide on one stock number.</div></div>
+          <div><div class="k">Fix</div><div class="v">Drop the redundant query; use a DB sequence or unique-constraint retry.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">17</span><span class="issue-title">Gallery binds a global key listener</span><span class="prio">Nice to have</span></div>
+        <div class="loc">src/components/truck/Gallery.tsx:21–28</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Arrow keys drive the gallery from anywhere on the page, hijacking expected behavior in the lead form.</div></div>
+          <div><div class="k">Fix</div><div class="v">Scope the listener to a focused/hovered container.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">18</span><span class="issue-title">Marketing claims need owner sign-off</span><span class="prio">Before launch · content</span></div>
+        <div class="loc">src/app/(frontend)/about/page.tsx:23–28 · truck detail</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">"400+ trucks sold," "Est. 2018," per-listing "Nationwide shipping / OBO / Trade-ins welcome" are asserted globally — credibility and regulatory risk for a licensed dealer.</div></div>
+          <div><div class="k">Fix</div><div class="v">Confirm each with the owner before launch.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">19</span><span class="issue-title">Missing favicon / app icons / manifest</span><span class="prio">Nice to have</span></div>
+        <div class="loc">No icon / apple-icon / manifest found</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">Tabs, bookmarks and "add to home screen" show a default glyph.</div></div>
+          <div><div class="k">Fix</div><div class="v">Add <code>icon.png</code>, <code>apple-icon.png</code>, and a <code>manifest.ts</code>.</div></div>
+        </div>
+      </div>
+
+      <div class="issue med">
+        <div class="issue-head"><span class="chip med">Medium</span><span class="issue-num">20</span><span class="issue-title">localhost fallback ships if env unset</span><span class="prio">Before launch</span></div>
+        <div class="loc">sitemap.ts · robots.ts · structured-data.ts · layout.tsx (+3)</div>
+        <div class="body-grid">
+          <div><div class="k">Why it matters</div><div class="v">If <code>NEXT_PUBLIC_SITE_URL</code> is missing in prod, canonicals, sitemap, JSON-LD and emails silently point to localhost.</div></div>
+          <div><div class="k">Fix</div><div class="v">Fail the build/boot loudly when the var is unset in production.</div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- QUICK WINS -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Fast payback</p>
+      <h2>Quick Wins</h2>
+      <p>Each under an hour. Doing these ten clears most of the accessibility failure and the worst config risks in a single sitting.</p>
+    </div>
+    <div class="wins">
+      <div class="win"><span class="t">30m</span><span class="txt"><b>Fix orange text contrast</b> — one new token swapped into labels + inline links. <span class="ref">#4</span></span></div>
+      <div class="win"><span class="t">10m</span><span class="txt"><b>Add a skip-to-content link</b> in the layout. <span class="ref">a11y</span></span></div>
+      <div class="win"><span class="t">10m</span><span class="txt"><b>Correct the contact-page phone</b> in metadata. <span class="ref">#2</span></span></div>
+      <div class="win"><span class="t">20m</span><span class="txt"><b>Collapse the 3 hero H1s</b> to one. <span class="ref">#10</span></span></div>
+      <div class="win"><span class="t">30m</span><span class="txt"><b>Add Twitter card + one static OG image.</b> <span class="ref">#7</span></span></div>
+      <div class="win"><span class="t">15m</span><span class="txt"><b>Drive CORS/CSRF from env.</b> <span class="ref">#1</span></span></div>
+      <div class="win"><span class="t">20m</span><span class="txt"><b>Wire aria-describedby</b> on form errors. <span class="ref">#14</span></span></div>
+      <div class="win"><span class="t">45m</span><span class="txt"><b>Add a honeypot field</b> + server check. <span class="ref">#8</span></span></div>
+      <div class="win"><span class="t">20m</span><span class="txt"><b>Add a loading skeleton</b> for inventory. <span class="ref">#11</span></span></div>
+      <div class="win"><span class="t">15m</span><span class="txt"><b>Guard the prod env var</b> so a missing URL fails loudly. <span class="ref">#20</span></span></div>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Go / no-go</p>
+      <h2>Launch Checklist</h2>
+      <p>Tap each item as it's resolved. Everything here should be green before go-live.</p>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 12 resolved</div>
+    </div>
+
+    <div class="checks" id="checks">
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>CORS / CSRF include the real production domain.</b> <span class="tag">Critical #1</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Production site URL set + boot guard against localhost fallback.</b> <span class="tag">#20</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>next/image remotePatterns matches the production media host.</b> <span class="tag">Critical #3</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Real phone / address confirmed &amp; propagated everywhere.</b> <span class="tag">Critical #2</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Owner sign-off on marketing claims (sold count, shipping, OBO).</b> <span class="tag">#18</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Orange-on-light contrast fixed to AA.</b> <span class="tag">High #4</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>A11y pass: one H1, skip link, nav focus trap, focus rings, error links.</b> <span class="tag">#10·12·13·14</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Hero frame loading made progressive / throttled.</b> <span class="tag">High #5</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Error boundaries + inventory loading state added.</b> <span class="tag">#6·11</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Field-level lockdown on lead fields + honeypot spam guard.</b> <span class="tag">#8·9</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>OpenGraph + Twitter images (static + per-truck).</b> <span class="tag">#7</span></span></label>
+      <label class="check"><input type="checkbox"><span class="box"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 4.6 9 10 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="ctxt"><b>Ops: DB backups, real secret, SMTP tested, HTTPS, media persistence.</b> <span class="tag">deploy</span></span></label>
+    </div>
+  </section>
+
+  <!-- STRENGTHS -->
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Credit where due</p>
+      <h2>Built Right — Don't Touch</h2>
+      <p>The foundations are strong and shouldn't be revisited. This is well above typical agency work.</p>
+    </div>
+    <div class="strengths">
+      <div class="str"><h4>Access control &amp; RBAC</h4><p>Employees edit only their own drafts; role changes are admin-only; the draft → review → publish workflow is thorough and correct.</p></div>
+      <div class="str"><h4>Clean client/server split</h4><p>Deliberate separation keeps server imports out of the client bundle — a common leak, avoided here.</p></div>
+      <div class="str"><h4>Sensitive data handled well</h4><p>The financing form deliberately never collects SSN or bank details — only a name and contact. Exactly right.</p></div>
+      <div class="str"><h4>SEO scaffolding</h4><p>Per-page canonicals, templated titles, a resilient sitemap, robots, and Product / AutoDealer JSON-LD from one source.</p></div>
+      <div class="str"><h4>Reduced-motion support</h4><p>Respected both in global CSS and in the hero's JavaScript path — rare and thoughtful.</p></div>
+      <div class="str"><h4>Secrets hygiene</h4><p>.env gitignored, large source media excluded, a documented .env.example. Nothing sensitive committed.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="note"><b>Methodology.</b> Full read of the codebase (~9,000 lines) applying SEO, accessibility (WCAG 2.2 AA), React / Next.js, and writing rubrics. Contrast ratios were computed, not estimated. Live-only checks — real Core Web Vitals and hosting-cost analysis — run after deployment and will refine the Performance and SEO scores. <b>Nothing here requires re-architecture.</b></p>
+    <p class="sig">Production readiness review · Sparta Motors · 79 / 100</p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    // Theme toggle
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    btn.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme');
+      if (!current) {
+        current = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Checklist progress
+    var checks = Array.prototype.slice.call(document.querySelectorAll('#checks input'));
+    var fill = document.getElementById('progressFill');
+    var num = document.getElementById('progressNum');
+    function update() {
+      var done = checks.filter(function (c) { return c.checked; }).length;
+      fill.style.width = (done / checks.length * 100) + '%';
+      num.textContent = done + ' / ' + checks.length + ' resolved';
+    }
+    checks.forEach(function (c) { c.addEventListener('change', update); });
+    update();
+  })();
+</script>

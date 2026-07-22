@@ -26,16 +26,24 @@ export interface ActivityItem {
   when: string
 }
 
+export interface LeadsDay {
+  /** Single-letter weekday label, e.g. "M". */
+  label: string
+  /** Full label for accessibility, e.g. "Mon Jul 14". */
+  full: string
+  count: number
+}
+
 export interface DashboardData {
   newLeads: number
   pendingReview: number
   publishedTrucks: number
-  fleetThisWeek: number
   oldestPendingDays: number | null
   publishedThisWeek: number
   newLeadsSinceYesterday: number
-  fleetTotal: number
   activity: ActivityItem[]
+  /** Leads created per day over the last 7 calendar days (oldest first). */
+  leadsByDay: LeadsDay[]
 }
 
 const SOURCE_TAGS: Record<string, string> = {
@@ -56,27 +64,25 @@ export async function getDashboardData(
   const weekAgo = weekAgoISO()
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
 
+  // Midnight 6 days ago → the start of the 7-day window shown in the chart.
+  const chartStart = new Date()
+  chartStart.setHours(0, 0, 0, 0)
+  chartStart.setDate(chartStart.getDate() - 6)
+
   const [
     newLeads,
     pendingReview,
     publishedTrucks,
-    fleetThisWeek,
-    fleetTotal,
     publishedThisWeek,
     newLeadsSinceYesterday,
     oldestPending,
     recentLeads,
     recentTrucks,
+    chartLeads,
   ] = await Promise.all([
     payload.count({ collection: 'leads', where: { status: { equals: 'new' } }, req }),
     payload.count({ collection: 'trucks', where: { status: { equals: 'pending-review' } }, req }),
     payload.count({ collection: 'trucks', where: { status: { equals: 'published' } }, req }),
-    payload.count({
-      collection: 'fleet-inquiries',
-      where: { createdAt: { greater_than: weekAgo } },
-      req,
-    }),
-    payload.count({ collection: 'fleet-inquiries', req }),
     payload.count({
       collection: 'trucks',
       where: {
@@ -103,6 +109,14 @@ export async function getDashboardData(
       where: { status: { in: ['pending-review', 'published', 'sold'] } },
       sort: '-updatedAt',
       limit: 8,
+      depth: 0,
+      req,
+    }),
+    payload.find({
+      collection: 'leads',
+      where: { createdAt: { greater_than_equal: chartStart.toISOString() } },
+      sort: 'createdAt',
+      limit: 1000,
       depth: 0,
       req,
     }),
@@ -159,15 +173,30 @@ export async function getDashboardData(
 
   activity.sort((a, b) => new Date(b.when).getTime() - new Date(a.when).getTime())
 
+  // Bucket the last 7 days into single-day counts (oldest first).
+  const DAY_MS = 24 * 60 * 60 * 1000
+  const leadsByDay: LeadsDay[] = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(chartStart.getTime() + i * DAY_MS)
+    return {
+      label: d.toLocaleDateString('en-US', { weekday: 'narrow' }),
+      full: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+      count: 0,
+    }
+  })
+  for (const lead of chartLeads.docs as Array<{ createdAt?: string }>) {
+    if (!lead.createdAt) continue
+    const idx = Math.floor((new Date(lead.createdAt).getTime() - chartStart.getTime()) / DAY_MS)
+    if (idx >= 0 && idx < 7) leadsByDay[idx].count += 1
+  }
+
   return {
     newLeads: newLeads.totalDocs,
     pendingReview: pendingReview.totalDocs,
     publishedTrucks: publishedTrucks.totalDocs,
-    fleetThisWeek: fleetThisWeek.totalDocs,
     oldestPendingDays,
     publishedThisWeek: publishedThisWeek.totalDocs,
     newLeadsSinceYesterday: newLeadsSinceYesterday.totalDocs,
-    fleetTotal: fleetTotal.totalDocs,
     activity: activity.slice(0, 12),
+    leadsByDay,
   }
 }

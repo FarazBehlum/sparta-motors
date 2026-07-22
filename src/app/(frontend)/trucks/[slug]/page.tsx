@@ -2,11 +2,12 @@ import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ChevronRight, FileText, Phone } from 'lucide-react'
+import { ChevronRight, CreditCard, FileText, Phone, ShieldCheck, Truck as TruckIcon } from 'lucide-react'
 import type { Media, Truck } from '@/payload-types'
 import { getTruckBySlug, getSimilarTrucks, getPublishedSlugs } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
-import { truckPhotos } from '@/lib/media'
+import { truckPhotos, truckPrimaryPhoto } from '@/lib/media'
+import { SITE_URL } from '@/lib/site'
 import {
   BODY_TYPE_TO_CATEGORY,
   bodyTypeLabel,
@@ -41,10 +42,25 @@ export async function generateMetadata({
   const truck = await getTruckBySlug(slug)
   if (!truck) return { title: 'Truck not found' }
   const name = truckName(truck)
+  const title = `${name} — Sparta Motors`
+  const description = `${name}. ${formatMileage(truck.mileage)}. ${bodyTypeLabel(truck.bodyType)}. ${formatPrice(truck.price)}. Spartanburg, SC.`
+  // The truck's own photo makes the strongest social card. Relative URLs are
+  // resolved against metadataBase (set in the root layout).
+  const primary = truckPrimaryPhoto(truck, 'hero')
+  const ogImages = primary
+    ? [{ url: primary.url, width: primary.width, height: primary.height, alt: name }]
+    : undefined
   return {
-    title: `${name} — Sparta Motors`,
-    description: `${name}. ${formatMileage(truck.mileage)}. ${bodyTypeLabel(truck.bodyType)}. ${formatPrice(truck.price)}. Spartanburg, SC.`,
+    title,
+    description,
     alternates: { canonical: `/trucks/${slug}` },
+    openGraph: { title, description, type: 'website', images: ogImages },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: primary ? [primary.url] : undefined,
+    },
   }
 }
 
@@ -64,12 +80,94 @@ function Badge({ children, variant }: { children: React.ReactNode; variant: 'fil
   )
 }
 
-function KeySpec({ label, value }: { label: string; value: string }) {
+function KeySpec({ label, value, valueClass = '' }: { label: string; value: string; valueClass?: string }) {
   return (
     <div>
       <div className="font-mono text-[10px] uppercase tracking-wider text-iron">{label}</div>
-      <div className="mt-0.5 font-mono text-sm font-medium text-sparta-black">{value}</div>
+      <div className={`mt-0.5 font-mono text-sm font-medium text-sparta-black ${valueClass}`}>{value}</div>
     </div>
+  )
+}
+
+const TITLE_LABELS: Record<string, string> = {
+  clean: 'Clean',
+  rebuilt: 'Rebuilt',
+  salvage: 'Salvage',
+  lien: 'Lien / loan',
+}
+
+const AREA_LABELS: Record<string, string> = {
+  engine: 'Engine',
+  transmission: 'Transmission',
+  brakes: 'Brakes',
+  tires: 'Tires',
+  suspension: 'Suspension',
+  electrical: 'Electrical',
+  frame: 'Frame & rust',
+  emissions: 'Emissions (DPF/DEF)',
+  interior: 'Interior / cab',
+  body: 'Body / exterior',
+}
+
+const RATING: Record<string, { label: string; cls: string }> = {
+  good: { label: 'Good', cls: 'bg-[#dcfce7] text-[#15803d]' },
+  fair: { label: 'Fair', cls: 'bg-[#fef3c7] text-[#b45309]' },
+  attention: { label: 'Needs attention', cls: 'bg-[#fee2e2] text-[#b91c1c]' },
+}
+
+/** Per-truck inspection block. Renders only what's been filled in (no fabrication). */
+function InspectionCard({ inspection }: { inspection: NonNullable<Truck['inspection']> }) {
+  const points = (inspection.points ?? []).filter((p) => p.area && p.rating)
+  const hasMeta = inspection.inspectedDate || inspection.inspectedBy
+  const when = inspection.inspectedDate
+    ? new Date(inspection.inspectedDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null
+
+  return (
+    <Card>
+      <div className="flex items-center gap-2">
+        <ShieldCheck className="text-orange" size={18} aria-hidden="true" />
+        <SectionLabel>Inspection &amp; condition</SectionLabel>
+      </div>
+      <h2 className="mt-2 font-barlow text-2xl font-bold uppercase tracking-tight text-sparta-black">
+        What we checked
+      </h2>
+      {hasMeta && (
+        <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-iron">
+          {when ? `Inspected ${when}` : 'Inspected'}
+          {inspection.inspectedBy ? ` · ${inspection.inspectedBy}` : ''}
+        </p>
+      )}
+      {inspection.summary && (
+        <p className="mt-3 font-inter text-[15px] leading-relaxed text-iron">{inspection.summary}</p>
+      )}
+      {points.length > 0 && (
+        <ul className="mt-5 flex flex-col divide-y divide-chalk">
+          {points.map((p, i) => {
+            const r = RATING[p.rating] ?? RATING.good
+            return (
+              <li key={i} className="flex items-start justify-between gap-4 py-2.5">
+                <div>
+                  <span className="font-barlow text-base font-bold uppercase tracking-wide text-sparta-black">
+                    {AREA_LABELS[p.area] ?? p.area}
+                  </span>
+                  {p.note && <p className="mt-0.5 font-inter text-sm text-iron">{p.note}</p>}
+                </div>
+                <span
+                  className={`shrink-0 rounded px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider ${r.cls}`}
+                >
+                  {r.label}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </Card>
   )
 }
 
@@ -98,8 +196,9 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
   const category = BODY_TYPE_TO_CATEGORY[truck.bodyType]
   const phone = settings.phone
   const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null
-  const vinShort = `${truck.vin.slice(0, 8)}..${truck.vin.slice(-4)}`
   const classLabel = truck.payloadClass ? truck.payloadClass.replace('-', ' ').toUpperCase() : null
+  const insp = truck.inspection
+  const hasInspection = Boolean(insp && (insp.summary || (insp.points?.length ?? 0) > 0 || insp.inspectedDate))
 
   const specSheet =
     truck.specSheet && typeof truck.specSheet === 'object' ? (truck.specSheet as Media) : null
@@ -116,12 +215,31 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
     vehicleModelDate: String(truck.year),
     mileageFromOdometer: { '@type': 'QuantitativeValue', value: truck.mileage, unitCode: 'SMI' },
     vehicleIdentificationNumber: truck.vin,
+    itemCondition: 'https://schema.org/UsedCondition',
     offers: {
       '@type': 'Offer',
       price: truck.price,
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/UsedCondition',
+      url: `${SITE_URL}/trucks/${truck.slug}`,
     },
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Inventory', item: `${SITE_URL}/inventory` },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: bodyTypeLabel(truck.bodyType),
+        item: `${SITE_URL}/inventory/${category}`,
+      },
+      { '@type': 'ListItem', position: 4, name },
+    ],
   }
 
   return (
@@ -129,6 +247,10 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       {/* Breadcrumb */}
@@ -170,7 +292,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                 </div>
                 <div className="shrink-0 sm:text-right">
                   <div className="font-mono text-[10px] uppercase tracking-wider text-iron">Price</div>
-                  <div className="font-mono text-3xl font-medium text-orange">
+                  <div className="font-mono text-3xl font-medium text-orange-ink">
                     {formatPrice(truck.price)}
                   </div>
                   <div className="font-mono text-[11px] text-iron">OBO · Trade-ins welcome</div>
@@ -180,9 +302,30 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
               {/* Key specs bar */}
               <div className="mt-5 grid grid-cols-2 gap-4 border-t border-chalk pt-4 sm:grid-cols-4">
                 <KeySpec label="Mileage" value={formatMileage(truck.mileage)} />
-                <KeySpec label="VIN" value={vinShort} />
                 <KeySpec label="Condition" value={truck.condition[0].toUpperCase() + truck.condition.slice(1)} />
+                {truck.titleStatus && <KeySpec label="Title" value={TITLE_LABELS[truck.titleStatus]} />}
                 <KeySpec label="Stock #" value={truck.stockNumber ?? '—'} />
+                <KeySpec
+                  label="VIN"
+                  value={truck.vin}
+                  valueClass="break-all text-xs leading-snug"
+                />
+              </div>
+
+              {/* Trust strip: brand promise + financing referral + shipping */}
+              <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-chalk pt-4 font-mono text-[11px] uppercase tracking-wider text-iron">
+                <span className="inline-flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-orange" aria-hidden="true" />
+                  Inspected before listing
+                </span>
+                <Link href="/financing" className="inline-flex items-center gap-1.5 hover:text-orange">
+                  <CreditCard size={14} className="text-orange" aria-hidden="true" />
+                  Financing available →
+                </Link>
+                <span className="inline-flex items-center gap-1.5">
+                  <TruckIcon size={14} className="text-orange" aria-hidden="true" />
+                  Nationwide shipping
+                </span>
               </div>
             </Card>
 
@@ -199,6 +342,9 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
               </div>
             </Card>
 
+            {/* Inspection & condition (renders only when filled in) */}
+            {hasInspection && insp && <InspectionCard inspection={insp} />}
+
             {/* Full spec table */}
             <Card>
               <SectionLabel>Full Specifications</SectionLabel>
@@ -213,6 +359,14 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                   <SpecRow label="Trim" value={truck.trim} />
                   <SpecRow label="Body Type" value={bodyTypeLabel(truck.bodyType)} />
                   <SpecRow label="Payload Class" value={classLabel} />
+                  <SpecRow
+                    label="Title"
+                    value={truck.titleStatus ? TITLE_LABELS[truck.titleStatus] : null}
+                  />
+                  <SpecRow
+                    label="Owners"
+                    value={truck.owners != null ? String(truck.owners) : null}
+                  />
                 </div>
                 <div>
                   <SpecRow label="GVWR" value={truck.gvwr ? `${truck.gvwr.toLocaleString('en-US')} lb` : null} />
@@ -220,6 +374,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                   <SpecRow label="Transmission" value={truck.transmission} />
                   <SpecRow label="Drivetrain" value={truck.drivetrain} />
                   <SpecRow label="Fuel Type" value={truck.fuelType[0].toUpperCase() + truck.fuelType.slice(1)} />
+                  <SpecRow label="VIN" value={<span className="break-all">{truck.vin}</span>} />
                 </div>
               </div>
             </Card>

@@ -25,7 +25,7 @@ export const Pages: CollectionConfig = {
         { label: 'Home', value: 'home' },
         { label: 'About', value: 'about' },
         { label: 'Financing', value: 'financing' },
-        { label: 'Fleet', value: 'fleet' },
+        { label: 'Parts', value: 'parts' },
         { label: 'Contact', value: 'contact' },
       ],
       admin: { position: 'sidebar' },

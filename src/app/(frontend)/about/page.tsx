@@ -7,7 +7,6 @@ import { organizationJsonLd } from '@/lib/structured-data'
 import { Container } from '@/components/Container'
 import { SectionLabel } from '@/components/SectionLabel'
 import { PageHeader } from '@/components/content/PageHeader'
-import { ContentSection } from '@/components/content/ContentSection'
 import { Callout } from '@/components/content/Callout'
 import { StatsStrip, type StripStat } from '@/components/content/StatsStrip'
 import { FadeInSection } from '@/components/home/FadeInSection'
@@ -174,7 +173,7 @@ function HoursRow({ day, value }: { day: string; value?: string | null }) {
   if (!value) return null
   return (
     <>
-      <dt className="font-mono text-xs uppercase tracking-wider text-orange">{day}</dt>
+      <dt className="font-mono text-xs uppercase tracking-wider text-orange-ink">{day}</dt>
       <dd className="text-sparta-black">{value}</dd>
     </>
   )

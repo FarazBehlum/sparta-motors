@@ -16,9 +16,21 @@ import { Settings } from './globals/Settings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Origins allowed to call the API / log in to the admin. The production origin
+// comes from NEXT_PUBLIC_SITE_URL; localhost + the LAN IP are added only outside
+// production so the admin keeps working on the real domain (was hardcoded).
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '')
+const devOrigins =
+  process.env.NODE_ENV === 'production'
+    ? []
+    : ['http://localhost:3000', 'http://192.168.12.30:3000']
+const allowedOrigins = [...(siteOrigin ? [siteOrigin] : []), ...devOrigins]
+
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Lock the admin to the light theme (no dark/auto toggle).
+    theme: 'light',
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -26,15 +38,29 @@ export default buildConfig({
       titleSuffix: '· Sparta Motors',
     },
     components: {
+      beforeNavLinks: [
+        '/components/admin/AdminBrand#default',
+        '/components/admin/NavUser#default',
+        '/components/admin/AdminNavLinks#default',
+      ],
       views: {
         dashboard: {
           Component: '/components/admin/Dashboard#default',
         },
+        draftReview: {
+          Component: '/components/admin/DraftReview#default',
+          path: '/draft-review',
+        },
       },
     },
   },
-  collections: [Users, Trucks, Leads, FleetInquiries, Media, Pages],
+  // Order drives the admin nav group order (grouped by first appearance):
+  // Inventory → Leads → Content → Team. The Inventory group itself is rendered
+  // by the custom AdminNavLinks sidebar and hidden from the auto-nav via CSS.
+  collections: [Trucks, Leads, FleetInquiries, Media, Pages, Users],
   globals: [Settings],
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

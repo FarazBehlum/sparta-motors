@@ -18,7 +18,7 @@ export function Callout({
       role="note"
       className={`rounded-r-lg border-l-4 border-orange bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] md:p-6 ${className}`}
     >
-      <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-orange">
+      <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-orange-ink">
         <span aria-hidden="true">◆ </span>
         {label}
       </p>

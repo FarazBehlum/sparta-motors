@@ -59,7 +59,7 @@ export function TruckListRow({ truck }: { truck: Truck }) {
 
         <div className="shrink-0 text-left sm:text-right">
           <span className="font-mono text-[10px] uppercase tracking-wider text-iron">Price</span>
-          <div className="font-mono text-2xl font-medium text-orange">{formatPrice(truck.price)}</div>
+          <div className="font-mono text-2xl font-medium text-orange-ink">{formatPrice(truck.price)}</div>
         </div>
       </div>
     </Link>

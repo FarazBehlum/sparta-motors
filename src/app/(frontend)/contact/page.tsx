@@ -9,15 +9,20 @@ import { PageHeader } from '@/components/content/PageHeader'
 import { ContentSection } from '@/components/content/ContentSection'
 import { FormCTA } from '@/components/content/FormCTA'
 import { ContactForm } from '@/components/content/ContactForm'
-import { FleetCTA } from '@/components/home/FleetCTA'
+import { PartsCTA } from '@/components/home/PartsCTA'
 import { LocationMap } from '@/components/map/LocationMap'
 import { FadeInSection } from '@/components/home/FadeInSection'
 
-export const metadata: Metadata = {
-  title: 'Contact Sparta Motors',
-  description:
-    'Contact Sparta Motors — used commercial truck dealer in Spartanburg, SC. Call (864) 266-5347 or email us. Mon–Fri 8am–5pm.',
-  alternates: { canonical: '/contact' },
+// Description is built from Settings so the phone number always matches the
+// live business record (never a hardcoded placeholder).
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings()
+  const call = settings.phone ? `Call ${formatPhone(settings.phone)} or email us.` : 'Call or email us.'
+  return {
+    title: 'Contact Sparta Motors',
+    description: `Contact Sparta Motors — used commercial truck dealer in Spartanburg, SC. ${call} Mon–Fri 8am–5pm.`,
+    alternates: { canonical: '/contact' },
+  }
 }
 
 export default async function ContactPage() {
@@ -110,7 +115,7 @@ export default async function ContactPage() {
         </FormCTA>
       </ContentSection>
 
-      <FleetCTA />
+      <PartsCTA />
     </>
   )
 }
@@ -126,7 +131,7 @@ function ContactCard({
 }) {
   return (
     <div className="rounded-[10px] border border-chalk bg-white p-5">
-      <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-orange">
+      <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-orange-ink">
         <span aria-hidden="true">◆ </span>
         {label}
       </p>
@@ -142,7 +147,7 @@ function HoursLine({ day, value }: { day: string; value?: string | null }) {
   if (!value) return null
   return (
     <span className="block font-barlow text-base font-bold uppercase tracking-tight">
-      <span className="text-orange">{day}</span>{' '}
+      <span className="text-orange-ink">{day}</span>{' '}
       <span className="text-sparta-black">{value}</span>
     </span>
   )

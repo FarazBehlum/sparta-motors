@@ -25,7 +25,7 @@ export function SuccessCard({
       {href && (
         <p className="mt-4 font-inter text-sm text-iron">
           Need us sooner?{' '}
-          <a href={href} className="font-semibold text-orange hover:underline">
+          <a href={href} className="font-semibold text-orange-ink hover:underline">
             Call {formatPhone(phone)}
           </a>
         </p>

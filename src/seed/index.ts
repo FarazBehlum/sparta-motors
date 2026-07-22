@@ -51,7 +51,7 @@ async function seed() {
     data: {
       siteName: 'Sparta Motors',
       phone: '(864) 266-5347',
-      email: process.env.SMTP_FROM || 'info@sparta-motors.com',
+      email: 'spartamotorsllc@gmail.com',
       address: {
         line1: '890 S Irwin Ave',
         line2: '',
@@ -70,7 +70,7 @@ async function seed() {
   payload.logger.info('Settings global seeded')
 
   // --- Pages ---
-  const pages: Array<{ slug: 'home' | 'about' | 'financing' | 'fleet' | 'contact'; title: string; heroLabel: string; heroTitle: string; heroSubtitle: string; metaDescription: string }> = [
+  const pages: Array<{ slug: 'home' | 'about' | 'financing' | 'parts' | 'contact'; title: string; heroLabel: string; heroTitle: string; heroSubtitle: string; metaDescription: string }> = [
     {
       slug: 'home',
       title: 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC',
@@ -96,12 +96,12 @@ async function seed() {
       metaDescription: 'Commercial truck financing in Spartanburg, SC. Get pre-qualified with Sparta Motors.',
     },
     {
-      slug: 'fleet',
-      title: 'Fleet & Bulk Sourcing',
-      heroLabel: 'FLEET & BULK SOURCING',
-      heroTitle: 'Growing your\nfleet? We source.',
-      heroSubtitle: 'Tell us what you need. We find the right trucks at the right price for growing small fleets.',
-      metaDescription: 'Fleet and bulk truck sourcing for small businesses in Spartanburg, SC.',
+      slug: 'parts',
+      title: 'Parts — Sparta Motors',
+      heroLabel: 'PARTS',
+      heroTitle: 'Need parts?\nWe stock them.',
+      heroSubtitle: 'Tested used OEM parts pulled from dismantled vehicles, shipped nationwide. Browse and buy through our online parts store.',
+      metaDescription: 'Tested used OEM truck parts, shipped nationwide. Shop the Sparta Motors online parts store.',
     },
     {
       slug: 'contact',

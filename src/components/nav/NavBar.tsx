@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, Phone, X } from 'lucide-react'
@@ -8,9 +8,10 @@ import { Logo } from '@/components/Logo'
 import { formatPhone } from '@/lib/format'
 
 export const NAV_LINKS = [
+  { label: 'Home', href: '/' },
   { label: 'Inventory', href: '/inventory' },
   { label: 'Financing', href: '/financing' },
-  { label: 'Fleet', href: '/fleet' },
+  { label: 'Parts', href: '/parts' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ] as const
@@ -30,19 +31,55 @@ export function NavBar({ phone }: { phone?: string | null }) {
   const [open, setOpen] = useState(false)
   const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null
   const closeMenu = () => setOpen(false)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
-  // Lock body scroll while the full-screen overlay is open.
+  // While the full-screen overlay is open: lock body scroll, move focus into
+  // the dialog, trap Tab within it, close on Escape, and restore focus to the
+  // menu button on close. (WCAG 2.4.3 / 2.1.2)
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
+    if (!open) return
+
+    // Capture the trigger now so focus returns to the same node on close.
+    const menuButton = menuButtonRef.current
+    const overlay = overlayRef.current
+    const focusables = overlay
+      ? Array.from(
+          overlay.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+        )
+      : []
+    focusables[0]?.focus()
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        return
+      }
+      if (e.key !== 'Tab' || focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
+      menuButton?.focus()
     }
   }, [open])
 
   return (
     <header className="sticky top-0 z-50 border-b border-charcoal bg-sparta-black text-bone">
-      <nav className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:px-10">
-        <Logo tone="dark" />
+      <nav className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:h-20 md:px-10">
+        <Logo tone="dark" size="lg" />
 
         {/* Desktop links */}
         <div className="hidden items-center gap-7 md:flex">
@@ -70,7 +107,7 @@ export function NavBar({ phone }: { phone?: string | null }) {
           {telHref && (
             <a
               href={telHref}
-              className="ml-1 inline-flex items-center gap-1.5 font-mono text-sm text-bone hover:text-orange"
+              className="ml-1 inline-flex items-center gap-1.5 font-mono text-base font-medium text-bone hover:text-orange lg:text-lg"
             >
               <span className="text-orange" aria-hidden="true">
                 ◆
@@ -92,10 +129,12 @@ export function NavBar({ phone }: { phone?: string | null }) {
             </a>
           )}
           <button
+            ref={menuButtonRef}
             type="button"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
             aria-expanded={open}
+            aria-haspopup="dialog"
             className="inline-flex h-11 w-11 items-center justify-center rounded text-bone hover:text-orange"
           >
             <Menu size={24} strokeWidth={2} />
@@ -105,7 +144,13 @@ export function NavBar({ phone }: { phone?: string | null }) {
 
       {/* Mobile full-screen overlay */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-sparta-black md:hidden">
+        <div
+          ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className="fixed inset-0 z-50 flex flex-col bg-sparta-black md:hidden"
+        >
           <div className="flex h-16 items-center justify-between px-5">
             <Logo tone="dark" />
             <button

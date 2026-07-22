@@ -15,7 +15,7 @@ const INVENTORY_LINKS = [
 const COMPANY_LINKS = [
   { label: 'About', href: '/about' },
   { label: 'Financing', href: '/financing' },
-  { label: 'Fleet inquiries', href: '/fleet' },
+  { label: 'Parts', href: '/parts' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -92,10 +92,18 @@ export async function Footer() {
           </ul>
         </nav>
 
-        {/* Parts (Phase 2 placeholder) */}
+        {/* Parts — informational page links out to the Shopify store. */}
         <div>
           <ColHeading>Parts</ColHeading>
-          <p className="font-inter text-sm text-concrete">Sparta Parts coming soon.</p>
+          <p className="font-inter text-sm leading-relaxed text-concrete">
+            Tested used OEM parts, shipped nationwide.
+          </p>
+          <Link
+            href="/parts"
+            className="mt-3 inline-block font-inter text-sm text-concrete transition-colors hover:text-bone"
+          >
+            Shop Parts →
+          </Link>
         </div>
       </div>
 

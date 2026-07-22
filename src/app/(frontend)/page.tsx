@@ -8,7 +8,9 @@ import { StatsBar, type Stat } from '@/components/home/StatsBar'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { FeaturedInventory } from '@/components/home/FeaturedInventory'
 import { HowWeWork } from '@/components/home/HowWeWork'
-import { FleetCTA } from '@/components/home/FleetCTA'
+import { VisitUs } from '@/components/home/VisitUs'
+import { PartsCTA } from '@/components/home/PartsCTA'
+import { addressLines, coords } from '@/lib/location'
 
 const DESCRIPTION =
   'Used commercial trucks for working businesses. Box trucks, reefers, day cabs, dump trucks, tow rigs. Spartanburg, SC. Est. 2018.'
@@ -33,6 +35,8 @@ export default async function HomePage() {
     getSettings(),
   ])
   const facets = computeFacets(trucks)
+  const lines = addressLines(settings)
+  const { lat, lng } = coords(settings)
 
   const stats: Stat[] = [
     { label: 'On the lot', value: pad2(trucks.length), lead: true },
@@ -52,7 +56,16 @@ export default async function HomePage() {
       <CategoryGrid counts={facets.body} />
       <FeaturedInventory trucks={featured} />
       <HowWeWork />
-      <FleetCTA />
+      <VisitUs
+        lat={lat}
+        lng={lng}
+        addressLines={lines}
+        phone={settings.phone}
+        hoursMonFri={settings.hoursMonFri}
+        hoursSat={settings.hoursSat}
+        hoursSun={settings.hoursSun}
+      />
+      <PartsCTA />
     </>
   )
 }

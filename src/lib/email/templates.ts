@@ -1,6 +1,6 @@
 import { formatDateTime, formatMileage, formatPrice, makeLabel } from '../format'
+import { SITE_URL as siteUrl } from '../site'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 const adminUrl = (path: string) => `${siteUrl}/admin${path}`
 
 interface TruckLike {

@@ -1,6 +1,5 @@
 import { formatDateTime, formatMileage, formatPrice, makeLabel } from '../format'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+import { SITE_URL as siteUrl } from '../site'
 
 interface LeadLike {
   id: string | number

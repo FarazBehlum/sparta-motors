@@ -36,7 +36,7 @@ export function ContentSection({
     <section className={TONE[tone]}>
       <Container width="wide" className={`py-14 md:py-20 ${className}`}>
         <FadeInSection>
-          <SectionLabel>{label}</SectionLabel>
+          <SectionLabel tone={tone === 'dark' ? 'dark' : 'light'}>{label}</SectionLabel>
           <h2 className={`mt-2 font-barlow text-4xl font-bold uppercase tracking-tight md:text-5xl ${titleColor}`}>
             {title}
           </h2>

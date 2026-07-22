@@ -1,15 +1,14 @@
 import type { MetadataRoute } from 'next'
 import { getPublishedTrucks } from '@/lib/trucks'
 import { CATEGORY_TO_BODY_TYPE } from '@/lib/format'
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+import { SITE_URL as siteUrl } from '@/lib/site'
 
 /** Public, indexable routes and their relative priority. */
 const STATIC_ROUTES: Array<{ path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'] }> = [
   { path: '/', priority: 1, changeFrequency: 'daily' },
   { path: '/inventory', priority: 0.9, changeFrequency: 'daily' },
   { path: '/financing', priority: 0.6, changeFrequency: 'monthly' },
-  { path: '/fleet', priority: 0.6, changeFrequency: 'monthly' },
+  { path: '/parts', priority: 0.6, changeFrequency: 'monthly' },
   { path: '/about', priority: 0.5, changeFrequency: 'monthly' },
   { path: '/contact', priority: 0.6, changeFrequency: 'monthly' },
 ]

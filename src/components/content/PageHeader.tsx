@@ -4,9 +4,9 @@ import { Container } from '@/components/Container'
 import { SectionLabel } from '@/components/SectionLabel'
 
 /**
- * Dark page header for content pages (Financing / Fleet / About / Contact).
+ * Dark page header for content pages (Financing / Parts / About / Contact).
  * A large low-opacity watermark word sits behind the breadcrumb + label +
- * display title + optional subtitle. See build-brief/{financing,fleet,about,
+ * display title + optional subtitle. See build-brief/{financing,about,
  * contact}.md.
  */
 export function PageHeader({
@@ -43,7 +43,7 @@ export function PageHeader({
           <span className="text-bone">{breadcrumb}</span>
         </nav>
 
-        <SectionLabel className="mt-6">{label}</SectionLabel>
+        <SectionLabel tone="dark" className="mt-6">{label}</SectionLabel>
         <h1 className="mt-3 max-w-3xl font-barlow text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-bone md:text-6xl">
           {title}
         </h1>

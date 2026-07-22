@@ -17,7 +17,7 @@ export function StatsBar({ stats }: { stats: Stat[] }) {
               </p>
               <p
                 className={`mt-2 font-barlow text-5xl font-bold leading-none tabular-nums ${
-                  stat.lead ? 'text-orange' : 'text-sparta-black'
+                  stat.lead ? 'text-orange-ink' : 'text-sparta-black'
                 }`}
               >
                 {stat.value}

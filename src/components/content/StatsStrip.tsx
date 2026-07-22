@@ -15,7 +15,7 @@ export function StatsStrip({ stats }: { stats: StripStat[] }) {
               <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-iron">
                 {stat.label}
               </p>
-              <p className="mt-2 font-barlow text-5xl font-bold leading-none tabular-nums text-orange">
+              <p className="mt-2 font-barlow text-5xl font-bold leading-none tabular-nums text-orange-ink">
                 {stat.value}
               </p>
               {stat.desc && (

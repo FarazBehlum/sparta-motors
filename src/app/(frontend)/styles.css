@@ -9,6 +9,10 @@
   --color-bone: #f5f3f0;
   --color-hero-warm: #efeeea;
   --color-orange: #f26b0f;
+  /* Darkened orange for small text/links on LIGHT grounds — passes WCAG AA
+     (≥4.5:1 on bone, white, and warm-white). Bright --color-orange is reserved
+     for large display text, on-dark text, and fills. */
+  --color-orange-ink: #a84b08;
   --color-amber: #f5a623;
   --color-charcoal: #2c2c2a;
   --color-iron: #5f5e5a;
@@ -76,6 +80,13 @@
 
   svg {
     vertical-align: middle;
+  }
+
+  /* Visible keyboard focus for every interactive element (WCAG 2.4.11).
+     Applies only to keyboard/AT focus, never mouse clicks. */
+  :focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 2px;
   }
 }
 

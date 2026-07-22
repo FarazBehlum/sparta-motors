@@ -52,7 +52,7 @@ export function LocationMap({ height = 440, ...inner }: LocationMapProps) {
       ref={ref}
       role="region"
       aria-label="Map showing Sparta Motors location"
-      className="overflow-hidden rounded-[10px] border border-chalk"
+      className="isolate overflow-hidden rounded-[10px] border border-chalk"
       style={{ height }}
     >
       {inView ? <MapInner {...inner} /> : <MapPlaceholder />}

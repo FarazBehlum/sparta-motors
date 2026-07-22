@@ -36,6 +36,12 @@ export function TruckCard({ truck }: { truck: Truck }) {
         <span className="absolute left-3 top-3 rounded bg-sparta-black/85 px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-bone backdrop-blur-sm">
           {bodyTypeLabel(truck.bodyType)}
         </span>
+        {truck.featured && (
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded bg-orange px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-sparta-black shadow-sm">
+            <span aria-hidden="true">◆</span>
+            Featured
+          </span>
+        )}
       </div>
 
       <div className="p-5">

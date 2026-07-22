@@ -27,7 +27,7 @@ export function HowWeWork() {
     <section className="bg-sparta-black text-bone">
       <Container width="wide" className="py-14 md:py-20">
         <FadeInSection>
-          <SectionLabel>How we work</SectionLabel>
+          <SectionLabel tone="dark">How we work</SectionLabel>
           <h2 className="mt-2 font-barlow text-4xl font-bold uppercase tracking-tight text-bone md:text-5xl">
             Straight talk. Working trucks.
           </h2>

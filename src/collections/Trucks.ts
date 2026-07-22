@@ -1,6 +1,7 @@
-import type { CollectionConfig, PayloadRequest, Where } from 'payload'
+import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
 import { isAdmin, isAdminOrEmployee } from '../access'
 import { isValidVin, normalizeVin } from '../lib/vin'
+import { makeLabel } from '../lib/format'
 import { truckSlug } from '../lib/slug'
 import { sendEmail } from '../lib/email/mailer'
 import {
@@ -32,28 +33,20 @@ const BODY_TYPE_OPTIONS = [
 ]
 
 async function nextStockNumber(req: PayloadRequest): Promise<string> {
+  // Single scan for the true max stock number (stock numbers can have gaps, and
+  // the newest row isn't always the highest). At Phase-1 volume (~20 trucks)
+  // this is trivial. Two admins creating trucks in the same instant could in
+  // theory collide — acceptable here since stockNumber isn't a unique key and
+  // the slug (which carries the unique VIN) is what disambiguates listings.
   const { docs } = await req.payload.find({
-    collection: 'trucks',
-    sort: '-createdAt',
-    limit: 1,
-    depth: 0,
-    pagination: false,
-    req,
-  })
-  let max = 1000
-  for (const d of docs) {
-    const n = parseInt(String((d as { stockNumber?: string }).stockNumber ?? '').replace('SM-', ''), 10)
-    if (!Number.isNaN(n) && n > max) max = n
-  }
-  // Scan all to find true max (there may be gaps / newer isn't always highest)
-  const all = await req.payload.find({
     collection: 'trucks',
     limit: 0,
     depth: 0,
     pagination: false,
     req,
   })
-  for (const d of all.docs) {
+  let max = 1000
+  for (const d of docs) {
     const n = parseInt(String((d as { stockNumber?: string }).stockNumber ?? '').replace('SM-', ''), 10)
     if (!Number.isNaN(n) && n > max) max = n
   }
@@ -116,8 +109,22 @@ export const Trucks: CollectionConfig = {
         }],
         afterRead: [({ data }) => {
           if (!data) return ''
-          return [data.year, data.make, data.model, data.trim].filter(Boolean).join(' ')
+          return [data.year, data.make ? makeLabel(data.make) : '', data.model, data.trim]
+            .filter(Boolean)
+            .join(' ')
         }],
+      },
+    },
+    // Invisible helper: sets the edit-view header to "Add a New Truck" on the
+    // create page (where the composed title is empty and Payload shows
+    // "[Untitled]"). Renders nothing. See TruckTitleField.
+    {
+      name: 'titleHeader',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/admin/TruckTitleField#default',
+        },
       },
     },
     {
@@ -186,6 +193,28 @@ export const Trucks: CollectionConfig = {
                     { label: 'Fair', value: 'fair' },
                   ],
                   admin: { width: '50%' },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'titleStatus',
+                  type: 'select',
+                  options: [
+                    { label: 'Clean', value: 'clean' },
+                    { label: 'Rebuilt', value: 'rebuilt' },
+                    { label: 'Salvage', value: 'salvage' },
+                    { label: 'Lien / loan', value: 'lien' },
+                  ],
+                  admin: { width: '50%', description: 'Shown on the listing to build buyer trust.' },
+                },
+                {
+                  name: 'owners',
+                  type: 'number',
+                  min: 0,
+                  admin: { width: '50%', description: 'Number of previous owners. Leave blank if unknown.' },
                 },
               ],
             },
@@ -260,6 +289,92 @@ export const Trucks: CollectionConfig = {
           ],
         },
         {
+          label: 'Inspection',
+          fields: [
+            {
+              name: 'inspection',
+              type: 'group',
+              label: 'Inspection & condition',
+              admin: {
+                description:
+                  'Shown as an inspection block on the listing. Only filled-in items appear — leave blank what you did not check.',
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'inspectedDate',
+                      type: 'date',
+                      admin: { width: '50%', description: 'When it was inspected' },
+                    },
+                    {
+                      name: 'inspectedBy',
+                      type: 'text',
+                      admin: { width: '50%', description: 'Technician or shop name' },
+                    },
+                  ],
+                },
+                {
+                  name: 'summary',
+                  type: 'textarea',
+                  admin: { description: 'Overall condition summary (optional).' },
+                },
+                {
+                  name: 'points',
+                  type: 'array',
+                  labels: { singular: 'Inspection point', plural: 'Inspection points' },
+                  admin: {
+                    description:
+                      'One row per system you checked. The rating sets the color shown on the listing.',
+                  },
+                  fields: [
+                    {
+                      type: 'row',
+                      fields: [
+                        {
+                          name: 'area',
+                          type: 'select',
+                          required: true,
+                          options: [
+                            { label: 'Engine', value: 'engine' },
+                            { label: 'Transmission', value: 'transmission' },
+                            { label: 'Brakes', value: 'brakes' },
+                            { label: 'Tires', value: 'tires' },
+                            { label: 'Suspension', value: 'suspension' },
+                            { label: 'Electrical', value: 'electrical' },
+                            { label: 'Frame & rust', value: 'frame' },
+                            { label: 'Emissions (DPF/DEF)', value: 'emissions' },
+                            { label: 'Interior / cab', value: 'interior' },
+                            { label: 'Body / exterior', value: 'body' },
+                          ],
+                          admin: { width: '40%' },
+                        },
+                        {
+                          name: 'rating',
+                          type: 'select',
+                          required: true,
+                          options: [
+                            { label: 'Good', value: 'good' },
+                            { label: 'Fair', value: 'fair' },
+                            { label: 'Needs attention', value: 'attention' },
+                          ],
+                          admin: { width: '30%' },
+                        },
+                        {
+                          name: 'note',
+                          type: 'text',
+                          admin: { width: '30%', description: 'Optional detail' },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Photos',
           fields: [
             {
@@ -323,7 +438,11 @@ export const Trucks: CollectionConfig = {
       name: 'featured',
       type: 'checkbox',
       defaultValue: false,
-      admin: { position: 'sidebar', description: 'Show in the Featured Inventory section on the home page.' },
+      admin: {
+        position: 'sidebar',
+        description:
+          'Featured trucks show in the home Featured Inventory section, sort first in the inventory (default order), and get a “Featured” badge on their card.',
+      },
     },
     {
       name: 'reviewNote',
@@ -366,7 +485,12 @@ export const Trucks: CollectionConfig = {
       async ({ data, req, operation, originalDoc }) => {
         // VIN format validation
         if (data.vin && !isValidVin(data.vin)) {
-          throw new Error('VIN must be 17 characters, letters and numbers only (no I, O, or Q).')
+          throw new APIError(
+            'VIN must be 17 characters, letters and numbers only (no I, O, or Q).',
+            400,
+            undefined,
+            true,
+          )
         }
 
         if (operation === 'create') {
@@ -388,7 +512,12 @@ export const Trucks: CollectionConfig = {
         if (newStatus === 'published') {
           const photoCount = Array.isArray(data.photos) ? data.photos.length : 0
           if (photoCount < 1) {
-            throw new Error('A truck must have at least one photo before it can be published.')
+            throw new APIError(
+              'A truck must have at least one photo before it can be published. Add a photo on the Photos tab, then publish.',
+              400,
+              undefined,
+              true,
+            )
           }
           if (prevStatus !== 'published') data.publishedAt = new Date().toISOString()
         }

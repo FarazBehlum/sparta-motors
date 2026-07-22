@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { InputField, TextareaField } from '@/components/FormField'
+import { Honeypot } from '@/components/Honeypot'
 import { SuccessCard, ErrorBanner, SubmitButton } from './form-ui'
 
 const schema = z.object({
@@ -13,6 +14,7 @@ const schema = z.object({
   email: z.string().email('Enter a valid email'),
   truckOfInterest: z.string().optional(),
   message: z.string().optional(),
+  website: z.string().optional(), // honeypot
 })
 type FormValues = z.infer<typeof schema>
 
@@ -42,6 +44,7 @@ export function FinancingForm({ phone }: { phone?: string | null }) {
           phone: data.phone,
           email: data.email,
           message: parts.length ? parts.join('\n\n') : undefined,
+          website: data.website || undefined,
           source: 'financing-prequal',
           financingInterest: true,
         }),
@@ -68,6 +71,7 @@ export function FinancingForm({ phone }: { phone?: string | null }) {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-4 rounded-[10px] border border-chalk bg-white p-6"
     >
+      <Honeypot {...register('website')} />
       <InputField
         id="fin-name"
         label="Full name"

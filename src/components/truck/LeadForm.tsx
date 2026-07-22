@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CheckCircle2 } from 'lucide-react'
 import { InputField, TextareaField } from '@/components/FormField'
+import { Honeypot } from '@/components/Honeypot'
 import { formatPhone } from '@/lib/format'
 
 const schema = z.object({
@@ -18,6 +19,7 @@ const schema = z.object({
   tradeInYearMakeModel: z.string().optional(),
   tradeInMileage: z.string().optional(),
   tradeInCondition: z.string().optional(),
+  website: z.string().optional(), // honeypot
 })
 
 type FormValues = z.infer<typeof schema>
@@ -71,6 +73,7 @@ export function LeadForm({
           phone: data.phone,
           email: data.email,
           message: data.message || undefined,
+          website: data.website || undefined,
           source: 'truck-inquiry',
           truckOfInterest: truckId,
           financingInterest: Boolean(data.financingInterest),
@@ -101,7 +104,7 @@ export function LeadForm({
         {telHref && (
           <p className="mt-4 font-inter text-sm text-iron">
             Need us sooner?{' '}
-            <a href={telHref} className="font-semibold text-orange hover:underline">
+            <a href={telHref} className="font-semibold text-orange-ink hover:underline">
               Call {formatPhone(phone)}
             </a>
           </p>
@@ -136,6 +139,7 @@ export function LeadForm({
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-6">
+        <Honeypot {...register('website')} />
         <InputField
           id="lead-name"
           label="Full name"

@@ -1,5 +1,5 @@
-import type { CollectionConfig, PayloadRequest, Where } from 'payload'
-import { anyone, isAdmin, isAdminOrEmployee } from '../access'
+import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
+import { anyone, isAdmin, isAdminOrEmployee, isAdminOrEmployeeFieldLevel } from '../access'
 import { HEARD_ABOUT_US_OPTIONS } from '../lib/options'
 import { sendEmail } from '../lib/email/mailer'
 import { newLeadEmail } from '../lib/email/lead-templates'
@@ -105,6 +105,14 @@ export const Leads: CollectionConfig = {
       admin: { condition: (data) => Boolean(data?.tradeIn) },
     },
     { name: 'heardAboutUs', type: 'select', options: HEARD_ABOUT_US_OPTIONS },
+    // Spam honeypot — hidden from the admin, stripped before persist (see hook).
+    // Present in the schema so it survives to the beforeValidate hook.
+    {
+      name: 'website',
+      type: 'text',
+      admin: { hidden: true, disableListColumn: true },
+      access: { read: () => false },
+    },
     {
       name: 'status',
       type: 'select',
@@ -116,22 +124,48 @@ export const Leads: CollectionConfig = {
         { label: 'Closed — Sold', value: 'closed-sold' },
         { label: 'Closed — Lost', value: 'closed-lost' },
       ],
+      // Public submissions must not be able to set an internal pipeline status.
+      access: { create: isAdminOrEmployeeFieldLevel },
       admin: { position: 'sidebar' },
     },
-    { name: 'internalNotes', type: 'textarea', admin: { position: 'sidebar' } },
+    {
+      name: 'internalNotes',
+      type: 'textarea',
+      access: { create: isAdminOrEmployeeFieldLevel },
+      admin: { position: 'sidebar' },
+    },
     {
       name: 'receivedAt',
       type: 'date',
+      access: { create: isAdminOrEmployeeFieldLevel },
       admin: { position: 'sidebar', readOnly: true },
       defaultValue: () => new Date().toISOString(),
     },
-    { name: 'contactedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },
-    { name: 'closedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },
+    {
+      name: 'contactedAt',
+      type: 'date',
+      access: { create: isAdminOrEmployeeFieldLevel },
+      admin: { position: 'sidebar', readOnly: true },
+    },
+    {
+      name: 'closedAt',
+      type: 'date',
+      access: { create: isAdminOrEmployeeFieldLevel },
+      admin: { position: 'sidebar', readOnly: true },
+    },
   ],
   hooks: {
     beforeValidate: [
-      ({ req, operation }) => {
-        if (operation === 'create') enforcePublicSubmitLimit(req, 'leads')
+      ({ req, operation, data }) => {
+        if (operation === 'create') {
+          // Honeypot: real users never fill the hidden `website` field; bots do.
+          if (!req.user && data?.website) {
+            throw new APIError('Submission rejected.', 400, undefined, true)
+          }
+          enforcePublicSubmitLimit(req, 'leads')
+        }
+        if (data) delete data.website // never persist the honeypot value
+        return data
       },
     ],
     beforeChange: [

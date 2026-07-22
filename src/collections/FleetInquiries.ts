@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { anyone, isAdmin, isAdminOrEmployee } from '../access'
+import { APIError, type CollectionConfig } from 'payload'
+import { anyone, isAdmin, isAdminOrEmployee, isAdminOrEmployeeFieldLevel } from '../access'
 import { HEARD_ABOUT_US_OPTIONS } from '../lib/options'
 import { sendEmail } from '../lib/email/mailer'
 import { newFleetInquiryEmail } from '../lib/email/lead-templates'
@@ -64,6 +64,13 @@ export const FleetInquiries: CollectionConfig = {
     },
     { name: 'trucksNeeded', type: 'textarea', required: true },
     { name: 'heardAboutUs', type: 'select', options: HEARD_ABOUT_US_OPTIONS },
+    // Spam honeypot — hidden, stripped before persist (see hook).
+    {
+      name: 'website',
+      type: 'text',
+      admin: { hidden: true, disableListColumn: true },
+      access: { read: () => false },
+    },
     {
       name: 'status',
       type: 'select',
@@ -76,20 +83,34 @@ export const FleetInquiries: CollectionConfig = {
         { label: 'Closed — Sold', value: 'closed-sold' },
         { label: 'Closed — Lost', value: 'closed-lost' },
       ],
+      access: { create: isAdminOrEmployeeFieldLevel },
       admin: { position: 'sidebar' },
     },
-    { name: 'internalNotes', type: 'textarea', admin: { position: 'sidebar' } },
+    {
+      name: 'internalNotes',
+      type: 'textarea',
+      access: { create: isAdminOrEmployeeFieldLevel },
+      admin: { position: 'sidebar' },
+    },
     {
       name: 'receivedAt',
       type: 'date',
+      access: { create: isAdminOrEmployeeFieldLevel },
       admin: { position: 'sidebar', readOnly: true },
       defaultValue: () => new Date().toISOString(),
     },
   ],
   hooks: {
     beforeValidate: [
-      ({ req, operation }) => {
-        if (operation === 'create') enforcePublicSubmitLimit(req, 'fleet-inquiries')
+      ({ req, operation, data }) => {
+        if (operation === 'create') {
+          if (!req.user && data?.website) {
+            throw new APIError('Submission rejected.', 400, undefined, true)
+          }
+          enforcePublicSubmitLimit(req, 'fleet-inquiries')
+        }
+        if (data) delete data.website
+        return data
       },
     ],
     afterChange: [

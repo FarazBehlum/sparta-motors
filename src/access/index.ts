@@ -12,6 +12,12 @@ export const isAdminOrEmployee: Access = ({ req: { user } }) => {
   return role === 'admin' || role === 'employee'
 }
 
+/** Field-level: only staff may set this field (e.g. on public form submissions). */
+export const isAdminOrEmployeeFieldLevel: FieldAccess = ({ req: { user } }) => {
+  const role = (user as UserLike)?.role
+  return role === 'admin' || role === 'employee'
+}
+
 export const anyone: Access = () => true
 
 export const isAuthenticated: Access = ({ req: { user } }) => Boolean(user)

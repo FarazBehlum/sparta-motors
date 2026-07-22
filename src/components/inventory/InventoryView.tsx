@@ -160,7 +160,7 @@ export async function InventoryView({
                   {settings.phone ? (
                     <a
                       href={`tel:${settings.phone.replace(/[^\d+]/g, '')}`}
-                      className="font-semibold text-orange hover:underline"
+                      className="font-semibold text-orange-ink hover:underline"
                     >
                       call us at {formatPhone(settings.phone)}
                     </a>

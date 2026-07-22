@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePrefersReducedMotion } from '@/lib/use-reduced-motion'
 
@@ -71,7 +71,11 @@ export function Hero() {
   const loadedRef = useRef<boolean[]>([])
   const drawnRef = useRef(-1)
   const progressRef = useRef(0)
-  const [progress, setProgress] = useState(0)
+  // Text phases, dots and the scroll hint are updated imperatively (via these
+  // refs) inside the scroll rAF — so scrolling never triggers a React re-render.
+  const phaseRefs = useRef<(HTMLDivElement | null)[]>([])
+  const dotRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const hintRef = useRef<HTMLDivElement>(null)
   const reduce = usePrefersReducedMotion()
 
   useEffect(() => {
@@ -123,16 +127,26 @@ export function Hero() {
       }
     }
 
-    // Load frames. Frame 0 first (immediate paint / poster), then the rest.
-    const loadFrame = (i: number) => {
+    // Load a single frame. `done` frees a slot in the concurrency pool below,
+    // firing on both success and error so one bad frame can't stall loading.
+    const loadFrame = (i: number, done?: () => void) => {
       const img = new Image()
       img.decoding = 'async'
-      img.onload = () => {
+      const ready = () => {
         loaded[i] = true
         const target = reduce ? 0 : frameForProgress(progressRef.current)
         // Repaint if this frame is now the best available for where we are.
         if (i === target || (drawnRef.current === -1 && i === 0)) drawNearest(target)
+        done?.()
       }
+      img.onload = () => {
+        // Pre-decode so the first drawImage of this frame never stalls the main
+        // thread mid-scroll. If decode() isn't available/rejects, mark it ready
+        // anyway (decode then happens synchronously on first draw, as before).
+        if (typeof img.decode === 'function') img.decode().then(ready, ready)
+        else ready()
+      }
+      img.onerror = () => done?.()
       img.src = framePath(i)
       images[i] = img
     }
@@ -140,8 +154,51 @@ export function Hero() {
     if (reduce) {
       loadFrame(0) // assembled truck, no scrubbing
     } else {
-      loadFrame(0)
-      for (let i = 1; i < FRAME_COUNT; i++) loadFrame(i)
+      // Don't fire all 160 requests at once (that competes with LCP and hammers
+      // the connection). Instead load through a small concurrency pool in a
+      // priority order: frame 0, then a coarse every-8th pass so scrubbing works
+      // almost immediately, then every remaining frame fills in the detail.
+      // drawNearest() already covers any frame that hasn't arrived yet.
+      const order: number[] = []
+      const seen = new Set<number>()
+      const enqueue = (i: number) => {
+        if (i >= 0 && i < FRAME_COUNT && !seen.has(i)) {
+          seen.add(i)
+          order.push(i)
+        }
+      }
+      enqueue(0)
+      for (let i = 0; i < FRAME_COUNT; i += 8) enqueue(i)
+      for (let i = 0; i < FRAME_COUNT; i++) enqueue(i)
+
+      const CONCURRENCY = 6
+      let cursor = 0
+      const pump = () => {
+        if (cursor >= order.length) return
+        loadFrame(order[cursor++], pump)
+      }
+      for (let k = 0; k < CONCURRENCY; k++) pump()
+    }
+
+    // Update phase opacities, dots and the scroll hint directly on the DOM —
+    // same visual result as the old state-driven render, minus the re-render.
+    const paintUI = (p: number) => {
+      const active = activePhase(p)
+      for (let i = 0; i < PHASES.length; i++) {
+        const el = phaseRefs.current[i]
+        if (el) {
+          el.style.opacity = String(reduce ? (i === active ? 1 : 0) : phaseOpacity(i, p))
+          el.style.pointerEvents = active === i ? 'auto' : 'none'
+          el.setAttribute('aria-hidden', String(active !== i))
+        }
+        const dot = dotRefs.current[i]
+        if (dot) {
+          const on = i === active
+          dot.style.backgroundColor = on ? 'var(--color-orange)' : 'rgba(0,0,0,0.12)'
+          dot.style.borderColor = on ? 'var(--color-orange)' : 'rgba(0,0,0,0.3)'
+        }
+      }
+      if (hintRef.current) hintRef.current.style.opacity = p > 0.02 ? '0' : '1'
     }
 
     let raf = 0
@@ -151,8 +208,8 @@ export function Hero() {
       const scrollable = rect.height - window.innerHeight
       const p = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0
       progressRef.current = p
-      setProgress(p)
       if (!reduce) drawNearest(frameForProgress(p))
+      paintUI(p)
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update)
@@ -175,10 +232,6 @@ export function Hero() {
     }
   }, [reduce])
 
-  const active = activePhase(progress)
-  // Reduced motion → snap to whichever phase we're in, no cross-fades.
-  const opacityFor = (i: number) => (reduce ? (i === active ? 1 : 0) : phaseOpacity(i, progress))
-
   return (
     <section
       ref={sectionRef}
@@ -191,7 +244,7 @@ export function Hero() {
         <span
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-barlow font-extrabold uppercase leading-none tracking-tighter text-sparta-black/[0.04]"
-          style={{ fontSize: 'min(38vw, 520px)' }}
+          style={{ fontSize: 'min(50vw, 700px)' }}
         >
           Sparta
         </span>
@@ -210,11 +263,11 @@ export function Hero() {
           className="absolute inset-0 h-full w-full"
         />
 
-        {/* Bottom fade for text legibility */}
+        {/* Bottom scrim for white-text legibility */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[260px]"
-          style={{ background: 'linear-gradient(to bottom, transparent, var(--color-hero-warm))' }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[420px]"
+          style={{ background: 'linear-gradient(to bottom, transparent, rgba(26,26,26,0.75))' }}
         />
 
         {/* Top-left: establishment */}
@@ -227,10 +280,13 @@ export function Hero() {
           {PHASES.map((_, i) => (
             <span
               key={i}
+              ref={(el) => {
+                dotRefs.current[i] = el
+              }}
               className="h-2.5 w-2.5 rounded-full border transition-colors duration-200"
               style={{
-                backgroundColor: i === active ? 'var(--color-orange)' : 'rgba(0,0,0,0.12)',
-                borderColor: i === active ? 'var(--color-orange)' : 'rgba(0,0,0,0.3)',
+                backgroundColor: i === 0 ? 'var(--color-orange)' : 'rgba(0,0,0,0.12)',
+                borderColor: i === 0 ? 'var(--color-orange)' : 'rgba(0,0,0,0.3)',
               }}
             />
           ))}
@@ -239,26 +295,34 @@ export function Hero() {
         {/* Text phases */}
         <div className="absolute inset-x-0 bottom-0 pb-16 md:pb-24">
           <div className="mx-auto grid max-w-[1400px] px-5 md:px-10">
-            {PHASES.map((phase, i) => (
+            {PHASES.map((phase, i) => {
+              // Only the first (default) phase is the page's real <h1>; the
+              // others are visually identical paragraphs so the document keeps
+              // exactly one h1 (SEO + screen-reader heading structure).
+              const TitleTag = (i === 0 ? 'h1' : 'p') as 'h1' | 'p'
+              return (
               <div
                 key={i}
-                aria-hidden={active !== i}
+                ref={(el) => {
+                  phaseRefs.current[i] = el
+                }}
+                aria-hidden={i !== 0}
                 className="col-start-1 row-start-1 max-w-3xl"
                 style={{
-                  opacity: opacityFor(i),
+                  opacity: i === 0 ? 1 : 0,
                   transition: reduce ? 'none' : 'opacity 200ms linear',
-                  pointerEvents: active === i ? 'auto' : 'none',
+                  pointerEvents: i === 0 ? 'auto' : 'none',
                 }}
               >
                 <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-orange">
                   <span aria-hidden="true">◆ </span>
                   {phase.kicker}
                 </p>
-                <h1 className="mt-3 font-barlow font-extrabold uppercase leading-[0.95] tracking-tight text-sparta-black text-[clamp(2.5rem,7vw,4.25rem)]">
+                <TitleTag className="mt-3 font-barlow font-extrabold uppercase leading-[0.95] tracking-tight text-white text-[clamp(2.5rem,7vw,4.25rem)] [text-shadow:0_2px_20px_rgba(0,0,0,0.35)]">
                   {phase.title}
-                </h1>
+                </TitleTag>
                 {phase.lead && (
-                  <p className="mt-4 max-w-xl font-inter text-base leading-relaxed text-iron md:text-lg">
+                  <p className="mt-4 max-w-xl font-inter text-base leading-relaxed text-white/85 md:text-lg [text-shadow:0_1px_12px_rgba(0,0,0,0.35)]">
                     {phase.lead}
                   </p>
                 )}
@@ -271,23 +335,25 @@ export function Hero() {
                       Browse inventory →
                     </Link>
                     <Link
-                      href="/fleet"
-                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded border border-sparta-black px-6 py-3 font-barlow text-sm font-bold uppercase tracking-wider text-sparta-black transition-colors duration-150 hover:bg-sparta-black hover:text-bone"
+                      href="/parts"
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded border border-white px-6 py-3 font-barlow text-sm font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-white hover:text-sparta-black"
                     >
-                      Fleet inquiries
+                      Shop Parts
                     </Link>
                   </div>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
         {/* Bottom-right: scroll hint, fades once scrolling starts */}
         <div
+          ref={hintRef}
           aria-hidden="true"
-          className="absolute bottom-6 right-5 flex flex-col items-center gap-1 font-mono text-[10px] uppercase tracking-[0.3em] text-iron transition-opacity duration-300 md:right-10"
-          style={{ opacity: progress > 0.02 ? 0 : 1 }}
+          className="absolute bottom-6 right-5 flex flex-col items-center gap-1 font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 transition-opacity duration-300 md:right-10"
+          style={{ opacity: 1 }}
         >
           Scroll
           <span className="text-orange">↓</span>

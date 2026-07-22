@@ -1,12 +1,32 @@
 import type { AdminViewServerProps } from 'payload'
 import React from 'react'
-import { getDashboardData, type ActivityItem } from '../../lib/admin-dashboard'
+import { getDashboardData, type ActivityItem, type LeadsDay } from '../../lib/admin-dashboard'
 import { formatDateTime } from '../../lib/format'
+
+/* Small inline stroke icons — no external icon dependency. */
+const ICON: Record<string, React.ReactNode> = {
+  leads: (
+    <path d="M2 4h12v8H2z M2 4l6 4 6-4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+  ),
+  drafts: (
+    <path d="M4 2h5l3 3v9H4z M9 2v3h3 M6 8h4 M6 10.5h4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+  ),
+  truck: (
+    <path d="M1 4h8v6H1z M9 6h3l2 2v2H9z M4.5 12.5a1.3 1.3 0 100-2.6 1.3 1.3 0 000 2.6z M11.5 12.5a1.3 1.3 0 100-2.6 1.3 1.3 0 000 2.6z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+  ),
+}
+
+function StatIcon({ name }: { name: keyof typeof ICON }) {
+  return (
+    <svg className="sd-stat__icon" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+      {ICON[name]}
+    </svg>
+  )
+}
 
 const LEADS_NEW = '/admin/collections/leads?where[status][equals]=new'
 const TRUCKS_PENDING = '/admin/collections/trucks?where[status][equals]=pending-review'
 const TRUCKS_PUBLISHED = '/admin/collections/trucks?where[status][equals]=published'
-const FLEET_ALL = '/admin/collections/fleet-inquiries'
 const NEW_TRUCK = '/admin/collections/trucks/create'
 const EXPORT_ALL = '/api/leads/export-csv'
 const EXPORT_WEEK = '/api/leads/export-csv?days=7'
@@ -21,21 +41,54 @@ function StatCard({
   value,
   change,
   href,
+  icon,
   hot,
 }: {
   label: string
   value: number
   change: string
   href: string
+  icon: keyof typeof ICON
   hot?: boolean
 }) {
   return (
     <a className="sd-stat" href={href}>
-      <span className="sd-stat__label">{label}</span>
+      <span className="sd-stat__top">
+        <StatIcon name={icon} />
+        <span className="sd-stat__label">{label}</span>
+      </span>
       <span className="sd-stat__view">VIEW →</span>
       <span className={`sd-stat__value${hot ? ' sd-stat__value--hot' : ''}`}>{value}</span>
       <span className="sd-stat__change">{change}</span>
     </a>
+  )
+}
+
+/** Compact inline-SVG bar chart of leads over the last 7 days. No chart lib. */
+function LeadsChart({ days }: { days: LeadsDay[] }) {
+  const max = Math.max(1, ...days.map((d) => d.count))
+  const total = days.reduce((s, d) => s + d.count, 0)
+  return (
+    <div className="sd-panel sd-chart">
+      <div className="sd-panel__head">
+        <h2 className="sd-panel__title">Leads · last 7 days</h2>
+        <span className="sd-chart__total">{total} total</span>
+      </div>
+      <div className="sd-chart__bars" role="img" aria-label={`Leads per day, last 7 days: ${days.map((d) => `${d.full} ${d.count}`).join(', ')}`}>
+        {days.map((d, i) => (
+          <div className="sd-chart__col" key={i}>
+            <span className="sd-chart__count">{d.count}</span>
+            <span className="sd-chart__track">
+              <span
+                className="sd-chart__bar"
+                style={{ height: `${Math.round((d.count / max) * 100)}%` }}
+              />
+            </span>
+            <span className="sd-chart__day">{d.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -87,6 +140,7 @@ const Dashboard: React.FC<AdminViewServerProps> = async ({ initPageResult }) => 
         <StatCard
           label="NEW LEADS"
           value={data.newLeads}
+          icon="leads"
           change={
             data.newLeadsSinceYesterday > 0
               ? `↑ ${data.newLeadsSinceYesterday} since yesterday`
@@ -98,6 +152,7 @@ const Dashboard: React.FC<AdminViewServerProps> = async ({ initPageResult }) => 
         <StatCard
           label="DRAFTS TO REVIEW"
           value={data.pendingReview}
+          icon="drafts"
           change={
             data.oldestPendingDays != null
               ? `Oldest: ${data.oldestPendingDays} day${data.oldestPendingDays === 1 ? '' : 's'} ago`
@@ -108,16 +163,13 @@ const Dashboard: React.FC<AdminViewServerProps> = async ({ initPageResult }) => 
         <StatCard
           label="PUBLISHED TRUCKS"
           value={data.publishedTrucks}
+          icon="truck"
           change={data.publishedThisWeek > 0 ? `↑ ${data.publishedThisWeek} this week` : '—'}
           href={TRUCKS_PUBLISHED}
         />
-        <StatCard
-          label="FLEET INQUIRIES"
-          value={data.fleetThisWeek}
-          change={`Total: ${data.fleetTotal}`}
-          href={FLEET_ALL}
-        />
       </section>
+
+      <LeadsChart days={data.leadsByDay} />
 
       <section className="sd-split">
         <div className="sd-panel">
@@ -207,12 +259,23 @@ const DashboardStyles = () => (
 .sd-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
 .sd-stat { position:relative; display:flex; flex-direction:column; background:var(--sd-card); border:1px solid var(--sd-line); border-radius:10px; padding:22px 24px; transition:border-color .15s, transform .15s, background .15s; }
 .sd-stat:hover { border-color:var(--sd-orange); background:var(--sd-card-alt); transform:translateY(-1px); }
+.sd-stat__top { display:flex; align-items:center; gap:8px; }
+.sd-stat__icon { color:var(--sd-orange); flex:0 0 auto; }
 .sd-stat__label { font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; letter-spacing:.1em; color:var(--sd-muted); }
 .sd-stat__view { position:absolute; top:20px; right:22px; font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; color:var(--sd-orange); opacity:0; transition:opacity .15s; }
 .sd-stat:hover .sd-stat__view { opacity:1; }
 .sd-stat__value { font-family:var(--font-barlow,'Barlow Condensed',sans-serif); font-weight:800; font-size:44px; line-height:1.05; margin-top:6px; color:var(--sd-text); }
 .sd-stat__value--hot { color:var(--sd-orange); }
 .sd-stat__change { font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; color:var(--sd-muted); margin-top:4px; }
+
+.sd-chart { margin-bottom:28px; }
+.sd-chart__total { font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; color:var(--sd-muted); }
+.sd-chart__bars { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; align-items:end; height:132px; padding-top:6px; }
+.sd-chart__col { display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+.sd-chart__count { font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; color:var(--sd-muted); }
+.sd-chart__track { position:relative; width:100%; max-width:44px; flex:1 1 auto; display:flex; align-items:flex-end; background:var(--sd-card-alt); border-radius:5px; overflow:hidden; }
+.sd-chart__bar { width:100%; min-height:3px; border-radius:5px 5px 0 0; background:linear-gradient(180deg,var(--sd-orange-light),var(--sd-orange)); transition:height .2s; }
+.sd-chart__day { font-family:var(--font-mono,ui-monospace,monospace); font-size:11px; color:var(--sd-muted); }
 
 .sd-split { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; }
 .sd-panel { background:var(--sd-card); border:1px solid var(--sd-line); border-radius:10px; padding:24px 26px; }

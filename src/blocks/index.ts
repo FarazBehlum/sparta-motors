@@ -57,7 +57,6 @@ export const FormBlock: Block = {
       options: [
         { label: 'Financing pre-qual', value: 'financing-prequal' },
         { label: 'General contact', value: 'general-contact' },
-        { label: 'Fleet inquiry', value: 'fleet-inquiry' },
       ],
     },
     { name: 'heading', type: 'text' },

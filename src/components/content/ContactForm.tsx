@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { InputField, TextareaField, SelectField } from '@/components/FormField'
+import { Honeypot } from '@/components/Honeypot'
 import { HEARD_ABOUT_US_OPTIONS } from '@/lib/options'
 import { SuccessCard, ErrorBanner, SubmitButton } from './form-ui'
 
@@ -14,6 +15,7 @@ const schema = z.object({
   email: z.string().email('Enter a valid email'),
   heardAboutUs: z.string().optional(),
   message: z.string().min(1, 'Please enter a message'),
+  website: z.string().optional(), // honeypot
 })
 type FormValues = z.infer<typeof schema>
 
@@ -38,6 +40,7 @@ export function ContactForm({ phone }: { phone?: string | null }) {
           email: data.email,
           message: data.message,
           heardAboutUs: data.heardAboutUs || undefined,
+          website: data.website || undefined,
           source: 'general-contact',
         }),
       })
@@ -63,6 +66,7 @@ export function ContactForm({ phone }: { phone?: string | null }) {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-4 rounded-[10px] border border-chalk bg-white p-6"
     >
+      <Honeypot {...register('website')} />
       <InputField
         id="contact-name"
         label="Full name"

@@ -1,6 +1,5 @@
 import type { Setting } from '@/payload-types'
-
-const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+import { SITE_URL } from '@/lib/site'
 
 function postalAddress(a: Setting['address']) {
   if (!a) return undefined
@@ -21,7 +20,7 @@ function postalAddress(a: Setting['address']) {
  * spec). Returns a schema.org @graph object ready for JSON.stringify.
  */
 export function organizationJsonLd(settings: Setting) {
-  const url = siteUrl()
+  const url = SITE_URL
   const address = postalAddress(settings.address)
   const a = settings.address
   const geo =

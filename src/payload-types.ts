@@ -67,12 +67,12 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
     trucks: Truck;
     leads: Lead;
     'fleet-inquiries': FleetInquiry;
     media: Media;
     pages: Page;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,12 +80,12 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
     trucks: TrucksSelect<false> | TrucksSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     'fleet-inquiries': FleetInquiriesSelect<false> | FleetInquiriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -131,41 +131,6 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
- */
-export interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  /**
-   * Admins can publish trucks and manage everything. Employees create drafts.
-   */
-  role: 'admin' | 'employee';
-  /**
-   * Optional. Internal contact only.
-   */
-  phone?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "trucks".
  */
 export interface Truck {
@@ -198,6 +163,14 @@ export interface Truck {
    */
   price: number;
   condition: 'excellent' | 'good' | 'fair';
+  /**
+   * Shown on the listing to build buyer trust.
+   */
+  titleStatus?: ('clean' | 'rebuilt' | 'salvage' | 'lien') | null;
+  /**
+   * Number of previous owners. Leave blank if unknown.
+   */
+  owners?: number | null;
   mileage: number;
   fuelType: 'diesel' | 'gasoline';
   /**
@@ -214,6 +187,47 @@ export interface Truck {
    */
   transmission?: string | null;
   drivetrain?: ('RWD' | '4WD' | 'AWD') | null;
+  /**
+   * Shown as an inspection block on the listing. Only filled-in items appear — leave blank what you did not check.
+   */
+  inspection?: {
+    /**
+     * When it was inspected
+     */
+    inspectedDate?: string | null;
+    /**
+     * Technician or shop name
+     */
+    inspectedBy?: string | null;
+    /**
+     * Overall condition summary (optional).
+     */
+    summary?: string | null;
+    /**
+     * One row per system you checked. The rating sets the color shown on the listing.
+     */
+    points?:
+      | {
+          area:
+            | 'engine'
+            | 'transmission'
+            | 'brakes'
+            | 'tires'
+            | 'suspension'
+            | 'electrical'
+            | 'frame'
+            | 'emissions'
+            | 'interior'
+            | 'body';
+          rating: 'good' | 'fair' | 'attention';
+          /**
+           * Optional detail
+           */
+          note?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   /**
    * At least one photo required to publish. Drag to reorder.
    */
@@ -233,7 +247,7 @@ export interface Truck {
   description: string;
   status: 'draft' | 'pending-review' | 'published' | 'sold' | 'archived';
   /**
-   * Show in the Featured Inventory section on the home page.
+   * Featured trucks show in the home Featured Inventory section, sort first in the inventory (default order), and get a “Featured” badge on their card.
    */
   featured?: boolean | null;
   /**
@@ -299,6 +313,41 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  /**
+   * Admins can publish trucks and manage everything. Employees create drafts.
+   */
+  role: 'admin' | 'employee';
+  /**
+   * Optional. Internal contact only.
+   */
+  phone?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
 export interface Lead {
@@ -318,6 +367,7 @@ export interface Lead {
   tradeInMileage?: number | null;
   tradeInCondition?: string | null;
   heardAboutUs?: ('google' | 'facebook' | 'referral' | 'drove-by-lot' | 'other') | null;
+  website?: string | null;
   status: 'new' | 'contacted' | 'closed-sold' | 'closed-lost';
   internalNotes?: string | null;
   receivedAt?: string | null;
@@ -340,6 +390,7 @@ export interface FleetInquiry {
   timeline: 'asap' | '1-3-months' | '3-6-months' | 'ongoing';
   trucksNeeded: string;
   heardAboutUs?: ('google' | 'facebook' | 'referral' | 'drove-by-lot' | 'other') | null;
+  website?: string | null;
   status: 'new' | 'sourcing' | 'presented' | 'closed-sold' | 'closed-lost';
   internalNotes?: string | null;
   receivedAt?: string | null;
@@ -352,7 +403,7 @@ export interface FleetInquiry {
  */
 export interface Page {
   id: number;
-  slug: 'home' | 'about' | 'financing' | 'fleet' | 'contact';
+  slug: 'home' | 'about' | 'financing' | 'parts' | 'contact';
   title: string;
   /**
    * For SEO. ~150-160 characters.
@@ -408,7 +459,7 @@ export interface Page {
             blockType: 'calloutBlock';
           }
         | {
-            formType: 'financing-prequal' | 'general-contact' | 'fleet-inquiry';
+            formType: 'financing-prequal' | 'general-contact';
             heading?: string | null;
             id?: string | null;
             blockName?: string | null;
@@ -484,10 +535,6 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
-      } | null)
-    | ({
         relationTo: 'trucks';
         value: number | Truck;
       } | null)
@@ -506,6 +553,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -551,32 +602,6 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
- */
-export interface UsersSelect<T extends boolean = true> {
-  firstName?: T;
-  lastName?: T;
-  role?: T;
-  phone?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
-    | T
-    | {
-        id?: T;
-        createdAt?: T;
-        expiresAt?: T;
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "trucks_select".
  */
 export interface TrucksSelect<T extends boolean = true> {
@@ -589,6 +614,8 @@ export interface TrucksSelect<T extends boolean = true> {
   vin?: T;
   price?: T;
   condition?: T;
+  titleStatus?: T;
+  owners?: T;
   mileage?: T;
   fuelType?: T;
   gvwr?: T;
@@ -596,6 +623,21 @@ export interface TrucksSelect<T extends boolean = true> {
   engine?: T;
   transmission?: T;
   drivetrain?: T;
+  inspection?:
+    | T
+    | {
+        inspectedDate?: T;
+        inspectedBy?: T;
+        summary?: T;
+        points?:
+          | T
+          | {
+              area?: T;
+              rating?: T;
+              note?: T;
+              id?: T;
+            };
+      };
   photos?:
     | T
     | {
@@ -632,6 +674,7 @@ export interface LeadsSelect<T extends boolean = true> {
   tradeInMileage?: T;
   tradeInCondition?: T;
   heardAboutUs?: T;
+  website?: T;
   status?: T;
   internalNotes?: T;
   receivedAt?: T;
@@ -653,6 +696,7 @@ export interface FleetInquiriesSelect<T extends boolean = true> {
   timeline?: T;
   trucksNeeded?: T;
   heardAboutUs?: T;
+  website?: T;
   status?: T;
   internalNotes?: T;
   receivedAt?: T;
@@ -807,6 +851,32 @@ export interface PagesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  role?: T;
+  phone?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

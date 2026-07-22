@@ -9,22 +9,26 @@ import Link from 'next/link'
 export function Logo({
   tone = 'dark',
   href = '/',
+  size = 'md',
   className = '',
 }: {
   tone?: 'dark' | 'light'
   href?: string | null
+  size?: 'md' | 'lg'
   className?: string
 }) {
   const wordColor = tone === 'dark' ? 'text-bone' : 'text-sparta-black'
+  const wordSize = size === 'lg' ? 'text-2xl md:text-3xl' : 'text-xl'
+  const markSize = size === 'lg' ? 'text-xl md:text-2xl' : 'text-lg'
 
   const inner = (
     <span className={`inline-flex items-center gap-2 ${className}`}>
-      <span className="text-orange text-lg leading-none" aria-hidden="true">
+      <span className={`text-orange ${markSize} leading-none`} aria-hidden="true">
         ◆
       </span>
       <span className="font-barlow font-extrabold uppercase leading-none tracking-tight">
-        <span className={`${wordColor} text-xl`}>SPARTA</span>
-        <span className="ml-1.5 text-orange text-xl">MOTORS</span>
+        <span className={`${wordColor} ${wordSize}`}>SPARTA</span>
+        <span className={`ml-1.5 text-orange ${wordSize}`}>MOTORS</span>
       </span>
     </span>
   )
