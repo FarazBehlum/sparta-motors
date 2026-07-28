@@ -9,18 +9,24 @@ import { InputField, TextareaField } from '@/components/FormField'
 import { Honeypot } from '@/components/Honeypot'
 import { formatPhone } from '@/lib/format'
 
-const schema = z.object({
-  fullName: z.string().min(1, 'Please enter your name'),
-  phone: z.string().min(7, 'Enter a valid phone number'),
-  email: z.string().email('Enter a valid email'),
-  message: z.string().optional(),
-  financingInterest: z.boolean().optional(),
-  tradeIn: z.boolean().optional(),
-  tradeInYearMakeModel: z.string().optional(),
-  tradeInMileage: z.string().optional(),
-  tradeInCondition: z.string().optional(),
-  website: z.string().optional(), // honeypot
-})
+const schema = z
+  .object({
+    fullName: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.union([z.literal(''), z.string().email('Enter a valid email')]).optional(),
+    message: z.string().optional(),
+    financingInterest: z.boolean().optional(),
+    tradeIn: z.boolean().optional(),
+    tradeInYearMakeModel: z.string().optional(),
+    tradeInMileage: z.string().optional(),
+    tradeInCondition: z.string().optional(),
+    website: z.string().optional(), // honeypot
+  })
+  // Nothing is required except a way to reach the person back.
+  .refine((d) => Boolean(d.email?.trim()) || Boolean(d.phone?.trim()), {
+    message: 'Add a phone number or email so we can reach you.',
+    path: ['email'],
+  })
 
 type FormValues = z.infer<typeof schema>
 
@@ -69,9 +75,9 @@ export function LeadForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: data.fullName,
-          phone: data.phone,
-          email: data.email,
+          fullName: data.fullName?.trim() || undefined,
+          phone: data.phone?.trim() || undefined,
+          email: data.email?.trim() || undefined,
           message: data.message || undefined,
           website: data.website || undefined,
           source: 'truck-inquiry',
@@ -143,7 +149,6 @@ export function LeadForm({
         <InputField
           id="lead-name"
           label="Full name"
-          required
           autoComplete="name"
           error={errors.fullName?.message}
           {...register('fullName')}
@@ -152,7 +157,6 @@ export function LeadForm({
           id="lead-phone"
           label="Phone"
           type="tel"
-          required
           autoComplete="tel"
           error={errors.phone?.message}
           {...register('phone')}
@@ -161,11 +165,13 @@ export function LeadForm({
           id="lead-email"
           label="Email"
           type="email"
-          required
           autoComplete="email"
           error={errors.email?.message}
           {...register('email')}
         />
+        <p className="-mt-1 font-inter text-xs text-iron">
+          Leave us a phone number or an email so we can get back to you.
+        </p>
         <TextareaField
           id="lead-message"
           label="Message"

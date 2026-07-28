@@ -65,11 +65,11 @@ export const Leads: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'fullName', type: 'text', required: true, admin: { width: '50%' } },
-        { name: 'phone', type: 'text', required: true, admin: { width: '50%' } },
+        { name: 'fullName', type: 'text', admin: { width: '50%' } },
+        { name: 'phone', type: 'text', admin: { width: '50%' } },
       ],
     },
-    { name: 'email', type: 'email', required: true },
+    { name: 'email', type: 'email' },
     { name: 'message', type: 'textarea' },
     {
       name: 'source',
@@ -161,6 +161,11 @@ export const Leads: CollectionConfig = {
           // Honeypot: real users never fill the hidden `website` field; bots do.
           if (!req.user && data?.website) {
             throw new APIError('Submission rejected.', 400, undefined, true)
+          }
+          // No field is required on public forms except a way to reach the
+          // person back — we need at least a phone or an email.
+          if (!req.user && !data?.phone?.trim() && !data?.email?.trim()) {
+            throw new APIError('Please provide a phone number or an email.', 400, undefined, true)
           }
           enforcePublicSubmitLimit(req, 'leads')
         }

@@ -9,14 +9,20 @@ import { Honeypot } from '@/components/Honeypot'
 import { HEARD_ABOUT_US_OPTIONS } from '@/lib/options'
 import { SuccessCard, ErrorBanner, SubmitButton } from './form-ui'
 
-const schema = z.object({
-  fullName: z.string().min(1, 'Please enter your name'),
-  phone: z.string().optional(),
-  email: z.string().email('Enter a valid email'),
-  heardAboutUs: z.string().optional(),
-  message: z.string().min(1, 'Please enter a message'),
-  website: z.string().optional(), // honeypot
-})
+const schema = z
+  .object({
+    fullName: z.string().optional(),
+    phone: z.string().optional(),
+    email: z.union([z.literal(''), z.string().email('Enter a valid email')]).optional(),
+    heardAboutUs: z.string().optional(),
+    message: z.string().optional(),
+    website: z.string().optional(), // honeypot
+  })
+  // Nothing is required except a way to reach the person back.
+  .refine((d) => Boolean(d.email?.trim()) || Boolean(d.phone?.trim()), {
+    message: 'Add a phone number or email so we can reach you.',
+    path: ['email'],
+  })
 type FormValues = z.infer<typeof schema>
 
 export function ContactForm({ phone }: { phone?: string | null }) {
@@ -35,10 +41,10 @@ export function ContactForm({ phone }: { phone?: string | null }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: data.fullName,
+          fullName: data.fullName?.trim() || undefined,
           phone: data.phone?.trim() || undefined,
-          email: data.email,
-          message: data.message,
+          email: data.email?.trim() || undefined,
+          message: data.message?.trim() || undefined,
           heardAboutUs: data.heardAboutUs || undefined,
           website: data.website || undefined,
           source: 'general-contact',
@@ -70,7 +76,6 @@ export function ContactForm({ phone }: { phone?: string | null }) {
       <InputField
         id="contact-name"
         label="Full name"
-        required
         autoComplete="name"
         error={errors.fullName?.message}
         {...register('fullName')}
@@ -88,12 +93,14 @@ export function ContactForm({ phone }: { phone?: string | null }) {
           id="contact-email"
           label="Email"
           type="email"
-          required
           autoComplete="email"
           error={errors.email?.message}
           {...register('email')}
         />
       </div>
+      <p className="-mt-2 font-inter text-xs text-iron">
+        Leave us a phone number or an email so we can get back to you.
+      </p>
       <SelectField
         id="contact-heard"
         label="How did you hear about us?"
@@ -104,7 +111,6 @@ export function ContactForm({ phone }: { phone?: string | null }) {
       <TextareaField
         id="contact-message"
         label="Message"
-        required
         placeholder="How can we help?"
         error={errors.message?.message}
         {...register('message')}
