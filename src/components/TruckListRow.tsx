@@ -53,7 +53,6 @@ export function TruckListRow({ truck }: { truck: Truck }) {
             <span>{formatMileage(truck.mileage)}</span>
             {cls && <span>{cls}</span>}
             <span className="capitalize">{truck.fuelType}</span>
-            <span className="capitalize">{truck.condition}</span>
           </div>
         </div>
 

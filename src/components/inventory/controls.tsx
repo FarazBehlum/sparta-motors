@@ -316,16 +316,6 @@ export function FilterSidebar({
       />
 
       <CheckGroup
-        title="Condition"
-        paramKey="condition"
-        options={['excellent', 'good', 'fair']}
-        selected={filters.condition}
-        counts={facets.condition}
-        labelFn={(v) => v[0].toUpperCase() + v.slice(1)}
-        query={query}
-      />
-
-      <CheckGroup
         title="Fuel Type"
         paramKey="fuel"
         options={['diesel', 'gasoline']}

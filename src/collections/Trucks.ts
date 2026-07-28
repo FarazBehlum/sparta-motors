@@ -3,6 +3,7 @@ import { isAdmin, isAdminOrEmployee } from '../access'
 import { isValidVin, normalizeVin } from '../lib/vin'
 import { makeLabel } from '../lib/format'
 import { truckSlug } from '../lib/slug'
+import { parseVideoUrl } from '../lib/video'
 import { sendEmail } from '../lib/email/mailer'
 import {
   draftPublishedEmail,
@@ -186,13 +187,13 @@ export const Trucks: CollectionConfig = {
                 {
                   name: 'condition',
                   type: 'select',
-                  required: true,
+                  // Internal reference only — no longer shown on the public site.
                   options: [
                     { label: 'Excellent', value: 'excellent' },
                     { label: 'Good', value: 'good' },
                     { label: 'Fair', value: 'fair' },
                   ],
-                  admin: { width: '50%' },
+                  admin: { width: '50%', description: 'Internal only — not shown on the site.' },
                 },
               ],
             },
@@ -375,7 +376,7 @@ export const Trucks: CollectionConfig = {
           ],
         },
         {
-          label: 'Photos',
+          label: 'Photos & Video',
           fields: [
             {
               name: 'photos',
@@ -387,6 +388,32 @@ export const Trucks: CollectionConfig = {
               fields: [
                 { name: 'image', type: 'upload', relationTo: 'media', required: true },
               ],
+            },
+            {
+              name: 'videoUrl',
+              type: 'text',
+              label: 'Walkaround video — YouTube or Vimeo link',
+              admin: {
+                description:
+                  'Paste a YouTube or Vimeo link. Preferred: it plays fast on phones and uses no site storage. If this is filled in it is used instead of an uploaded file.',
+              },
+              validate: (value: string | null | undefined) => {
+                if (!value) return true
+                return parseVideoUrl(value)
+                  ? true
+                  : 'Not a YouTube or Vimeo link. Example: https://youtu.be/dQw4w9WgXcQ'
+              },
+            },
+            {
+              name: 'videoFile',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Or upload a video file',
+              filterOptions: { mimeType: { in: ['video/mp4', 'video/webm'] } },
+              admin: {
+                description:
+                  'MP4 or WebM, 64MB max. Use only when a link is not practical — uploaded video is served exactly as-is, so keep clips short and compress before uploading.',
+              },
             },
             {
               name: 'specSheet',

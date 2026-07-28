@@ -20,7 +20,6 @@ export const SORT_OPTIONS: { label: string; value: SortKey }[] = [
 export type TruckFilters = {
   body: string[]
   make: string[]
-  condition: string[]
   fuel: string[]
   yearMin?: number
   yearMax?: number
@@ -38,7 +37,6 @@ export type RawParams = Record<string, string | string[] | undefined>
 export type Facets = {
   body: Record<string, number>
   make: Record<string, number>
-  condition: Record<string, number>
   fuel: Record<string, number>
   yearRange: [number, number]
   priceRange: [number, number]
@@ -68,7 +66,6 @@ export function parseFilters(params: RawParams, lockedBody?: string): TruckFilte
   return {
     body: lockedBody ? [lockedBody] : csv(params.body),
     make: csv(params.make),
-    condition: csv(params.condition),
     fuel: csv(params.fuel),
     yearMin: num(params.year_min),
     yearMax: num(params.year_max),
@@ -85,7 +82,6 @@ export function parseFilters(params: RawParams, lockedBody?: string): TruckFilte
 export function truckMatches(t: Truck, f: TruckFilters): boolean {
   if (f.body.length && !f.body.includes(t.bodyType)) return false
   if (f.make.length && !f.make.includes(t.make)) return false
-  if (f.condition.length && !f.condition.includes(t.condition)) return false
   if (f.fuel.length && !f.fuel.includes(t.fuelType)) return false
   if (f.yearMin != null && t.year < f.yearMin) return false
   if (f.yearMax != null && t.year > f.yearMax) return false
@@ -138,7 +134,6 @@ export function computeFacets(all: Truck[]): Facets {
   return {
     body: tally(all, (t) => t.bodyType),
     make: tally(all, (t) => t.make),
-    condition: tally(all, (t) => t.condition),
     fuel: tally(all, (t) => t.fuelType),
     yearRange: range(years, [2010, new Date().getFullYear()]),
     priceRange: range(prices, [0, 150000]),

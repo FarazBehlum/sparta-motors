@@ -162,7 +162,10 @@ export interface Truck {
    * Whole US dollars
    */
   price: number;
-  condition: 'excellent' | 'good' | 'fair';
+  /**
+   * Internal only — not shown on the site.
+   */
+  condition?: ('excellent' | 'good' | 'fair') | null;
   /**
    * Shown on the listing to build buyer trust.
    */
@@ -237,6 +240,14 @@ export interface Truck {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Paste a YouTube or Vimeo link. Preferred: it plays fast on phones and uses no site storage. If this is filled in it is used instead of an uploaded file.
+   */
+  videoUrl?: string | null;
+  /**
+   * MP4 or WebM, 64MB max. Use only when a link is not practical — uploaded video is served exactly as-is, so keep clips short and compress before uploading.
+   */
+  videoFile?: (number | null) | Media;
   /**
    * Optional PDF spec sheet
    */
@@ -352,9 +363,9 @@ export interface User {
  */
 export interface Lead {
   id: number;
-  fullName: string;
-  phone: string;
-  email: string;
+  fullName?: string | null;
+  phone?: string | null;
+  email?: string | null;
   message?: string | null;
   source: 'truck-inquiry' | 'financing-prequal' | 'general-contact';
   /**
@@ -644,6 +655,8 @@ export interface TrucksSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  videoUrl?: T;
+  videoFile?: T;
   specSheet?: T;
   description?: T;
   status?: T;

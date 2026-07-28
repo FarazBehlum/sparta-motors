@@ -61,6 +61,12 @@ export default buildConfig({
   globals: [Settings],
   cors: allowedOrigins,
   csrf: allowedOrigins,
+  // Cap uploads at 64MB. Photos never come close; the limit exists to stop a
+  // raw, untranscoded phone video (often 200MB+) from being uploaded and then
+  // served at full size to every visitor on mobile data.
+  upload: {
+    limits: { fileSize: 64 * 1024 * 1024 },
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

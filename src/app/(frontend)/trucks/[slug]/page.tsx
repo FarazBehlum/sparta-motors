@@ -7,6 +7,7 @@ import type { Media, Truck } from '@/payload-types'
 import { getTruckBySlug, getSimilarTrucks, getPublishedSlugs } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
 import { truckPhotos, truckPrimaryPhoto } from '@/lib/media'
+import { truckVideo } from '@/lib/video'
 import { SITE_URL } from '@/lib/site'
 import {
   BODY_TYPE_TO_CATEGORY,
@@ -192,6 +193,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
 
   const [similar, settings] = await Promise.all([getSimilarTrucks(truck), getSettings()])
   const photos = truckPhotos(truck, 'hero')
+  const video = truckVideo(truck)
   const name = truckName(truck)
   const category = BODY_TYPE_TO_CATEGORY[truck.bodyType]
   const phone = settings.phone
@@ -272,7 +274,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
           {/* Main column */}
           <main className="flex flex-col gap-6">
-            <Gallery photos={photos} badge={bodyTypeLabel(truck.bodyType)} />
+            <Gallery photos={photos} badge={bodyTypeLabel(truck.bodyType)} video={video} />
 
             {/* Title + price */}
             <Card>
@@ -302,7 +304,6 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
               {/* Key specs bar */}
               <div className="mt-5 grid grid-cols-2 gap-4 border-t border-chalk pt-4 sm:grid-cols-4">
                 <KeySpec label="Mileage" value={formatMileage(truck.mileage)} />
-                <KeySpec label="Condition" value={truck.condition[0].toUpperCase() + truck.condition.slice(1)} />
                 {truck.titleStatus && <KeySpec label="Title" value={TITLE_LABELS[truck.titleStatus]} />}
                 <KeySpec label="Stock #" value={truck.stockNumber ?? '—'} />
                 <KeySpec
