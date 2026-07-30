@@ -2,6 +2,12 @@
 
 Deployment approach: single small VPS, Cloudflare in front, everything self-hosted, PostgreSQL and Node running on the same box.
 
+> **This document explains the decisions. To actually deploy, follow
+> [`/deploy/README.md`](../deploy/README.md)** — the executable runbook, with the
+> real config files (`deploy/nginx.conf`, `deploy/ecosystem.config.cjs`,
+> `deploy/backup.sh`) that ship alongside it. Where the two disagree, the runbook
+> is correct: it matches what the code actually reads.
+
 ## Server provisioning
 
 ### Provider
@@ -39,10 +45,13 @@ Once the VPS is provisioned:
 
 1. Clone the git repo to `/var/www/sparta-motors/`
 2. Install dependencies: `npm ci`
-3. Run migrations: `npx payload migrate`
-4. Build: `npm run build`
-5. Start with PM2: `pm2 start npm --name sparta -- start`
-6. Save PM2 state: `pm2 save && pm2 startup`
+3. Build: `npm run build`
+4. Run migrations: `NODE_ENV=production npm run migrate` — required. Payload's
+   auto-schema-push is disabled in production on purpose, so a fresh database has
+   no tables until this runs.
+5. Seed the first admin + page content: `NODE_ENV=production npm run seed`
+6. Start with PM2: `pm2 start deploy/ecosystem.config.cjs`
+7. Save PM2 state: `pm2 save && pm2 startup`
 
 **Option B — Deploy via GitHub Actions + rsync:**
 
@@ -56,22 +65,31 @@ Option B is nicer once things are stable. Option A is simpler for initial launch
 
 ### Environment variables
 
-Create `/var/www/sparta-motors/.env.production` with:
+Create `/var/www/sparta-motors/.env` with:
 
 ```
-DATABASE_URI=postgres://sparta:<password>@localhost:5432/sparta_motors
+DATABASE_URL=postgres://sparta:<password>@localhost:5432/sparta_motors
 PAYLOAD_SECRET=<generate a long random string>
+MEDIA_DIR=/var/www/sparta-motors/media
 SMTP_HOST=<smtp host>
 SMTP_PORT=587
 SMTP_USER=<email account>
 SMTP_PASSWORD=<app password>
-SMTP_FROM=info@sparta-motors.com
+SMTP_FROM=spartamotorsllc@gmail.com
 NOTIFICATION_TO=<admin email>
 NEXT_PUBLIC_SITE_URL=https://sparta-motors.com
 PAYLOAD_PUBLIC_SERVER_URL=https://sparta-motors.com
+SEED_ADMIN_EMAIL=<admin email>
+SEED_ADMIN_PASSWORD=<strong password>
 ```
 
-**Never commit .env files to git.** Add to `.gitignore`.
+Names corrected against the code as built: the app reads `DATABASE_URL` (not
+`DATABASE_URI`), and `MEDIA_DIR` decides where uploaded photos land — it has to
+match the `alias` path in the nginx config or images 404. The file is `.env`, not
+`.env.production`, because the Payload CLI (used for migrations and seeding)
+reads `.env`. Full annotated version in [`/deploy/README.md`](../deploy/README.md).
+
+**Never commit .env files to git.** Already in `.gitignore`.
 
 ### Nginx configuration
 
@@ -105,13 +123,18 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    location /uploads/ {
+    # Payload serves uploads at /api/media/file/<filename>, not /uploads/.
+    # try_files falls back to the app for sizes generated on request.
+    location /api/media/file/ {
         alias /var/www/sparta-motors/media/;
+        try_files $uri @app;
         expires 30d;
-        add_header Cache-Control "public, immutable";
+        add_header Cache-Control "public, max-age=2592000";
     }
 }
 ```
+
+The maintained version of this file is [`/deploy/nginx.conf`](../deploy/nginx.conf).
 
 ## DNS
 

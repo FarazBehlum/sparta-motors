@@ -28,7 +28,14 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ['.next/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
+    // src/migrations is written by `payload migrate:create` — generated SQL with
+    // a fixed handler signature, same as payload-types.ts. Not hand-edited.
+    ignores: [
+      '.next/',
+      'src/payload-types.ts',
+      'src/payload-generated-schema.ts',
+      'src/migrations/',
+    ],
   },
 ]
 

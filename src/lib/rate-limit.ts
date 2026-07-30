@@ -43,6 +43,14 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): Ra
 /** Best-effort client IP from proxy headers, falling back to a shared bucket. */
 export function clientIp(req: PayloadRequest): string {
   const headers = req.headers
+  // Cloudflare sets this header itself and overwrites any copy the client sent,
+  // so in production it's the one value here a visitor cannot forge. It has to
+  // be checked first: a spammer who sends their own `X-Forwarded-For` gets it
+  // preserved as the leading entry, and could rotate that value to land in a
+  // fresh bucket on every request. X-Forwarded-For stays as the fallback for
+  // setups with no Cloudflare in front (local dev, LAN, a bare origin).
+  const cf = headers?.get('cf-connecting-ip')
+  if (cf) return cf.trim()
   const fwd = headers?.get('x-forwarded-for')
   if (fwd) return fwd.split(',')[0]!.trim()
   return headers?.get('x-real-ip') ?? 'unknown'
