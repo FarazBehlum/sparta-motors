@@ -93,6 +93,11 @@ export function Hero() {
 
     // Cover-fit the given (loaded) frame onto the canvas, honoring devicePixelRatio.
     const drawFrame = (index: number) => {
+      // Already on the canvas — skip the redundant clear + drawImage. This is what
+      // stops the canvas from repainting on every scroll tick once progress is
+      // pinned (e.g. frame 159 while you scroll the sections below the hero).
+      // A resize sets drawnRef to -1 first, so it still forces a redraw.
+      if (index === drawnRef.current) return
       const img = images[index]
       if (!img || !loaded[index]) return
       const ctx = canvas.getContext('2d')
@@ -205,6 +210,11 @@ export function Hero() {
     const update = () => {
       raf = 0
       const rect = section.getBoundingClientRect()
+      // Once the hero has fully scrolled off the top, nothing it owns (canvas,
+      // text phases, dots) is on screen — so do zero per-scroll work. This is
+      // what keeps every section BELOW the hero scrolling smoothly: the global
+      // scroll handler becomes a single cheap rect read down there.
+      if (rect.bottom <= 0) return
       const scrollable = rect.height - window.innerHeight
       const p = scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0
       progressRef.current = p
@@ -239,6 +249,18 @@ export function Hero() {
       className="relative bg-hero-warm"
       style={{ height: '300vh' }}
     >
+      {/* Scroll-snap stops — one per text phase, at scroll depths p=0, 0.5, 1
+          (0/100/200vh into the 300vh section). Zero-size + invisible; they just
+          give the page three points to gently settle on as you scroll the hero,
+          so each of the three texts gets its own "step". */}
+      {[0, 100, 200].map((topVh) => (
+        <div
+          key={topVh}
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 h-px w-px snap-start snap-always"
+          style={{ top: `${topVh}vh` }}
+        />
+      ))}
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* SPARTA watermark, very low opacity, behind everything */}
         <span

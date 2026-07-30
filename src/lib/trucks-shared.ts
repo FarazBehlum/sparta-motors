@@ -90,7 +90,7 @@ export function truckMatches(t: Truck, f: TruckFilters): boolean {
   if (f.mileageMin != null && t.mileage < f.mileageMin) return false
   if (f.mileageMax != null && t.mileage > f.mileageMax) return false
   if (f.q) {
-    const hay = `${t.year} ${t.make} ${t.model} ${t.trim ?? ''} ${t.vin} ${t.stockNumber ?? ''}`.toLowerCase()
+    const hay = `${t.year} ${t.make} ${t.model} ${t.trim ?? ''} ${t.listingTitle ?? ''} ${t.vin ?? ''} ${t.stockNumber ?? ''}`.toLowerCase()
     if (!hay.includes(f.q.toLowerCase())) return false
   }
   return true

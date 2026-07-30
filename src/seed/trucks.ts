@@ -150,7 +150,8 @@ async function seedTrucks() {
         ...s,
         vin,
         status: 'published',
-        photos: [{ image: photoA.id }, { image: photoB.id }],
+        availability: 'available',
+        photos: [photoA.id, photoB.id],
       },
     })
     payload.logger.info(`Created truck: ${s.year} ${s.make} ${s.model} (${vin})`)

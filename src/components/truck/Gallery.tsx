@@ -104,6 +104,18 @@ export function Gallery({
     setTouchX(null)
   }
 
+  // Hover-zoom is mouse-only. Touch devices fire a synthetic mouseenter on tap
+  // but never a mouseleave, so on a phone the magnifier would latch on at the
+  // first tap and leave the visitor dragging around a 2x photo with no way out.
+  const [canHover, setCanHover] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const sync = () => setCanHover(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   // Hover-zoom (desktop): magnify into the area under the cursor.
   const [zoom, setZoom] = useState(false)
   const [origin, setOrigin] = useState({ x: 50, y: 50 })
@@ -166,9 +178,9 @@ export function Gallery({
         }}
         onTouchStart={isVideo ? undefined : (e) => setTouchX(e.touches[0].clientX)}
         onTouchEnd={isVideo ? undefined : (e) => onTouchEnd(e.changedTouches[0].clientX)}
-        onMouseEnter={isVideo ? undefined : () => setZoom(true)}
-        onMouseLeave={isVideo ? undefined : () => setZoom(false)}
-        onMouseMove={isVideo ? undefined : onZoomMove}
+        onMouseEnter={isVideo || !canHover ? undefined : () => setZoom(true)}
+        onMouseLeave={isVideo || !canHover ? undefined : () => setZoom(false)}
+        onMouseMove={isVideo || !canHover ? undefined : onZoomMove}
       >
         {active.kind === 'video' ? (
           <VideoSlide video={active.video} poster={lead} />
@@ -182,9 +194,9 @@ export function Gallery({
             sizes="(max-width: 1024px) 100vw, 60vw"
             className="object-cover transition-transform duration-200 ease-out will-change-transform"
             style={{
-              transform: zoom ? 'scale(2)' : 'scale(1)',
+              transform: zoom && canHover ? 'scale(2)' : 'scale(1)',
               transformOrigin: `${origin.x}% ${origin.y}%`,
-              cursor: zoom ? 'zoom-in' : undefined,
+              cursor: zoom && canHover ? 'zoom-in' : undefined,
             }}
           />
         )}

@@ -25,7 +25,7 @@ export function mediaPhoto(
 export function truckPhotos(truck: Truck, size: SizeName): Photo[] {
   const alt = `${truck.year} ${truck.make} ${truck.model}`
   return (truck.photos ?? [])
-    .map((p) => mediaPhoto(p.image, size, alt))
+    .map((img) => mediaPhoto(img, size, alt))
     .filter((p): p is Photo => p !== null)
 }
 

@@ -47,7 +47,7 @@ export function newLeadEmail(
 
   const truckBlock = truck
     ? `${truck.year} ${makeLabel(truck.make)} ${truck.model}
-Stock #${truck.stockNumber ?? '—'} · VIN ${truck.vin} · ${formatPrice(truck.price)} · ${formatMileage(
+Stock #${truck.stockNumber ?? '—'} · VIN ${truck.vin ?? '—'} · ${formatPrice(truck.price)} · ${formatMileage(
         truck.mileage,
       )}`
     : 'None specified'

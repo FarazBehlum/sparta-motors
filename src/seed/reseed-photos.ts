@@ -47,9 +47,7 @@ async function run() {
   const n = ids.length
   let i = 0
   for (const truck of docs) {
-    const photos = Array.from({ length: PHOTOS_PER_TRUCK }, (_, k) => ({
-      image: ids[(i + k) % n],
-    }))
+    const photos = Array.from({ length: PHOTOS_PER_TRUCK }, (_, k) => ids[(i + k) % n])
     await payload.update({ collection: 'trucks', id: truck.id, data: { photos } })
     i++
   }

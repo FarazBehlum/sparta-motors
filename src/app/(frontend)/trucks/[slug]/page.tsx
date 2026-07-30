@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ChevronRight, CreditCard, FileText, Phone, ShieldCheck, Truck as TruckIcon } from 'lucide-react'
+import { CreditCard, FileText, Phone, ShieldCheck, Truck as TruckIcon } from 'lucide-react'
 import type { Media, Truck } from '@/payload-types'
 import { getTruckBySlug, getSimilarTrucks, getPublishedSlugs } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
@@ -15,13 +15,22 @@ import {
   formatMileage,
   formatPrice,
   makeLabel,
+  truckHeadline,
 } from '@/lib/format'
 import { SectionLabel } from '@/components/SectionLabel'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { AvailabilityBadge, isSold } from '@/components/AvailabilityBadge'
 import { TruckCard } from '@/components/TruckCard'
 import { Gallery } from '@/components/truck/Gallery'
 import { LeadForm } from '@/components/truck/LeadForm'
 
 type Params = { slug: string }
+
+const SCHEMA_AVAILABILITY: Record<string, string> = {
+  available: 'https://schema.org/InStock',
+  pending: 'https://schema.org/LimitedAvailability',
+  sold: 'https://schema.org/SoldOut',
+}
 
 export const revalidate = 60
 
@@ -31,7 +40,7 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 function truckName(t: Truck): string {
-  return [t.year, makeLabel(t.make), t.model, t.trim].filter(Boolean).join(' ')
+  return t.listingTitle?.trim() || [t.year, makeLabel(t.make), t.model, t.trim].filter(Boolean).join(' ')
 }
 
 export async function generateMetadata({
@@ -196,6 +205,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
   const video = truckVideo(truck)
   const name = truckName(truck)
   const category = BODY_TYPE_TO_CATEGORY[truck.bodyType]
+  const sold = isSold(truck)
   const phone = settings.phone
   const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null
   const classLabel = truck.payloadClass ? truck.payloadClass.replace('-', ' ').toUpperCase() : null
@@ -216,13 +226,15 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
     model: truck.model,
     vehicleModelDate: String(truck.year),
     mileageFromOdometer: { '@type': 'QuantitativeValue', value: truck.mileage, unitCode: 'SMI' },
-    vehicleIdentificationNumber: truck.vin,
+    vehicleIdentificationNumber: truck.vin ?? undefined,
     itemCondition: 'https://schema.org/UsedCondition',
     offers: {
       '@type': 'Offer',
       price: truck.price,
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+      // Must track the real sale state — Google flags rich results whose
+      // structured data contradicts what's on the page.
+      availability: SCHEMA_AVAILABILITY[truck.availability ?? 'available'],
       itemCondition: 'https://schema.org/UsedCondition',
       url: `${SITE_URL}/trucks/${truck.slug}`,
     },
@@ -255,36 +267,38 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
-      {/* Breadcrumb */}
-      <div className="border-b border-chalk bg-warm-white">
-        <nav className="mx-auto flex max-w-[1280px] items-center gap-1 overflow-x-auto px-5 py-3 font-mono text-[11px] uppercase tracking-wider text-iron md:px-10">
-          <Link href="/" className="hover:text-orange">Home</Link>
-          <ChevronRight size={12} aria-hidden="true" />
-          <Link href="/inventory" className="hover:text-orange">Inventory</Link>
-          <ChevronRight size={12} aria-hidden="true" />
-          <Link href={`/inventory/${category}`} className="hover:text-orange">
-            {bodyTypeLabel(truck.bodyType)}
-          </Link>
-          <ChevronRight size={12} aria-hidden="true" />
-          <span className="whitespace-nowrap text-sparta-black">{name}</span>
-        </nav>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Inventory', href: '/inventory' },
+          { label: `${bodyTypeLabel(truck.bodyType)}s`, href: `/inventory/${category}` },
+          { label: name },
+        ]}
+      />
 
       <div className="mx-auto max-w-[1280px] px-5 py-8 md:px-10">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px]">
-          {/* Main column */}
-          <main className="flex flex-col gap-6">
+        {/* minmax(0,1fr), not a bare 1fr: a bare 1fr floors the track at its
+            content's min-content width, and the gallery thumbnail strip (one
+            80px thumb per photo) is wider than the column on trucks with a lot
+            of photos — which pushed the whole page sideways. */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+          {/* Main column — a div, not <main>: the root layout already renders
+              the page's single <main> landmark around this. */}
+          <div className="flex flex-col gap-6">
             <Gallery photos={photos} badge={bodyTypeLabel(truck.bodyType)} video={video} />
 
             {/* Title + price */}
             <Card>
               <div className="flex flex-col justify-between gap-4 sm:flex-row">
                 <div>
-                  <div className="font-mono text-xs uppercase tracking-wider text-iron">
-                    {truck.year} · {makeLabel(truck.make)}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="font-mono text-xs uppercase tracking-wider text-iron">
+                      {truck.year} · {makeLabel(truck.make)}
+                    </div>
+                    <AvailabilityBadge availability={truck.availability} />
                   </div>
                   <h1 className="mt-1 font-barlow text-3xl font-extrabold uppercase leading-tight tracking-tight text-sparta-black md:text-4xl">
-                    {truck.model} {truck.trim}
+                    {truckHeadline(truck)}
                   </h1>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Badge variant="filled">{bodyTypeLabel(truck.bodyType)}</Badge>
@@ -308,7 +322,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                 <KeySpec label="Stock #" value={truck.stockNumber ?? '—'} />
                 <KeySpec
                   label="VIN"
-                  value={truck.vin}
+                  value={truck.vin ?? '—'}
                   valueClass="break-all text-xs leading-snug"
                 />
               </div>
@@ -375,7 +389,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                   <SpecRow label="Transmission" value={truck.transmission} />
                   <SpecRow label="Drivetrain" value={truck.drivetrain} />
                   <SpecRow label="Fuel Type" value={truck.fuelType[0].toUpperCase() + truck.fuelType.slice(1)} />
-                  <SpecRow label="VIN" value={<span className="break-all">{truck.vin}</span>} />
+                  <SpecRow label="VIN" value={truck.vin ? <span className="break-all">{truck.vin}</span> : null} />
                 </div>
               </div>
             </Card>
@@ -398,10 +412,30 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                 </span>
               </a>
             )}
-          </main>
+          </div>
 
           {/* Sticky lead form (right on desktop, below on mobile) */}
           <aside id="inquire" className="lg:sticky lg:top-[88px] lg:self-start">
+            {/* A sold truck's page stays reachable from old links and search
+                results, so say so plainly before the inquiry form rather than
+                letting someone fill it out for a truck that's gone. */}
+            {sold && (
+              <div className="mb-4 rounded-[10px] border border-chalk bg-sparta-black p-5 text-bone">
+                <div className="font-barlow text-lg font-bold uppercase tracking-wide">
+                  This truck has been sold
+                </div>
+                <p className="mt-2 font-inter text-sm leading-relaxed text-concrete">
+                  We move trucks quickly. Tell us what you&rsquo;re after and we&rsquo;ll let you
+                  know when something similar hits the lot.
+                </p>
+                <Link
+                  href={`/inventory/${category}`}
+                  className="mt-4 inline-flex items-center gap-2 font-barlow text-sm font-bold uppercase tracking-wider text-orange hover:text-bone"
+                >
+                  Browse {bodyTypeLabel(truck.bodyType)}s →
+                </Link>
+              </div>
+            )}
             <LeadForm truckId={truck.id} truckName={name} phone={phone} />
           </aside>
         </div>
@@ -433,10 +467,10 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
           </a>
         )}
         <a
-          href="#inquire"
+          href={sold ? `/inventory/${category}` : '#inquire'}
           className="inline-flex flex-[2] items-center justify-center rounded bg-orange py-3 font-barlow text-sm font-bold uppercase tracking-wider text-sparta-black"
         >
-          Inquire →
+          {sold ? 'See similar →' : 'Inquire →'}
         </a>
       </div>
     </div>

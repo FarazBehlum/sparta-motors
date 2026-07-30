@@ -51,6 +51,19 @@ export function makeLabel(make: string): string {
   return MAKE_LABELS[make] ?? make
 }
 
+/**
+ * Main headline for a truck: the custom listing title if set, otherwise
+ * "{model} {trim}". Pairs with the "{year} · {make}" eyebrow shown above it,
+ * so the eyebrow keeps the factual context even when a custom title is used.
+ */
+export function truckHeadline(t: {
+  listingTitle?: string | null
+  model: string
+  trim?: string | null
+}): string {
+  return t.listingTitle?.trim() || [t.model, t.trim].filter(Boolean).join(' ')
+}
+
 const BODY_TYPE_LABELS: Record<string, string> = {
   'box-truck': 'Box Truck',
   reefer: 'Reefer',

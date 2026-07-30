@@ -4,6 +4,7 @@ import Image from 'next/image'
 import type { Truck } from '@/payload-types'
 import { bodyTypeLabel, formatMileage, formatPrice, makeLabel } from '@/lib/format'
 import { truckPrimaryPhoto } from '@/lib/media'
+import { AvailabilityBadge } from '@/components/AvailabilityBadge'
 
 function payloadClassLabel(c?: string | null): string | null {
   if (!c) return null
@@ -38,6 +39,7 @@ export function TruckListRow({ truck }: { truck: Truck }) {
         <span className="absolute left-3 top-3 rounded bg-sparta-black/85 px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-bone">
           {bodyTypeLabel(truck.bodyType)}
         </span>
+        <AvailabilityBadge availability={truck.availability} className="absolute right-3 top-3" />
       </div>
 
       <div className="flex flex-1 flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
@@ -46,8 +48,14 @@ export function TruckListRow({ truck }: { truck: Truck }) {
             {truck.year} {makeLabel(truck.make)}
           </p>
           <h3 className="mt-1 font-barlow text-xl font-bold uppercase leading-tight tracking-tight text-sparta-black">
-            {truck.model}
-            {truck.trim ? <span className="text-iron"> {truck.trim}</span> : null}
+            {truck.listingTitle?.trim() ? (
+              truck.listingTitle.trim()
+            ) : (
+              <>
+                {truck.model}
+                {truck.trim ? <span className="text-iron"> {truck.trim}</span> : null}
+              </>
+            )}
           </h3>
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-iron">
             <span>{formatMileage(truck.mileage)}</span>

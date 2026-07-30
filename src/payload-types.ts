@@ -155,9 +155,13 @@ export interface Truck {
   trim?: string | null;
   bodyType: 'box-truck' | 'reefer' | 'day-cab' | 'flat-bed' | 'dump-truck' | 'tow-truck';
   /**
-   * 17 characters. Validated on save.
+   * Optional. Custom headline for this listing (shown on the card and detail page). Leave blank to use "{year} {make} {model} {trim}".
    */
-  vin: string;
+  listingTitle?: string | null;
+  /**
+   * Optional. If provided, must be 17 characters — validated on save.
+   */
+  vin?: string | null;
   /**
    * Whole US dollars
    */
@@ -232,14 +236,9 @@ export interface Truck {
       | null;
   };
   /**
-   * At least one photo required to publish. Drag to reorder.
+   * Upload or select multiple photos at once (drag several files straight in). Drag to reorder — the first photo is the main one. At least one required to publish.
    */
-  photos?:
-    | {
-        image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
+  photos?: (number | Media)[] | null;
   /**
    * Paste a YouTube or Vimeo link. Preferred: it plays fast on phones and uses no site storage. If this is filled in it is used instead of an uploaded file.
    */
@@ -256,7 +255,14 @@ export interface Truck {
    * Customer-facing narrative. Short sentences, specs before adjectives.
    */
   description: string;
-  status: 'draft' | 'pending-review' | 'published' | 'sold' | 'archived';
+  /**
+   * Whether this listing is live on the website. To mark a truck sold, use Availability below — not this field.
+   */
+  status: 'draft' | 'pending-review' | 'published' | 'archived';
+  /**
+   * Sold trucks drop out of inventory browsing, but their page stays live and marked SOLD so old links and Google results still work. Sale Pending stays listed and keeps taking inquiries.
+   */
+  availability: 'available' | 'pending' | 'sold';
   /**
    * Featured trucks show in the home Featured Inventory section, sort first in the inventory (default order), and get a “Featured” badge on their card.
    */
@@ -622,6 +628,7 @@ export interface TrucksSelect<T extends boolean = true> {
   model?: T;
   trim?: T;
   bodyType?: T;
+  listingTitle?: T;
   vin?: T;
   price?: T;
   condition?: T;
@@ -649,17 +656,13 @@ export interface TrucksSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  photos?:
-    | T
-    | {
-        image?: T;
-        id?: T;
-      };
+  photos?: T;
   videoUrl?: T;
   videoFile?: T;
   specSheet?: T;
   description?: T;
   status?: T;
+  availability?: T;
   featured?: T;
   reviewNote?: T;
   stockNumber?: T;

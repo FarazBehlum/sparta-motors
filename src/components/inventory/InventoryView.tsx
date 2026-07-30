@@ -127,7 +127,7 @@ export async function InventoryView({
           </p>
         )}
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
           {/* Sidebar — collapsible on mobile, sticky on desktop */}
           <details open>
             <summary className="mb-4 flex cursor-pointer items-center gap-2 font-barlow text-sm font-bold uppercase tracking-wide text-sparta-black lg:hidden">

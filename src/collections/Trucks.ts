@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
 import { isAdmin, isAdminOrEmployee } from '../access'
 import { isValidVin, normalizeVin } from '../lib/vin'
@@ -38,7 +39,8 @@ async function nextStockNumber(req: PayloadRequest): Promise<string> {
   // the newest row isn't always the highest). At Phase-1 volume (~20 trucks)
   // this is trivial. Two admins creating trucks in the same instant could in
   // theory collide — acceptable here since stockNumber isn't a unique key and
-  // the slug (which carries the unique VIN) is what disambiguates listings.
+  // the slug (which carries the VIN, or the stock number when there's no VIN) is
+  // what disambiguates listings.
   const { docs } = await req.payload.find({
     collection: 'trucks',
     limit: 0,
@@ -54,11 +56,29 @@ async function nextStockNumber(req: PayloadRequest): Promise<string> {
   return `SM-${max + 1}`
 }
 
+/**
+ * Refresh the statically-cached pages that show truck data after any create /
+ * update / delete, so the home "on the lot" count + featured grid, the sitemap,
+ * and the truck's own detail page reflect changes without waiting for a rebuild.
+ * (/inventory and category pages are dynamic, so they're always fresh.)
+ * revalidatePath throws outside a Next request (seed/CLI) — safe to ignore there.
+ */
+function revalidateTruckPaths(slug?: string | null, prevSlug?: string | null) {
+  try {
+    revalidatePath('/')
+    revalidatePath('/sitemap.xml')
+    if (slug) revalidatePath(`/trucks/${slug}`)
+    if (prevSlug && prevSlug !== slug) revalidatePath(`/trucks/${prevSlug}`)
+  } catch {
+    /* not in a request scope (e.g. a CLI script) — nothing to revalidate */
+  }
+}
+
 export const Trucks: CollectionConfig = {
   slug: 'trucks',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'stockNumber', 'status', 'price', 'mileage'],
+    defaultColumns: ['title', 'stockNumber', 'status', 'availability', 'price', 'mileage'],
     group: 'Inventory',
     listSearchableFields: ['model', 'vin', 'stockNumber'],
   },
@@ -110,6 +130,9 @@ export const Trucks: CollectionConfig = {
         }],
         afterRead: [({ data }) => {
           if (!data) return ''
+          if (typeof data.listingTitle === 'string' && data.listingTitle.trim()) {
+            return data.listingTitle.trim()
+          }
           return [data.year, data.make ? makeLabel(data.make) : '', data.model, data.trim]
             .filter(Boolean)
             .join(' ')
@@ -166,12 +189,20 @@ export const Trucks: CollectionConfig = {
               ],
             },
             {
+              name: 'listingTitle',
+              type: 'text',
+              label: 'Listing title',
+              admin: {
+                description:
+                  'Optional. Custom headline for this listing (shown on the card and detail page). Leave blank to use "{year} {make} {model} {trim}".',
+              },
+            },
+            {
               name: 'vin',
               type: 'text',
-              required: true,
               unique: true,
               admin: {
-                description: '17 characters. Validated on save.',
+                description: 'Optional. If provided, must be 17 characters — validated on save.',
                 components: {},
               },
             },
@@ -380,14 +411,13 @@ export const Trucks: CollectionConfig = {
           fields: [
             {
               name: 'photos',
-              type: 'array',
-              labels: { singular: 'Photo', plural: 'Photos' },
+              type: 'upload',
+              relationTo: 'media',
+              hasMany: true,
               admin: {
-                description: 'At least one photo required to publish. Drag to reorder.',
+                description:
+                  'Upload or select multiple photos at once (drag several files straight in). Drag to reorder — the first photo is the main one. At least one required to publish.',
               },
-              fields: [
-                { name: 'image', type: 'upload', relationTo: 'media', required: true },
-              ],
             },
             {
               name: 'videoUrl',
@@ -448,7 +478,6 @@ export const Trucks: CollectionConfig = {
         { label: 'Draft', value: 'draft' },
         { label: 'Pending Review', value: 'pending-review' },
         { label: 'Published', value: 'published' },
-        { label: 'Sold', value: 'sold' },
         { label: 'Archived', value: 'archived' },
       ],
       access: {
@@ -459,7 +488,36 @@ export const Trucks: CollectionConfig = {
           return role === 'admin' || role === 'employee'
         },
       },
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description:
+          'Whether this listing is live on the website. To mark a truck sold, use Availability below — not this field.',
+      },
+    },
+    {
+      // Sale state, kept separate from the editorial `status` above: `status`
+      // controls whether the listing exists publicly at all, this controls what
+      // a shopper is told about it.
+      name: 'availability',
+      type: 'select',
+      required: true,
+      defaultValue: 'available',
+      options: [
+        { label: 'Available', value: 'available' },
+        { label: 'Sale Pending', value: 'pending' },
+        { label: 'Sold', value: 'sold' },
+      ],
+      access: {
+        update: ({ req: { user } }) => {
+          const role = (user as { role?: string })?.role
+          return role === 'admin' || role === 'employee'
+        },
+      },
+      admin: {
+        position: 'sidebar',
+        description:
+          'Sold trucks drop out of inventory browsing, but their page stays live and marked SOLD so old links and Google results still work. Sale Pending stays listed and keeps taking inquiries.',
+      },
     },
     {
       name: 'featured',
@@ -504,7 +562,12 @@ export const Trucks: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data }) => {
-        if (data?.vin) data.vin = normalizeVin(data.vin)
+        // VIN is optional. Normalize when provided; store NULL (not '') when blank
+        // so the unique index allows any number of VIN-less trucks.
+        if (data && typeof data.vin === 'string') {
+          const v = normalizeVin(data.vin)
+          data.vin = v.length ? v : null
+        }
         return data
       },
     ],
@@ -523,12 +586,13 @@ export const Trucks: CollectionConfig = {
         if (operation === 'create') {
           if (req.user) data.assignedEmployee = data.assignedEmployee || req.user.id
           if (!data.stockNumber) data.stockNumber = await nextStockNumber(req)
-          if (!data.slug && data.year && data.make && data.model && data.vin) {
+          if (!data.slug && data.year && data.make && data.model) {
             data.slug = truckSlug({
               year: data.year,
               make: data.make,
               model: data.model,
               vin: data.vin,
+              stockNumber: data.stockNumber,
             })
           }
         }
@@ -548,13 +612,16 @@ export const Trucks: CollectionConfig = {
           }
           if (prevStatus !== 'published') data.publishedAt = new Date().toISOString()
         }
-        if (newStatus === 'sold' && prevStatus !== 'sold') {
+        if (data.availability === 'sold' && originalDoc?.availability !== 'sold') {
           data.soldAt = new Date().toISOString()
         }
         return data
       },
     ],
     afterChange: [
+      ({ doc, previousDoc }) => {
+        revalidateTruckPaths(doc.slug, previousDoc?.slug)
+      },
       async ({ doc, previousDoc, req, operation }) => {
         const prev = operation === 'update' ? previousDoc?.status : undefined
         const now = doc.status
@@ -600,6 +667,11 @@ export const Trucks: CollectionConfig = {
             void sendEmail({ to: empEmail, subject, body })
           }
         }
+      },
+    ],
+    afterDelete: [
+      ({ doc }) => {
+        revalidateTruckPaths(doc.slug)
       },
     ],
   },

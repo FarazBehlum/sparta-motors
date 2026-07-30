@@ -22,7 +22,7 @@ export default function InventoryLoading() {
 
       {/* Body: sidebar + card grid placeholders */}
       <div className="mx-auto max-w-[1400px] px-5 py-10 md:px-10">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
           <div className="hidden lg:block">
             <div className="h-[520px] rounded bg-warm-white" />
           </div>

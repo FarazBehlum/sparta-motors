@@ -16,15 +16,22 @@ import { Settings } from './globals/Settings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Origins allowed to call the API / log in to the admin. The production origin
-// comes from NEXT_PUBLIC_SITE_URL; localhost + the LAN IP are added only outside
-// production so the admin keeps working on the real domain (was hardcoded).
+// Origins allowed to call the API / log in to the admin. The real production
+// origin comes from NEXT_PUBLIC_SITE_URL. localhost + the LAN IP are ALSO always
+// allowed so the admin works when a production build is served locally (e.g.
+// entering listings from a phone over the office WiFi). This is safe on a real
+// public deploy: a private IP / localhost can't be the origin of a cross-site
+// request against the live domain. Set ALLOWED_ORIGINS (comma-separated) to add
+// more without a code change — e.g. if this Mac's LAN IP changes.
 const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, '')
-const devOrigins =
-  process.env.NODE_ENV === 'production'
-    ? []
-    : ['http://localhost:3000', 'http://192.168.12.30:3000']
-const allowedOrigins = [...(siteOrigin ? [siteOrigin] : []), ...devOrigins]
+const localOrigins = ['http://localhost:3000', 'http://192.168.12.30:3000']
+const extraOrigins = (process.env.ALLOWED_ORIGINS ?? '')
+  .split(',')
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean)
+const allowedOrigins = [
+  ...new Set([...(siteOrigin ? [siteOrigin] : []), ...localOrigins, ...extraOrigins]),
+]
 
 export default buildConfig({
   admin: {

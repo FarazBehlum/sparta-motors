@@ -106,7 +106,8 @@ export async function getDashboardData(
     payload.find({ collection: 'leads', sort: '-createdAt', limit: 8, depth: 1, req }),
     payload.find({
       collection: 'trucks',
-      where: { status: { in: ['pending-review', 'published', 'sold'] } },
+      // Sold trucks stay `published` now — sale state lives on `availability`.
+      where: { status: { in: ['pending-review', 'published'] } },
       sort: '-updatedAt',
       limit: 8,
       depth: 0,
@@ -146,20 +147,26 @@ export async function getDashboardData(
 
   for (const t of recentTrucks.docs as unknown as Array<Record<string, unknown>>) {
     const status = String(t.status)
+    const availability = String(t.availability ?? 'available')
     const name = truckName(t)
     let text = ''
     let dot: ActivityDot = 'green'
     let tag: string | undefined
-    if (status === 'pending-review') {
+    // Sale state wins over the editorial state: "sold" is the newer, more
+    // useful headline for a truck that is also, still, published.
+    if (availability === 'sold') {
+      text = 'Marked as sold'
+      dot = 'gray'
+      tag = 'SOLD'
+    } else if (availability === 'pending') {
+      text = 'Marked sale pending'
+      tag = 'PENDING'
+    } else if (status === 'pending-review') {
       text = 'Draft submitted for review'
       tag = 'DRAFT'
     } else if (status === 'published') {
       text = 'Published to inventory'
       tag = 'PUBLISHED'
-    } else if (status === 'sold') {
-      text = 'Marked as sold'
-      dot = 'gray'
-      tag = 'SOLD'
     }
     activity.push({
       id: `truck-${t.id}`,
@@ -167,7 +174,7 @@ export async function getDashboardData(
       text,
       truck: name,
       tag,
-      when: String((status === 'sold' ? t.soldAt : t.publishedAt) ?? t.updatedAt ?? ''),
+      when: String((availability === 'sold' ? t.soldAt : t.publishedAt) ?? t.updatedAt ?? ''),
     })
   }
 

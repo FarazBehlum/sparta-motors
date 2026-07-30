@@ -64,7 +64,7 @@ function ReviewCard({ truck }: { truck: Truck }) {
           ))}
         </ul>
 
-        <p className="dr-card__vin">VIN {truck.vin}</p>
+        {truck.vin && <p className="dr-card__vin">VIN {truck.vin}</p>}
 
         <p className="dr-card__meta">
           {submittedBy ? <>Submitted by <strong>{submittedBy}</strong> · </> : null}

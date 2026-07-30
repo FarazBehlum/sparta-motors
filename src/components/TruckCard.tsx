@@ -4,6 +4,7 @@ import Image from 'next/image'
 import type { Truck } from '@/payload-types'
 import { bodyTypeLabel, formatMileage, formatPrice, makeLabel } from '@/lib/format'
 import { truckPrimaryPhoto } from '@/lib/media'
+import { AvailabilityBadge } from '@/components/AvailabilityBadge'
 
 /**
  * Truck card (grid view). Photo with body-type badge, year/make in mono caps,
@@ -36,11 +37,17 @@ export function TruckCard({ truck }: { truck: Truck }) {
         <span className="absolute left-3 top-3 rounded bg-sparta-black/85 px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-bone backdrop-blur-sm">
           {bodyTypeLabel(truck.bodyType)}
         </span>
-        {truck.featured && (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded bg-orange px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-sparta-black shadow-sm">
-            <span aria-hidden="true">◆</span>
-            Featured
-          </span>
+        {/* Sale state outranks the Featured flag for the same corner — a shopper
+            needs to know a truck is spoken for before anything else. */}
+        {truck.availability && truck.availability !== 'available' ? (
+          <AvailabilityBadge availability={truck.availability} className="absolute right-3 top-3" />
+        ) : (
+          truck.featured && (
+            <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded bg-orange px-2 py-1 font-barlow text-[11px] font-bold uppercase tracking-wider text-sparta-black shadow-sm">
+              <span aria-hidden="true">◆</span>
+              Featured
+            </span>
+          )
         )}
       </div>
 
@@ -49,8 +56,14 @@ export function TruckCard({ truck }: { truck: Truck }) {
           {truck.year} {makeLabel(truck.make)}
         </p>
         <h3 className="mt-1 font-barlow text-xl font-bold uppercase leading-tight tracking-tight text-sparta-black">
-          {truck.model}
-          {truck.trim ? <span className="text-iron"> {truck.trim}</span> : null}
+          {truck.listingTitle?.trim() ? (
+            truck.listingTitle.trim()
+          ) : (
+            <>
+              {truck.model}
+              {truck.trim ? <span className="text-iron"> {truck.trim}</span> : null}
+            </>
+          )}
         </h3>
 
         <div className="mt-4 flex items-center justify-between border-t border-chalk pt-3">
