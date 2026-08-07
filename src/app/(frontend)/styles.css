@@ -144,13 +144,3 @@
     scroll-behavior: auto !important;
   }
 }
-
-/* Hero "3 steps": the hero places 3 snap points (one per text phase). `proximity`
-   means the page only settles onto a point when you stop near it — so every
-   section BELOW the hero still scrolls completely freely. Only the hero has snap
-   targets. Skipped entirely for reduced-motion users (they get plain scroll). */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-}

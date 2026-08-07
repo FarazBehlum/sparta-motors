@@ -4,7 +4,6 @@ import { getFeaturedTrucks, getPublishedTrucks, computeFacets } from '@/lib/truc
 import { getSettings } from '@/lib/payload'
 import { organizationJsonLd } from '@/lib/structured-data'
 import { Hero } from '@/components/home/Hero'
-import { StatsBar, type Stat } from '@/components/home/StatsBar'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { FeaturedInventory } from '@/components/home/FeaturedInventory'
 import { HowWeWork } from '@/components/home/HowWeWork'
@@ -26,8 +25,6 @@ export const metadata: Metadata = {
   },
 }
 
-const pad2 = (n: number) => String(n).padStart(2, '0')
-
 export default async function HomePage() {
   const [trucks, featured, settings] = await Promise.all([
     getPublishedTrucks(),
@@ -38,13 +35,6 @@ export default async function HomePage() {
   const lines = addressLines(settings)
   const { lat, lng } = coords(settings)
 
-  const stats: Stat[] = [
-    { label: 'On the lot', value: pad2(trucks.length), lead: true },
-    { label: 'Body types', value: pad2(Object.keys(facets.body).length) },
-    { label: 'Brands', value: pad2(Object.keys(facets.make).length) },
-    { label: 'Est.', value: '2018' },
-  ]
-
   return (
     <>
       <script
@@ -52,7 +42,9 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(settings)) }}
       />
       <Hero />
-      <StatsBar stats={stats} />
+      {/* StatsBar is intentionally not rendered. With one truck in stock it read
+          "01 / 01 / 01", which undersells the business — restore it once the real
+          inventory is loaded and the numbers work in our favour. */}
       <CategoryGrid counts={facets.body} />
       <FeaturedInventory trucks={featured} />
       <HowWeWork />
