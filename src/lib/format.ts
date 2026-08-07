@@ -67,8 +67,8 @@ export function truckHeadline(t: {
 const BODY_TYPE_LABELS: Record<string, string> = {
   'box-truck': 'Box Truck',
   reefer: 'Reefer',
-  'day-cab': 'Day Cab',
-  'flat-bed': 'Flatbed',
+  landscaper: 'Landscaper',
+  '26ft-box-truck': '26ft Box Truck',
   'dump-truck': 'Dump Truck',
   'tow-truck': 'Tow Truck',
 }
@@ -81,8 +81,8 @@ export function bodyTypeLabel(bodyType: string): string {
 export const CATEGORY_TO_BODY_TYPE: Record<string, string> = {
   'box-trucks': 'box-truck',
   reefers: 'reefer',
-  'day-cabs': 'day-cab',
-  'flat-beds': 'flat-bed',
+  landscapers: 'landscaper',
+  '26ft-box-trucks': '26ft-box-truck',
   'dump-trucks': 'dump-truck',
   'tow-trucks': 'tow-truck',
 }

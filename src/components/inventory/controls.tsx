@@ -212,7 +212,7 @@ const MAKE_ORDER = [
   'isuzu', 'freightliner', 'hino', 'nissan', 'volvo',
   'peterbilt', 'kenworth', 'mack', 'international', 'other',
 ]
-const BODY_ORDER = ['box-truck', 'reefer', 'day-cab', 'flat-bed', 'dump-truck', 'tow-truck']
+const BODY_ORDER = ['box-truck', 'reefer', 'landscaper', '26ft-box-truck', 'dump-truck', 'tow-truck']
 
 export function FilterSidebar({
   query,

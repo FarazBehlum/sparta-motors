@@ -28,8 +28,8 @@ const MAKE_OPTIONS = [
 const BODY_TYPE_OPTIONS = [
   { label: 'Box Truck', value: 'box-truck' },
   { label: 'Reefer', value: 'reefer' },
-  { label: 'Day Cab', value: 'day-cab' },
-  { label: 'Flatbed', value: 'flat-bed' },
+  { label: 'Landscaper', value: 'landscaper' },
+  { label: '26ft Box Truck', value: '26ft-box-truck' },
   { label: 'Dump Truck', value: 'dump-truck' },
   { label: 'Tow Truck', value: 'tow-truck' },
 ]

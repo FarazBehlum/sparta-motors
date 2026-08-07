@@ -7,7 +7,7 @@ import { formatPhone } from '@/lib/format'
 const INVENTORY_LINKS = [
   { label: 'Box Trucks', href: '/inventory/box-trucks' },
   { label: 'Reefers', href: '/inventory/reefers' },
-  { label: 'Day Cabs', href: '/inventory/day-cabs' },
+  { label: 'Landscapers', href: '/inventory/landscapers' },
   { label: 'Dump Trucks', href: '/inventory/dump-trucks' },
   { label: 'Tow Trucks', href: '/inventory/tow-trucks' },
 ]

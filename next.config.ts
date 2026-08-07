@@ -30,8 +30,19 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // The Fleet feature was retired and replaced by Parts. Permanently redirect the
   // old URL so existing links / search results land on the new page.
+  //
+  // Day Cabs / Flat Beds were likewise replaced by Landscapers / 26ft Box Trucks.
+  // These slugs were live and are in the sitemap, so send them on rather than 404.
   async redirects() {
-    return [{ source: '/fleet', destination: '/parts', statusCode: 301 }]
+    return [
+      { source: '/fleet', destination: '/parts', statusCode: 301 },
+      { source: '/inventory/day-cabs', destination: '/inventory/landscapers', statusCode: 301 },
+      {
+        source: '/inventory/flat-beds',
+        destination: '/inventory/26ft-box-trucks',
+        statusCode: 301,
+      },
+    ]
   },
   // Allow loading the dev server from other devices on the LAN (e.g. a phone at
   // http://192.168.12.30:3000). Without this, Next 16 blocks its /_next/* dev

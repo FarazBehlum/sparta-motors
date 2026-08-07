@@ -24,7 +24,7 @@ type Sample = {
   make: Make
   model: string
   trim?: string
-  bodyType: 'box-truck' | 'reefer' | 'day-cab' | 'flat-bed' | 'dump-truck' | 'tow-truck'
+  bodyType: 'box-truck' | 'reefer' | 'landscaper' | '26ft-box-truck' | 'dump-truck' | 'tow-truck'
   price: number
   condition: 'excellent' | 'good' | 'fair'
   mileage: number
@@ -71,21 +71,21 @@ const SAMPLES: Sample[] = [
       '2021 Isuzu NRR with a 20-foot insulated reefer body. Low miles, tight thermostat, ready for daily routes.',
   },
   {
-    year: 2017, make: 'freightliner', model: 'Cascadia', trim: 'Day Cab', bodyType: 'day-cab',
+    year: 2017, make: 'freightliner', model: 'Cascadia', trim: 'Day Cab', bodyType: 'landscaper',
     price: 42900, condition: 'good', mileage: 389400, fuelType: 'diesel', gvwr: 52000,
     payloadClass: 'class-8', engine: 'Detroit DD13', transmission: '10-spd Manual', drivetrain: 'RWD',
     description:
       '2017 Freightliner Cascadia day cab. Detroit power, strong runner for regional and yard work. Fresh DOT inspection.',
   },
   {
-    year: 2016, make: 'volvo', model: 'VNL 300', trim: 'Day Cab', bodyType: 'day-cab',
+    year: 2016, make: 'volvo', model: 'VNL 300', trim: 'Day Cab', bodyType: 'landscaper',
     price: 38500, condition: 'fair', mileage: 512300, fuelType: 'diesel', gvwr: 52000,
     payloadClass: 'class-8', engine: 'Volvo D13', transmission: 'I-Shift Auto', drivetrain: 'RWD',
     description:
       '2016 Volvo VNL 300 day cab. Higher miles but priced to move. I-Shift transmission, comfortable cab. Solid work truck.',
   },
   {
-    year: 2019, make: 'international', model: 'MV607', trim: 'Flatbed', bodyType: 'flat-bed',
+    year: 2019, make: 'international', model: 'MV607', trim: 'Flatbed', bodyType: '26ft-box-truck',
     price: 47800, condition: 'good', mileage: 98700, fuelType: 'diesel', gvwr: 26000,
     payloadClass: 'class-6', engine: 'Cummins B6.7', transmission: 'Auto · Allison', drivetrain: 'RWD',
     featured: true,

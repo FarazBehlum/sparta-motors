@@ -153,7 +153,7 @@ export interface Truck {
    * e.g. "16FT Box"
    */
   trim?: string | null;
-  bodyType: 'box-truck' | 'reefer' | 'day-cab' | 'flat-bed' | 'dump-truck' | 'tow-truck';
+  bodyType: 'box-truck' | 'reefer' | 'landscaper' | '26ft-box-truck' | 'dump-truck' | 'tow-truck';
   /**
    * Optional. Custom headline for this listing (shown on the card and detail page). Leave blank to use "{year} {make} {model} {trim}".
    */
