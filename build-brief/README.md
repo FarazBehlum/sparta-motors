@@ -51,7 +51,7 @@ If you are the **project manager** during build: refer here whenever Claude Code
 
 ### Integrations
 
-- **[integrations/leaflet-map.md](./integrations/leaflet-map.md)** — Leaflet + OpenStreetMap CartoDB Positron. Used on Contact, About, and the footer.
+- **[integrations/leaflet-map.md](./integrations/leaflet-map.md)** — location map. Now a free Google Maps embed (superseded Leaflet 2026-08-06). Used on Contact, About, and the home Visit Us section.
 - **[integrations/smtp-email.md](./integrations/smtp-email.md)** — Lead notification pipeline via the business email's SMTP.
 - **[integrations/hero-video.md](./integrations/hero-video.md)** — Scroll-driven video pipeline: 240-frame image sequence → WebM → scroll-scrubbed.
 

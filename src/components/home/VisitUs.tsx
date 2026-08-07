@@ -16,9 +16,9 @@ type VisitUsProps = {
 }
 
 /**
- * "Visit the lot" home section — the reusable Leaflet map paired with address,
- * phone, and hours. Data comes from Settings via the home page. Sits just above
- * the Parts CTA strip.
+ * "Visit the lot" home section — the reusable map paired with address, phone,
+ * and hours. Data comes from Settings via the home page. Sits just above the
+ * Parts CTA strip.
  */
 export function VisitUs({
   lat,
@@ -109,7 +109,7 @@ export function VisitUs({
           {/* Right: the map. Fixed height on mobile; stretches to match the
               left column on md (grid items-stretch gives a definite height). */}
           <div className="h-[340px] md:h-auto">
-            <LocationMap lat={lat} lng={lng} addressLines={lines} phone={phone} height="100%" />
+            <LocationMap lat={lat} lng={lng} addressLines={lines} height="100%" />
           </div>
         </FadeInSection>
       </Container>

@@ -92,7 +92,7 @@ export default async function ContactPage() {
           </div>
 
           <FadeInSection className="mt-8">
-            <LocationMap lat={lat} lng={lng} addressLines={lines} phone={phone} height={440} />
+            <LocationMap lat={lat} lng={lng} addressLines={lines} height={440} />
           </FadeInSection>
         </Container>
       </section>

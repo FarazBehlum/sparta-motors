@@ -1,10 +1,35 @@
-# Integration — Leaflet Map
+# Integration — Location Map
+
+> ## ⚠️ SUPERSEDED — the site now uses a Google Maps embed, not Leaflet
+>
+> **Changed 2026-08-06 at the client's request:** they asked for Google Maps
+> because it is what customers recognise. Leaflet, `react-leaflet`,
+> `@types/leaflet`, `MapInner.tsx`, and the ~87 lines of Leaflet CSS overrides
+> have all been removed. The implementation is now a single iframe in
+> `src/components/map/LocationMap.tsx`.
+>
+> **Critically, this did NOT cost anything.** We use the free Google Maps
+> *embed*, not the Maps JavaScript API — no API key, no Google Cloud project,
+> no billing account, no card on file, unlimited loads. The zero-cost,
+> zero-vendor-account property that originally won Leaflet the job is intact.
+>
+> **What was given up:** the custom orange Sparta pin and the branded popup.
+> Google shows its own red pin and info card, and those are not stylable in an
+> embed. Acceptable because all three pages that host the map already render
+> the address, phone, and hours as HTML beside it, so no information was lost.
+>
+> The map is queried by business name + address, so the pin opens the Google
+> Business Profile rather than a bare coordinate.
+>
+> The section below is kept as the record of the original decision. The
+> filename stays `leaflet-map.md` so existing links across the brief still
+> resolve.
 
 Interactive map showing Sparta Motors' Spartanburg location. Used on Contact, About, and Inventory pages, plus the site footer.
 
 **Mockup reference:** All content-page mockups in `/mockups/sparta-content-pages.html` show this map; also `/mockups/sparta-inventory.html`.
 
-## Why Leaflet + OpenStreetMap
+## Why Leaflet + OpenStreetMap (ORIGINAL DECISION — no longer in effect)
 
 Considered options:
 - **Google Maps** — best-known, but requires API key, billing account, and $ per 1000 map loads after free tier. Overkill for a static location marker.
@@ -12,6 +37,11 @@ Considered options:
 - **Leaflet + OpenStreetMap** — completely free, no API key, no account, well-documented, works forever.
 
 Leaflet chosen for zero cost, zero setup complexity, and no vendor account required. It's the correct choice for a small business showing a single physical location.
+
+> **Note on the Google row above:** it is accurate about the Maps *JavaScript
+> API*, which is what "Google Maps" usually means to a developer. It overlooked
+> the *embed*, which has none of those costs. That gap is why the switch turned
+> out to be free rather than a trade against the budget.
 
 ## Tile provider
 

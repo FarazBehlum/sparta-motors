@@ -20,7 +20,7 @@ The chosen stack meets all three.
 | **Email delivery** | SMTP through the existing Sparta business email | Zero added cost. Low volume (~20 leads per day at peak). If deliverability becomes a problem, swap to a service like Resend later — one-file change. |
 | **File / photo storage** | Local disk on the VPS, served through Next.js image optimization | Simplest option. Sparta will not accumulate enough photos in Phase 1 to need object storage. Phase 2 may migrate to S3-compatible storage (Cloudflare R2 is a free option). |
 | **Video (scroll hero)** | WebM served as a static asset, scrubbed via scroll | See `integrations/hero-video.md` for the ffmpeg pipeline that converts the 240-frame PNG sequence into a single ~500KB video. |
-| **Maps** | Leaflet.js + OpenStreetMap CartoDB Positron tiles | Free forever, no API key, no billing account. See `integrations/leaflet-map.md`. |
+| **Maps** | Google Maps **embed** (iframe) | Client asked for Google — it's what customers recognise. Still free forever, no API key, no billing account, unlimited loads (the embed, *not* the Maps JavaScript API). Superseded Leaflet 2026-08-06; see `integrations/leaflet-map.md`. |
 | **Analytics** | Deferred to Phase 1.5 | Add after launch when there's real traffic to measure. Likely candidate: Plausible or Umami (both privacy-friendly and cheap). |
 
 **Estimated monthly total: $10-15.**

@@ -141,7 +141,6 @@ export default async function AboutPage() {
                 lat={lat}
                 lng={lng}
                 addressLines={lines}
-                phone={phone}
                 height={400}
               />
             </div>
