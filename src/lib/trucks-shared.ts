@@ -140,3 +140,46 @@ export function computeFacets(all: Truck[]): Facets {
     mileageRange: range(miles, [0, 300000]),
   }
 }
+
+/**
+ * How long a sold truck's listing stays public after the sale, in days.
+ *
+ * The window exists so the lot visibly moves stock and so a buyer's own link
+ * keeps working right after the sale. Once it lapses the listing is admin-only:
+ * still fully editable in /admin, no longer reachable by the public.
+ */
+export const SOLD_VISIBLE_DAYS = 7
+
+const DAY_MS = 86_400_000
+
+type SaleState = Pick<Truck, 'availability' | 'soldAt'>
+
+/**
+ * Whether a sold truck is still inside its public grace period.
+ *
+ * Fails OPEN — a sold truck with a missing or unparseable `soldAt` counts as
+ * still visible. That field is only stamped on the available→sold transition,
+ * so anything marked sold before it existed (or edited straight in the DB) has
+ * no date. Hiding those silently would retire listings nobody asked to retire;
+ * leaving them up is visible and correctable.
+ */
+export function isSoldGraceActive(truck: SaleState, now: number = Date.now()): boolean {
+  if (truck.availability !== 'sold') return false
+  if (!truck.soldAt) return true
+  const soldMs = new Date(truck.soldAt).getTime()
+  if (Number.isNaN(soldMs)) return true
+  return now - soldMs < SOLD_VISIBLE_DAYS * DAY_MS
+}
+
+/** A shopper can still act on this truck (it isn't sold). */
+export function isBuyable(truck: SaleState): boolean {
+  return truck.availability !== 'sold'
+}
+
+/**
+ * Whether the public may see this listing at all: everything that isn't sold,
+ * plus sold trucks still inside their grace period.
+ */
+export function isPubliclyVisible(truck: SaleState, now: number = Date.now()): boolean {
+  return isBuyable(truck) || isSoldGraceActive(truck, now)
+}

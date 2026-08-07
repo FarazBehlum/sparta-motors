@@ -1,10 +1,10 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { CreditCard, FileText, Phone, ShieldCheck, Truck as TruckIcon } from 'lucide-react'
 import type { Media, Truck } from '@/payload-types'
-import { getTruckBySlug, getSimilarTrucks, getPublishedSlugs } from '@/lib/trucks'
+import { getTruckBySlug, getSimilarTrucks, getPublishedSlugs, isPubliclyVisible } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
 import { truckPhotos, truckPrimaryPhoto } from '@/lib/media'
 import { truckVideo } from '@/lib/video'
@@ -200,6 +200,12 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
   const truck = await getTruckBySlug(slug)
   if (!truck) notFound()
 
+  // Sold and past its grace window: the listing is admin-only from here. Send
+  // the visitor to inventory rather than 404 — someone following an old link or
+  // a stale Google result is a live buyer, and a dead end loses them. Caught
+  // within a minute of the window lapsing (see `revalidate` above).
+  if (!isPubliclyVisible(truck)) redirect('/inventory')
+
   const [similar, settings] = await Promise.all([getSimilarTrucks(truck), getSettings()])
   const photos = truckPhotos(truck, 'hero')
   const video = truckVideo(truck)
@@ -295,7 +301,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
                     <div className="font-mono text-xs uppercase tracking-wider text-iron">
                       {truck.year} · {makeLabel(truck.make)}
                     </div>
-                    <AvailabilityBadge availability={truck.availability} />
+                    <AvailabilityBadge availability={truck.availability} showAvailable />
                   </div>
                   <h1 className="mt-1 font-barlow text-3xl font-extrabold uppercase leading-tight tracking-tight text-sparta-black md:text-4xl">
                     {truckHeadline(truck)}

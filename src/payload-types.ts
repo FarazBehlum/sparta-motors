@@ -260,7 +260,7 @@ export interface Truck {
    */
   status: 'draft' | 'pending-review' | 'published' | 'archived';
   /**
-   * Sold trucks drop out of inventory browsing, but their page stays live and marked SOLD so old links and Google results still work. Sale Pending stays listed and keeps taking inquiries.
+   * Sold trucks stay in inventory marked SOLD for 7 days, then come off the public site automatically — the listing stays here and old links redirect to inventory. Sale Pending stays listed and keeps taking inquiries.
    */
   availability: 'available' | 'pending' | 'sold';
   /**
@@ -275,6 +275,9 @@ export interface Truck {
   slug?: string | null;
   assignedEmployee?: (number | null) | User;
   publishedAt?: string | null;
+  /**
+   * Stamped automatically when marked Sold. The listing leaves the public site 7 days after this date.
+   */
   soldAt?: string | null;
   updatedAt: string;
   createdAt: string;

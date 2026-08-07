@@ -516,7 +516,7 @@ export const Trucks: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Sold trucks drop out of inventory browsing, but their page stays live and marked SOLD so old links and Google results still work. Sale Pending stays listed and keeps taking inquiries.',
+          'Sold trucks stay in inventory marked SOLD for 7 days, then come off the public site automatically — the listing stays here and old links redirect to inventory. Sale Pending stays listed and keeps taking inquiries.',
       },
     },
     {
@@ -557,7 +557,16 @@ export const Trucks: CollectionConfig = {
       admin: { position: 'sidebar', readOnly: true },
     },
     { name: 'publishedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },
-    { name: 'soldAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },
+    {
+      name: 'soldAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Stamped automatically when marked Sold. The listing leaves the public site 7 days after this date.',
+        condition: (data) => data?.availability === 'sold',
+      },
+    },
   ],
   hooks: {
     beforeValidate: [
@@ -614,6 +623,15 @@ export const Trucks: CollectionConfig = {
         }
         if (data.availability === 'sold' && originalDoc?.availability !== 'sold') {
           data.soldAt = new Date().toISOString()
+        } else if (
+          data.availability &&
+          data.availability !== 'sold' &&
+          originalDoc?.availability === 'sold'
+        ) {
+          // Un-sold — the sale fell through, or it's being relisted. Drop the
+          // timestamp so the record doesn't carry a sale date it no longer has,
+          // and so a later sale starts a clean grace window.
+          data.soldAt = null
         }
         return data
       },

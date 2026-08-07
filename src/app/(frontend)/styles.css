@@ -21,6 +21,24 @@
   --color-warm-white: #eeece5;
   --color-success: #16803b;
   --color-success-light: #eaf3de;
+
+  /* Sale-state colours, as their own family rather than borrowed brand tokens.
+     A truck's availability is a distinct semantic axis from "success" or
+     "brand orange", and these three are only ever read against each other.
+     All three carry their label text at ≥4.5:1 (AA) — verified, not assumed:
+       available #166534 + bone 6.44:1   (was --color-success, a thin 4.53:1)
+       pending   #f26b0f + black 5.71:1
+       sold      #851c1c + bone 8.70:1
+
+     The sold red is deliberately DEEP rather than a bright alarm red. It sits
+     one card away from the orange "Sale Pending" badge, and red-vs-orange is
+     the exact axis red-green colour blindness collapses. A mid red (#b91c1c)
+     is only 2.12:1 against --color-orange — indistinguishable by lightness.
+     #851c1c is the reddest value that still clears 3:1 against it (3.16:1),
+     so the two states stay tellable apart without relying on hue. */
+  --color-status-available: #166534;
+  --color-status-pending: #f26b0f;
+  --color-status-sold: #851c1c;
   --color-danger: #b91c1c;
   --color-warning-soft: #fdf3eb;
   --color-warning-dark: #b84a2f;
