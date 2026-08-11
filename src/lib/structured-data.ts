@@ -1,6 +1,23 @@
 import type { Setting } from '@/payload-types'
 import { SITE_URL } from '@/lib/site'
 
+/**
+ * Serialize a JSON-LD object for injection into a <script type="application/ld+json">.
+ *
+ * JSON.stringify does not escape `<`, so CMS text containing `</script>` would
+ * close the tag early and let whatever follows execute as markup on the same
+ * origin as /admin. Truck descriptions are free text written by staff and land
+ * in the Product schema, so escape the three characters that can break out.
+ * Inside a JSON string literal these \u escapes are equivalent to the raw
+ * characters, so parsers still read the original text.
+ */
+export function jsonLdScript(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+}
+
 function postalAddress(a: Setting['address']) {
   if (!a) return undefined
   return {

@@ -1,6 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import { APIError, type CollectionConfig, type PayloadRequest, type Where } from 'payload'
-import { isAdmin, isAdminOrEmployee } from '../access'
+import { isAdmin, isAdminOrEmployee, isAdminOrEmployeeFieldLevel } from '../access'
 import { isValidVin, normalizeVin } from '../lib/vin'
 import { makeLabel } from '../lib/format'
 import { truckSlug } from '../lib/slug'
@@ -219,6 +219,9 @@ export const Trucks: CollectionConfig = {
                   name: 'condition',
                   type: 'select',
                   // Internal reference only — no longer shown on the public site.
+                  // Field-level read keeps it out of the anonymous REST response
+                  // too; without it "internal only" was still public JSON.
+                  access: { read: isAdminOrEmployeeFieldLevel },
                   options: [
                     { label: 'Excellent', value: 'excellent' },
                     { label: 'Good', value: 'good' },
@@ -532,7 +535,12 @@ export const Trucks: CollectionConfig = {
     {
       name: 'reviewNote',
       type: 'textarea',
-      access: { update: ({ req: { user } }) => (user as { role?: string })?.role === 'admin' },
+      access: {
+        update: ({ req: { user } }) => (user as { role?: string })?.role === 'admin',
+        // "Not shown publicly" has to be enforced, not just intended — this was
+        // being served to anyone who called GET /api/trucks.
+        read: isAdminOrEmployeeFieldLevel,
+      },
       admin: {
         position: 'sidebar',
         description: 'Note to the employee when sending a draft back. Not shown publicly.',
@@ -554,6 +562,9 @@ export const Trucks: CollectionConfig = {
       name: 'assignedEmployee',
       type: 'relationship',
       relationTo: 'users',
+      // Which staff member owns a listing is internal; it has no public use and
+      // exposed a users-table id to anonymous API callers.
+      access: { read: isAdminOrEmployeeFieldLevel },
       admin: { position: 'sidebar', readOnly: true },
     },
     { name: 'publishedAt', type: 'date', admin: { position: 'sidebar', readOnly: true } },

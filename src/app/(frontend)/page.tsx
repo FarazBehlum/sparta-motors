@@ -2,7 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { getFeaturedTrucks, getPublishedTrucks, computeFacets } from '@/lib/trucks'
 import { getSettings } from '@/lib/payload'
-import { organizationJsonLd } from '@/lib/structured-data'
+import { jsonLdScript, organizationJsonLd } from '@/lib/structured-data'
 import { Hero } from '@/components/home/Hero'
 import { CategoryGrid } from '@/components/home/CategoryGrid'
 import { FeaturedInventory } from '@/components/home/FeaturedInventory'
@@ -39,7 +39,7 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(settings)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(organizationJsonLd(settings)) }}
       />
       <Hero />
       {/* StatsBar is intentionally not rendered. With one truck in stock it read

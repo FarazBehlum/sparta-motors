@@ -31,6 +31,10 @@ async function exportCsvHandler(req: PayloadRequest): Promise<Response> {
     limit: 5000,
     depth: 1,
     req,
+    // The Local API skips access control by default. The role check above
+    // currently mirrors the collection's `read` rule exactly, but if that rule
+    // is ever narrowed this endpoint would silently keep exporting everything.
+    overrideAccess: false,
   })
 
   const csv = leadsToCsv(docs as never[])
@@ -61,16 +65,23 @@ export const Leads: CollectionConfig = {
     update: isAdminOrEmployee,
     delete: isAdmin,
   },
+  // Length caps on every publicly-writable field. Anyone on the internet can
+  // POST here, nginx allows an 80MB body (sized for photo uploads), and these
+  // columns are unbounded `varchar` — so without caps a single request can
+  // write an arbitrarily large row, and a loop can fill the VPS disk. These are
+  // validation-only: they do not change the column type, so no migration.
   fields: [
     {
       type: 'row',
       fields: [
-        { name: 'fullName', type: 'text', admin: { width: '50%' } },
-        { name: 'phone', type: 'text', admin: { width: '50%' } },
+        { name: 'fullName', type: 'text', maxLength: 120, admin: { width: '50%' } },
+        { name: 'phone', type: 'text', maxLength: 40, admin: { width: '50%' } },
       ],
     },
+    // No maxLength: Payload's EmailField doesn't accept one, and its format
+    // validation already rejects anything that isn't a plausible address.
     { name: 'email', type: 'email' },
-    { name: 'message', type: 'textarea' },
+    { name: 'message', type: 'textarea', maxLength: 5000 },
     {
       name: 'source',
       type: 'select',
@@ -92,6 +103,7 @@ export const Leads: CollectionConfig = {
     {
       name: 'tradeInYearMakeModel',
       type: 'text',
+      maxLength: 200,
       admin: { condition: (data) => Boolean(data?.tradeIn) },
     },
     {
@@ -102,6 +114,7 @@ export const Leads: CollectionConfig = {
     {
       name: 'tradeInCondition',
       type: 'text',
+      maxLength: 500,
       admin: { condition: (data) => Boolean(data?.tradeIn) },
     },
     { name: 'heardAboutUs', type: 'select', options: HEARD_ABOUT_US_OPTIONS },

@@ -1,5 +1,5 @@
 import { APIError, type CollectionConfig } from 'payload'
-import { anyone, isAdmin, isAdminOrEmployee, isAdminOrEmployeeFieldLevel } from '../access'
+import { isAdmin, isAdminOrEmployee, isAdminOrEmployeeFieldLevel } from '../access'
 import { HEARD_ABOUT_US_OPTIONS } from '../lib/options'
 import { sendEmail } from '../lib/email/mailer'
 import { newFleetInquiryEmail } from '../lib/email/lead-templates'
@@ -14,7 +14,13 @@ export const FleetInquiries: CollectionConfig = {
     listSearchableFields: ['companyName', 'contactName', 'email', 'phone'],
   },
   access: {
-    create: anyone,
+    // The Fleet feature was retired: /fleet 301s to /parts, there is no public
+    // fleet form anywhere on the site, and this collection is hidden from the
+    // admin nav. `create: anyone` therefore left an anonymous write endpoint at
+    // POST /api/fleet-inquiries that nothing legitimate calls and that fires a
+    // notification email per request — spam surface with no business purpose.
+    // If Phase 3 revives the B2B form, change this back to `anyone`.
+    create: isAdminOrEmployee,
     read: isAdminOrEmployee,
     update: isAdminOrEmployee,
     delete: isAdmin,
