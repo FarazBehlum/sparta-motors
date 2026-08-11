@@ -47,3 +47,7 @@ next-env.d.ts
 /hero-source/
 /_MConverter.eu_Video/
 /_MConverter.eu_Video.zip
+
+# Raw category-image source material — the shipped versions live in
+# public/categories/ as processed .webp.
+/Vehical Type Images/

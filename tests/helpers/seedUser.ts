@@ -10,9 +10,28 @@ export const testUser = {
 }
 
 /**
+ * Refuse to run against a production database.
+ *
+ * playwright.config.ts loads `dotenv/config` and reuses an existing server, so
+ * this helper targets whatever DATABASE_URL is in .env. Running the e2e suite on
+ * a machine that happens to hold production credentials would plant an admin
+ * account with the password "test" on the live site.
+ */
+function assertNotProduction(): void {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Refusing to seed the e2e test user with NODE_ENV=production — this would ' +
+        'create an admin account with a known password. Point DATABASE_URL at a ' +
+        'development database first.',
+    )
+  }
+}
+
+/**
  * Seeds a test user for e2e admin tests.
  */
 export async function seedTestUser(): Promise<void> {
+  assertNotProduction()
   const payload = await getPayload({ config })
 
   // Delete existing test user if any

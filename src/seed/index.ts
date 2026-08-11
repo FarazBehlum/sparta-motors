@@ -5,7 +5,7 @@ import config from '../payload.config'
 /**
  * Idempotent seed: admin user, Settings global, and the five editable Pages
  * with baseline hero copy. Business address/phone/hours are the real dealership
- * details (890 S Irwin Ave, Spartanburg, SC). Map coordinates are approximate —
+ * details (890 S Irwin Ave Ext, Spartanburg, SC). Map coordinates are approximate —
  * verify before the Contact/About map ships.
  *
  * Run with: npm run seed
@@ -53,7 +53,7 @@ async function seed() {
       phone: '(864) 266-5347',
       email: 'spartamotorsllc@gmail.com',
       address: {
-        line1: '890 S Irwin Ave',
+        line1: '890 S Irwin Ave Ext',
         line2: '',
         city: 'Spartanburg',
         state: 'SC',

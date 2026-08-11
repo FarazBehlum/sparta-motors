@@ -1,9 +1,9 @@
 import type { Setting } from '@/payload-types'
 
-// Fallback coords ≈ 890 S Irwin Ave, Spartanburg, SC (also set by the seed).
+// Fallback coords ≈ 890 S Irwin Ave Ext, Spartanburg, SC (also set by the seed).
 const FALLBACK_COORDS = { lat: 34.9377, lng: -81.9187 }
 
-/** Address as display lines, e.g. ["890 S Irwin Ave", "Spartanburg, SC 29306"]. */
+/** Address as display lines, e.g. ["890 S Irwin Ave Ext", "Spartanburg, SC 29306"]. */
 export function addressLines(settings: Setting): string[] {
   const a = settings.address
   if (!a) return []
