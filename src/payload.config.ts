@@ -83,7 +83,33 @@ export default buildConfig({
   collections: [Trucks, Leads, FleetInquiries, Media, Pages, Users],
   globals: [Settings],
   cors: allowedOrigins,
-  csrf: allowedOrigins,
+  // `csrf` is deliberately NOT set, and setting it here would break admin login.
+  //
+  // When csrf is a non-empty array, Payload requires every cookie-authenticated
+  // request to carry an `Origin` header present in that list, and treats a
+  // MISSING origin as a failure. Browsers do not send Origin on same-origin GET
+  // requests — which is every page load and every "who am I?" call the admin
+  // makes. The result was login returning "Authentication Passed", setting a
+  // valid cookie, and then bouncing straight back to the login screen forever.
+  //
+  // Measured on the server with one token, varying only the header:
+  //     no Origin      -> {"user":null}
+  //     correct Origin -> authenticated
+  //     wrong Origin   -> {"user":null}
+  //
+  // This never appeared locally because it takes a deployed origin to notice;
+  // the whitelist happened to contain localhost, but the failing requests carry
+  // no origin at all, so the contents of the list were never the point.
+  //
+  // The whitelist bought nothing here regardless: the site, the API and the
+  // admin are all served from one origin, and there is no separate front end
+  // calling the API. Cross-site request forgery is already prevented by the
+  // session cookie's SameSite=Lax (src/collections/Users.ts), which stops the
+  // browser attaching it to any cross-site state-changing request, while `cors`
+  // above still stops another origin's JavaScript reading a response.
+  //
+  // Only reintroduce csrf if a genuinely separate front-end origin ever needs
+  // cookie auth against this API — and then include this origin in the list.
   // Cap uploads at 64MB. Photos never come close; the limit exists to stop a
   // raw, untranscoded phone video (often 200MB+) from being uploaded and then
   // served at full size to every visitor on mobile data.
