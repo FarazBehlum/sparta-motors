@@ -51,7 +51,7 @@ async function seed() {
     data: {
       siteName: 'Sparta Motors',
       phone: '(864) 266-5347',
-      email: 'spartamotorsllc@gmail.com',
+      email: 'sparrowmotorsllc@gmail.com',
       address: {
         line1: '890 S Irwin Ave Ext',
         line2: '',

@@ -52,7 +52,7 @@ Have these five things ready. Nothing below works without them.
    business email, and the nameservers are changed at **Squarespace**, not
    Hostinger.
 3. **An SMTP account** for sending lead notifications — the Gmail address
-   `spartamotorsllc@gmail.com` with a Google **App Password** (not the account
+   `sparrowmotorsllc@gmail.com` with a Google **App Password** (not the account
    password; 2FA must be on to generate one).
 4. **An SSH key** on your Mac. Check with `ls ~/.ssh/*.pub`; if there is none,
    run `ssh-keygen -t ed25519`. An existing RSA key is fine — the PM's
@@ -207,11 +207,11 @@ MEDIA_DIR=/var/www/sparta-motors/media
 # Gmail requires an App Password, not the normal account password.
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=spartamotorsllc@gmail.com
+SMTP_USER=sparrowmotorsllc@gmail.com
 SMTP_PASSWORD=REPLACE_GMAIL_APP_PASSWORD
-SMTP_FROM=spartamotorsllc@gmail.com
+SMTP_FROM=sparrowmotorsllc@gmail.com
 # Where new-lead notifications land.
-NOTIFICATION_TO=spartamotorsllc@gmail.com
+NOTIFICATION_TO=sparrowmotorsllc@gmail.com
 
 # --- First admin login (used once, by `npm run seed`) ---
 SEED_ADMIN_EMAIL=REPLACE_ADMIN_EMAIL
