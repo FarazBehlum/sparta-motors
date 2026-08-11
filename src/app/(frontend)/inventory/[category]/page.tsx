@@ -7,7 +7,19 @@ import type { RawParams } from '@/lib/trucks'
 
 type Params = { category: string }
 
-export const dynamic = 'force-dynamic'
+// Only the six slugs from generateStaticParams are real routes; anything else
+// 404s at the router, before rendering starts.
+//
+// This replaced `export const dynamic = 'force-dynamic'`. Under force-dynamic
+// the response streams before the in-render notFound() below can set a status,
+// so /inventory/anything answered HTTP 200 with 404 content — a soft 404 that
+// invites Google to index unlimited junk URLs. dynamicParams has no effect
+// while force-dynamic is set, so the directive had to go.
+//
+// Dropping it does NOT make this page static: it reads searchParams, which
+// opts the route into dynamic rendering on its own. Verified in the production
+// build output — the route is still listed as ƒ (Dynamic).
+export const dynamicParams = false
 
 /** Pre-register the six known category slugs. */
 export function generateStaticParams(): Params[] {

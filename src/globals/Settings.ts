@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import type { GlobalConfig } from 'payload'
 import { anyone, isAdmin } from '../access'
 
@@ -7,6 +8,23 @@ export const Settings: GlobalConfig = {
   access: {
     read: anyone,
     update: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      () => {
+        // Phone, address and hours are read by the root layout (nav + footer)
+        // and by /contact, /about, /financing and /parts — all of which are
+        // statically prerendered at build time. Without this, changing the
+        // phone number in the CMS would leave the old one on every one of
+        // those pages until the next deploy, which is a lost-lead path.
+        // 'layout' revalidates every route rendered under the root layout.
+        try {
+          revalidatePath('/', 'layout')
+        } catch {
+          /* not in a request scope (e.g. the seed script) — nothing to do */
+        }
+      },
+    ],
   },
   fields: [
     { name: 'siteName', type: 'text', defaultValue: 'Sparta Motors' },

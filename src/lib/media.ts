@@ -1,4 +1,5 @@
 import type { Media, Truck } from '@/payload-types'
+import { makeLabel } from '@/lib/format'
 
 type SizeName = 'thumbnail' | 'card' | 'hero'
 
@@ -23,7 +24,10 @@ export function mediaPhoto(
 
 /** All resolvable photos for a truck at a given size. */
 export function truckPhotos(truck: Truck, size: SizeName): Photo[] {
-  const alt = `${truck.year} ${truck.make} ${truck.model}`
+  // `make` is stored lowercased ("hino"), so the raw value produced alt text
+  // reading "2019 hino 195". Photos rarely have an alt set in the CMS, so this
+  // fallback is what screen readers and Google Images actually get.
+  const alt = `${truck.year} ${makeLabel(truck.make)} ${truck.model}`
   return (truck.photos ?? [])
     .map((img) => mediaPhoto(img, size, alt))
     .filter((p): p is Photo => p !== null)
