@@ -21,8 +21,14 @@ This file is the executable version of that document.
 
 Have these five things ready. Nothing below works without them.
 
-1. **A server.** Hetzner **CX23** (~$4.50/mo, 2 vCPU / 4GB / 40GB, 20TB traffic),
-   Ubuntu 24.04, **Falkenstein or Nuremberg (Germany)**.
+1. **A server.** Hetzner **CX23** (€5.49/mo ≈ $6, 2 vCPU / 4GB / 40GB, 20TB
+   traffic), Ubuntu 24.04, **Falkenstein or Nuremberg (Germany)**.
+
+   > This is the cheapest server Hetzner sells — CAX11 (ARM) is €5.99 and CPX11
+   > is dearer still for half the RAM — and it is also the cheapest one that
+   > meets the 4GB floor below. Price checked 2026-08-11, after the 15 June 2026
+   > increase took it from €3.99 to €5.49. Hetzner has raised prices repeatedly
+   > through 2026, so read the figure at checkout rather than trusting this line.
 
    > **Not Ashburn, and not CX22.** Hetzner's US locations only offer the CPX and
    > CCX lines — the cost-optimized CX line is Germany/Finland only — and their
@@ -53,8 +59,9 @@ Have these five things ready. Nothing below works without them.
    `~/.ssh/id_rsa.pub` is what this deployment uses.
 5. **Access to this git repo** from the server (a deploy key or a personal access token).
 
-> **Cost check:** server ~$4.50/mo, Cloudflare $0, backups $0 (Cloudflare R2 free
-> tier), uptime monitoring $0. Total ~$5/month, inside the $25 target.
+> **Cost check:** server €5.49/mo (≈$6), Cloudflare $0, backups $0 (Cloudflare R2
+> free tier), uptime monitoring $0. Total ≈$6/month — about a quarter of the $25
+> target, leaving headroom for the Phase 1.5 analytics box.
 
 ---
 
