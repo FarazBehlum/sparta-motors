@@ -45,11 +45,20 @@ export function organizationJsonLd(settings: Setting) {
       ? { '@type': 'GeoCoordinates', latitude: a.latitude, longitude: a.longitude }
       : undefined
 
+  // Google will not show a brand logo for the business unless Organization
+  // declares one — a favicon alone is not enough, and the two are used in
+  // different places (the favicon sits beside a search result, the logo appears
+  // in brand/knowledge panels). Must be crawlable and at least 112x112, so this
+  // points at a 512px raster rather than the SVG icon.
+  const logo = `${url}/logo.png`
+
   const org = {
     '@type': 'Organization',
     '@id': `${url}/#organization`,
     name: settings.siteName || 'Sparta Motors',
     url,
+    logo,
+    image: logo,
     telephone: settings.phone || undefined,
     email: settings.email || undefined,
     address,
@@ -61,6 +70,8 @@ export function organizationJsonLd(settings: Setting) {
     '@id': `${url}/#dealer`,
     name: settings.siteName || 'Sparta Motors',
     url,
+    logo,
+    image: logo,
     telephone: settings.phone || undefined,
     email: settings.email || undefined,
     address,
