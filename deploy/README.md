@@ -59,9 +59,15 @@ Have these five things ready. Nothing below works without them.
    `~/.ssh/id_rsa.pub` is what this deployment uses.
 5. **Access to this git repo** from the server (a deploy key or a personal access token).
 
-> **Cost check:** server €5.49/mo (≈$6), Cloudflare $0, backups $0 (Cloudflare R2
-> free tier), uptime monitoring $0. Total ≈$6/month — about a quarter of the $25
-> target, leaving headroom for the Phase 1.5 analytics box.
+> **Cost check:** server €5.49/mo + **€0.50/mo primary IPv4** (Hetzner unbundled
+> this — it is a separate line item, billed whether attached or not) = €5.99/mo
+> ≈ $6.50. Cloudflare $0, backups $0 (Cloudflare R2 free tier), uptime
+> monitoring $0. Total ≈$6.50/month — about a quarter of the $25 target, leaving
+> headroom for the Phase 1.5 analytics box.
+>
+> Billing is in EUR wherever you are. EU VAT should **not** apply to a US
+> billing address; if the checkout total is ~19% high, check the country under
+> Account → Billing before buying.
 
 ---
 
