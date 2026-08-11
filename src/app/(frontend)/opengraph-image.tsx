@@ -7,6 +7,14 @@ export const contentType = 'image/png'
 /**
  * Default social-share card for the whole frontend. Truck pages override this
  * with the truck's own photo (see trucks/[slug]/page.tsx generateMetadata).
+ *
+ * Keep this card to characters the bundled font actually has. The brand's ◆
+ * eyebrow marker used to lead the line below, but Satori has no glyph for
+ * U+25C6 in its default font and tried to fetch one at build time; the request
+ * 400s ("Failed to load dynamic font for ◆"), the build logs an error, and the
+ * card shipped with a tofu box in the top-left corner of every link preview.
+ * The ◆ still appears everywhere on the site itself, where a real webfont
+ * renders it.
  */
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -33,7 +41,7 @@ export default function OpengraphImage() {
             textTransform: 'uppercase',
           }}
         >
-          ◆ Est. 2018 · Spartanburg, SC
+          Est. 2018 · Spartanburg, SC
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>

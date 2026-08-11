@@ -26,13 +26,41 @@ function isActive(pathname: string, href: string): boolean {
  * row + phone; mobile shows a "◆ Call" button + hamburger opening a full-screen
  * overlay. See build-brief/04-design-system.md ("Mobile-specific patterns").
  */
-export function NavBar({ phone }: { phone?: string | null }) {
+export function NavBar({
+  phone,
+  addressLines = [],
+  email,
+}: {
+  phone?: string | null
+  /** Display lines from lib/location.ts — Settings is the single source of truth. */
+  addressLines?: string[]
+  email?: string | null
+}) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const telHref = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null
   const closeMenu = () => setOpen(false)
   const overlayRef = useRef<HTMLDivElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+
+  // Publish the header's real height as --header-h so anything that has to sit
+  // clear of it can offset by the true value. The height is not a constant: it
+  // changes with the breakpoint, and on desktop it grows with however many
+  // address lines Settings holds and whether an email is set. A hardcoded
+  // offset went stale the moment the address block was added — the truck page's
+  // sticky inquiry form pinned at 88px under a 163px header, hiding its own
+  // heading behind the nav.
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const publish = () =>
+      document.documentElement.style.setProperty('--header-h', `${el.offsetHeight}px`)
+    publish()
+    const ro = new ResizeObserver(publish)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // While the full-screen overlay is open: lock body scroll, move focus into
   // the dialog, trap Tab within it, close on Escape, and restore focus to the
@@ -77,7 +105,18 @@ export function NavBar({ phone }: { phone?: string | null }) {
   }, [open])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-charcoal bg-sparta-black text-bone">
+    <>
+      {/* Only this bar is sticky. It has to be a SIBLING of the address strip
+          below rather than its wrapper: a sticky element is confined to its
+          parent's box, so while the two shared a 163px <header> the nav
+          unstuck after 83px of scrolling. As a direct child of the page flow
+          its containing block is the document, so it pins for the whole page
+          and the address strip scrolls up and disappears behind it (hence the
+          background and z-50 here). */}
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-50 border-b border-charcoal bg-sparta-black text-bone"
+      >
       <nav className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:h-20 md:px-10">
         <Logo tone="dark" size="lg" />
 
@@ -194,6 +233,29 @@ export function NavBar({ phone }: { phone?: string | null }) {
           </div>
         </div>
       )}
-    </header>
+      </header>
+
+      {/* Address + email. Deliberately OUTSIDE the sticky bar: it is reference
+          detail, not navigation, so it shows on first view and then scrolls
+          away rather than charging 83px of every screen for three short lines.
+          Desktop only — on a phone the Call button, the footer and /contact
+          already cover it. */}
+      {(addressLines.length > 0 || email) && (
+        <div className="hidden border-b border-charcoal bg-sparta-black text-bone md:block">
+          <div className="mx-auto max-w-[1400px] px-5 pb-4 pt-3 md:px-10">
+            <address className="font-inter text-sm not-italic leading-snug text-concrete">
+              {addressLines.map((line) => (
+                <div key={line}>{line}</div>
+              ))}
+              {email && (
+                <a href={`mailto:${email}`} className="mt-2 inline-block hover:text-orange">
+                  {email}
+                </a>
+              )}
+            </address>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

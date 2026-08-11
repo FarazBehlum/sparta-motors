@@ -9,6 +9,7 @@ import { getSettings } from '@/lib/payload'
 import { truckPhotos, truckPrimaryPhoto } from '@/lib/media'
 import { truckVideo } from '@/lib/video'
 import { SITE_URL } from '@/lib/site'
+import { jsonLdScript } from '@/lib/structured-data'
 import {
   BODY_TYPE_TO_CATEGORY,
   bodyTypeLabel,
@@ -266,11 +267,11 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
     <div className="pb-24 lg:pb-0">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbLd) }}
       />
 
       <Breadcrumbs
@@ -421,7 +422,16 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
           </div>
 
           {/* Sticky lead form (right on desktop, below on mobile) */}
-          <aside id="inquire" className="lg:sticky lg:top-[88px] lg:self-start">
+          {/* Offsets come from --header-h, which NavBar measures and republishes
+              on resize — the header is 64px on mobile and ~163px on desktop
+              (wordmark row + address block), so no single literal works.
+              `scroll-mt` is what makes the mobile "Inquire →" button land on the
+              form instead of scrolling it under the sticky nav. The 88px
+              fallback only applies for the instant before hydration. */}
+          <aside
+            id="inquire"
+            className="scroll-mt-[calc(var(--header-h,88px)+1rem)] lg:sticky lg:top-[calc(var(--header-h,88px)+1.5rem)] lg:self-start"
+          >
             {/* A sold truck's page stays reachable from old links and search
                 results, so say so plainly before the inquiry form rather than
                 letting someone fill it out for a truck that's gone. */}

@@ -23,6 +23,43 @@ $sparta-orange-light: #f5843a;
   filter: brightness(1.18);
 }
 
+/* ---------------------------------------------------------------------------
+   iOS Safari: make full-height overlays use the VISIBLE height.
+
+   Payload sizes these with `height: 100vh`. On iOS Safari `100vh` is the
+   viewport with the toolbars HIDDEN, which is taller than what you can
+   actually see while they are showing — so the bottom ~80px of the element is
+   laid out underneath Safari's toolbar.
+
+   For `.drawer` that bottom strip is exactly where the upload drawer puts its
+   actions bar and its orange Save button, so adding a truck photo on an iPhone
+   looked like it had no confirm button at all. There was no way to scroll to
+   it either: `.drawer` is `overflow: hidden`, and its scrollable child
+   (`.drawer__content-children`) is sized to the same too-tall box, so its
+   content never overflows and it never produces a scrollbar.
+
+   `dvh` is the *dynamic* viewport height — the currently visible height, which
+   updates as the toolbars slide away. Payload's stylesheet uses no dvh units
+   anywhere, so this is the whole fix. Browsers without dvh support (iOS < 15.4)
+   ignore the declaration and keep Payload's 100vh, which is the current
+   behaviour rather than a regression.
+
+   The selector is doubled to raise specificity above Payload's own `.drawer`
+   without resorting to `!important`. custom.scss is imported after Payload's
+   CSS so source order should already win, but bundlers are free to reorder
+   independent stylesheets and this failure mode is invisible until someone
+   opens the admin on a phone.
+--------------------------------------------------------------------------- */
+.drawer.drawer {
+  height: 100dvh;
+}
+
+/* Same root cause: the date-picker portal (Published At, Sold At) is a fixed
+   100vh overlay, so its lower edge hides under the toolbar too. */
+.react-datepicker__portal.react-datepicker__portal {
+  height: 100dvh;
+}
+
 /* Text selection in the Sparta orange. */
 ::selection {
   background: $sparta-orange;

@@ -29,7 +29,7 @@ export function HowWeWork() {
         <FadeInSection>
           <SectionLabel tone="dark">How we work</SectionLabel>
           <h2 className="mt-2 font-barlow text-4xl font-bold uppercase tracking-tight text-bone md:text-5xl">
-            Straight talk. Working trucks.
+            No extra fees. Clear price. Business finance options.
           </h2>
         </FadeInSection>
 

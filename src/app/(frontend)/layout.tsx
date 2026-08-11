@@ -5,6 +5,7 @@ import { barlowCondensed, inter, jetbrainsMono } from './fonts'
 import { NavBar } from '@/components/nav/NavBar'
 import { Footer } from '@/components/Footer'
 import { getSettings } from '@/lib/payload'
+import { addressLines } from '@/lib/location'
 import { SITE_URL as siteUrl } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -40,7 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
-        <NavBar phone={settings.phone} />
+        <NavBar
+          phone={settings.phone}
+          addressLines={addressLines(settings)}
+          email={settings.email}
+        />
         <main id="main" tabIndex={-1} className="flex-1">
           {children}
         </main>
