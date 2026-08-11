@@ -34,6 +34,22 @@ const allowedOrigins = [
 ]
 
 export default buildConfig({
+  // Payload's own public address. Without this, cookie authentication breaks on
+  // any real deployment, in a way that only appears once the site is not on
+  // localhost.
+  //
+  // `csrf` below makes Payload accept a session cookie only from a whitelisted
+  // origin. Browsers do not send an `Origin` header on same-origin GET fetches,
+  // so the admin's own "who am I?" call arrives with no origin to check. Payload
+  // resolves that case by comparing against serverURL — and when serverURL is
+  // unset it defaults to localhost, which matches in development and matches
+  // nothing in production. The symptom is login returning "Authentication
+  // Passed" and setting a valid cookie, after which every request is treated as
+  // anonymous and the admin bounces straight back to the login screen.
+  //
+  // Verified against the server: the identical token authenticates when an
+  // Origin header is present and is ignored when it is absent.
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || siteOrigin || '',
   admin: {
     user: Users.slug,
     // Lock the admin to the light theme (no dark/auto toggle).
