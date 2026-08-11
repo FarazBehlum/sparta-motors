@@ -34,21 +34,38 @@ const allowedOrigins = [
 ]
 
 export default buildConfig({
-  // Payload's own public address. Without this, cookie authentication breaks on
-  // any real deployment, in a way that only appears once the site is not on
-  // localhost.
+  // Payload's own public address. Used for absolute URLs, and sanitize.ts also
+  // appends it to `csrf` below.
   //
-  // `csrf` below makes Payload accept a session cookie only from a whitelisted
-  // origin. Browsers do not send an `Origin` header on same-origin GET fetches,
-  // so the admin's own "who am I?" call arrives with no origin to check. Payload
-  // resolves that case by comparing against serverURL — and when serverURL is
-  // unset it defaults to localhost, which matches in development and matches
-  // nothing in production. The symptom is login returning "Authentication
-  // Passed" and setting a valid cookie, after which every request is treated as
-  // anonymous and the admin bounces straight back to the login screen.
+  // ⚠️ THE ADMIN CANNOT BE USED OVER PLAIN http:// ON A NON-LOCALHOST HOST.
+  // This is a property of browsers, not a bug to fix here, and it cost a long
+  // debugging session — so: the site MUST be on https before anyone tries to
+  // log in to /admin from anything other than localhost.
   //
-  // Verified against the server: the identical token authenticates when an
-  // Origin header is present and is ignored when it is absent.
+  // Why. node_modules/payload/dist/auth/extractJWT.js accepts a session cookie
+  // when the request's `Origin` is in `csrf`, OR when `csrf` is empty, OR when
+  // `Sec-Fetch-Site` is same-origin/same-site/none. A browser sends no Origin on
+  // a same-origin GET — every admin page load and every "who am I?" call — so
+  // everything rests on Sec-Fetch-Site. Browsers only send `Sec-Fetch-*` headers
+  // in a SECURE CONTEXT: https, or http://localhost. Over http:// to a bare IP
+  // or a LAN address they are omitted entirely, Payload finds nothing it can
+  // trust, and the cookie is discarded.
+  //
+  // The symptom is badly misleading: login answers "Authentication Passed",
+  // writes a real users_sessions row and sets a valid cookie, and then every
+  // subsequent request is anonymous, so the admin returns to the login screen
+  // with no error shown. It looks exactly like a wrong password.
+  //
+  // Measured on the server against one token, varying a single header:
+  //     no Origin, no Sec-Fetch-Site        -> {"user":null}
+  //     Origin: <this site>                 -> authenticated
+  //     Sec-Fetch-Site: same-origin         -> authenticated
+  //     Sec-Fetch-Site: cross-site          -> {"user":null}
+  //
+  // The LAN-over-http note above therefore no longer holds for the admin:
+  // listing the LAN origin in `csrf` does not help, because the failing requests
+  // carry no origin at all. Staff on the office network must use the https
+  // domain.
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || siteOrigin || '',
   admin: {
     user: Users.slug,
