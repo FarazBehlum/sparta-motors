@@ -21,17 +21,40 @@ This file is the executable version of that document.
 
 Have these five things ready. Nothing below works without them.
 
-1. **A server.** Hetzner CX22 (~$5/mo, 2 vCPU / 4GB / 40GB), Ubuntu 24.04, Ashburn US-East.
-2. **The domain**, with its DNS managed in Cloudflare (free plan).
+1. **A server.** Hetzner **CX23** (~$4.50/mo, 2 vCPU / 4GB / 40GB, 20TB traffic),
+   Ubuntu 24.04, **Falkenstein or Nuremberg (Germany)**.
+
+   > **Not Ashburn, and not CX22.** Hetzner's US locations only offer the CPX and
+   > CCX lines — the cost-optimized CX line is Germany/Finland only — and their
+   > June 2026 increase hit US CPX hardest. The equivalent US box (CPX21, 4GB) is
+   > **~$43/mo**, well over the project's $25 ceiling, with far less included
+   > traffic. Checked 2026-08-11; re-check before ordering, because this pricing
+   > has already moved once.
+   >
+   > The trade-off accepted here is latency: the origin is in Europe, so requests
+   > that actually reach it — filtered inventory browsing and the `/admin` screens
+   > — cost roughly an extra 100ms. Cloudflare edge-caches the statically
+   > rendered pages, so ordinary visitors landing on the home, about, contact and
+   > category pages are unaffected.
+   >
+   > **4GB is not optional at this size**, because section 2.3 compiles the site
+   > on the server. A 2GB box runs the site fine but can fail mid-build. If a
+   > future host only offers 2GB, move the build off the server first.
+
+2. **The domain**, with its DNS managed in Cloudflare (free plan). For
+   sparta-motors.com specifically, read section 6 first — it carries live
+   business email, and the nameservers are changed at **Squarespace**, not
+   Hostinger.
 3. **An SMTP account** for sending lead notifications — the Gmail address
    `spartamotorsllc@gmail.com` with a Google **App Password** (not the account
    password; 2FA must be on to generate one).
-4. **An SSH key** on your Mac. Check with `ls ~/.ssh/id_ed25519.pub`; if it's
-   missing, run `ssh-keygen -t ed25519`.
+4. **An SSH key** on your Mac. Check with `ls ~/.ssh/*.pub`; if there is none,
+   run `ssh-keygen -t ed25519`. An existing RSA key is fine — the PM's
+   `~/.ssh/id_rsa.pub` is what this deployment uses.
 5. **Access to this git repo** from the server (a deploy key or a personal access token).
 
-> **Cost check:** server ~$5/mo, Cloudflare $0, backups $0 (Cloudflare R2 free
-> tier), uptime monitoring $0. Total ~$5–6/month, inside the $25 target.
+> **Cost check:** server ~$4.50/mo, Cloudflare $0, backups $0 (Cloudflare R2 free
+> tier), uptime monitoring $0. Total ~$5/month, inside the $25 target.
 
 ---
 
