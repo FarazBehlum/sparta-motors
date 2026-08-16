@@ -26,7 +26,7 @@ const VALUE_PROPS: { title: string; body: string }[] = [
   },
   {
     title: 'Fast nationwide shipping',
-    body: 'Ordered parts ship anywhere in the country — packed, tracked, and on the way.',
+    body: 'Ordered parts ship anywhere in the country, packed, tracked, and on the way.',
   },
   {
     title: 'Secure checkout · 30-day returns',
@@ -42,14 +42,14 @@ export default function PartsPage() {
         breadcrumb="Parts"
         label="Parts"
         title="Need parts? We stock tested used OEM parts."
-        subtitle="Beyond trucks, Sparta Motors runs a full used-parts operation — tested OEM parts pulled from dismantled vehicles, shipped nationwide. Browse and buy through our online parts store."
+        subtitle="Beyond trucks, Sparta Motors runs a full used-parts operation. We pull tested OEM parts from dismantled vehicles and ship them nationwide. Browse and buy through our online parts store."
       />
 
       <ContentSection
         tone="dark"
         label="Why buy from us"
         title="Real parts. Real testing. Shipped to you."
-        lead="Same standard as our trucks — nothing gets listed without being checked first."
+        lead="Same standard as our trucks. Nothing gets listed without being checked first."
       >
         <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
           {VALUE_PROPS.map((prop, i) => (

@@ -72,7 +72,7 @@ export default async function AboutPage() {
               <p>
                 Every truck is inspected before it goes on our lot. If it doesn&apos;t run right, we
                 don&apos;t sell it. Real mileage, real condition notes, real photos. VIN on every
-                listing so you can run your own report. That&apos;s the whole model — no games, no
+                listing so you can run your own report. That&apos;s the whole model. No games, no
                 hidden reconditioning, no upsell.
               </p>
             </Callout>
@@ -89,7 +89,7 @@ export default async function AboutPage() {
               Come see the trucks.
             </h2>
             <p className="mt-3 max-w-2xl font-inter leading-relaxed text-iron">
-              We&apos;re in Spartanburg, SC. Stop by during business hours — plenty of room to walk
+              We&apos;re in Spartanburg, SC. Stop by during business hours. Plenty of room to walk
               the lot.
             </p>
           </FadeInSection>

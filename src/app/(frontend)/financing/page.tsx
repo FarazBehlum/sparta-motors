@@ -66,7 +66,7 @@ export default async function FinancingPage() {
         breadcrumb="Financing"
         label="Commercial truck financing"
         title="We help you get the truck."
-        subtitle="Sparta Motors doesn't finance directly. We work with commercial lenders and banks who do — and we'll connect you with the right one."
+        subtitle="Sparta Motors doesn't finance directly. We work with commercial lenders and banks who do, and we'll connect you with the right one."
       />
 
       <ContentSection
@@ -105,7 +105,7 @@ export default async function FinancingPage() {
         <FormCTA
           tone="dark"
           heading="Pre-qualification form"
-          description={`This is our standard inquiry form with financing pre-checked. Same as the form on any truck listing — we just skip the "truck of interest" if you don't have one picked yet.`}
+          description={`This is our standard inquiry form with financing pre-checked. Same as the form on any truck listing, except we skip the "truck of interest" if you don't have one picked yet.`}
           phone={phone}
         >
           <FinancingForm phone={phone} />

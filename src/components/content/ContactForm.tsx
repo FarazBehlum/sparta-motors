@@ -61,7 +61,7 @@ export function ContactForm({ phone }: { phone?: string | null }) {
     return (
       <SuccessCard
         title="Message sent."
-        message="Thanks for reaching out — we usually reply within a few hours during business hours."
+        message="Thanks for reaching out. We usually reply within a few hours during business hours."
         phone={phone}
       />
     )

@@ -17,17 +17,17 @@ import {
 /** Short SEO intro per category (Phase 1: inline; moves to Pages global later). */
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   'box-trucks':
-    'Used box trucks are the workhorses of local commerce — deliveries, dry freight, moving, and small-business logistics. Sparta Motors stocks used box trucks from Isuzu, Hino, Freightliner, and other proven brands, most between 14 and 26 feet, in a mix of gas and diesel. Every truck is inspected before it goes on the lot, with real mileage and real photos.',
+    'Used box trucks are the workhorses of local commerce, handling deliveries, dry freight, moving, and small-business logistics. Sparta Motors stocks used box trucks from Isuzu, Hino, Freightliner, and other proven brands, most between 14 and 26 feet, in a mix of gas and diesel. Every truck is inspected before it goes on the lot, with real mileage and real photos.',
   reefers:
-    'Refrigerated trucks keep your cold chain intact — produce, pharma, catering, and frozen freight. Our used reefers come from names like Thermo King and Carrier on Isuzu, Hino, and Freightliner chassis. Every unit is inspected and run before it goes on the lot.',
+    'Refrigerated trucks keep your cold chain intact for produce, pharma, catering, and frozen freight. Our used reefers come from names like Thermo King and Carrier on Isuzu, Hino, and Freightliner chassis. Every unit is inspected and run before it goes on the lot.',
   landscapers:
-    'Landscape trucks are built for crews that haul equipment, mulch, and debris all day. Sparta Motors stocks used landscape bodies — dovetails, dumps, and open decks — on proven medium-duty chassis, each inspected with honest mileage and clear condition notes.',
+    'Landscape trucks are built for crews that haul equipment, mulch, and debris all day. Sparta Motors stocks used dovetails, dumps, and open decks on proven medium-duty chassis, each inspected with honest mileage and clear condition notes.',
   '26ft-box-trucks':
     'A 26ft box truck is the largest van body most drivers can run without a CDL, which makes it the go-to for moving companies, furniture delivery, and regional freight. Ours come with liftgates and roll-up or swing doors, inspected before listing with real specs.',
   'dump-trucks':
-    'Dump trucks move dirt, gravel, and debris for construction and site work. Sparta Motors stocks used dumps from Kenworth, Peterbilt, and International with tight hydraulics and solid bodies — all inspected before listing.',
+    'Dump trucks move dirt, gravel, and debris for construction and site work. Sparta Motors stocks used dumps from Kenworth, Peterbilt, and International with tight hydraulics and solid bodies, all inspected before listing.',
   'tow-trucks':
-    'Tow and recovery trucks keep your fleet — and your customers — moving. Our used rollbacks and wreckers are inspected and road-ready, with honest hours and clear condition notes.',
+    'Tow and recovery trucks keep your fleet and your customers moving. Our used rollbacks and wreckers are inspected and road-ready, with honest hours and clear condition notes.',
 }
 
 function flattenParams(params: RawParams): Record<string, string> {
@@ -101,7 +101,7 @@ export async function InventoryView({
               </h1>
               <p className="mt-4 font-inter text-sm leading-relaxed text-concrete">
                 Every truck inspected before it goes on the lot. Filter by body type, brand, or
-                budget — call us if you don&rsquo;t see what you need.
+                budget. Call us if you don&rsquo;t see what you need.
               </p>
             </div>
             <div className="flex gap-10">

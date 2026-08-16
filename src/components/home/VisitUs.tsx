@@ -44,11 +44,11 @@ export function VisitUs({
               Come see the trucks in person.
             </h2>
             <p className="mt-4 font-inter leading-relaxed text-iron">
-              We&apos;re in Spartanburg, SC — plenty of room to walk the lot. Stop by during hours or
-              call ahead for after-hours access.
+              We&apos;re in Spartanburg, SC, with plenty of room to walk the lot. Stop by during
+              hours or call ahead for after-hours access.
             </p>
             <p className="mt-2 font-inter leading-relaxed text-iron">
-              Can&apos;t make it in person? We ship trucks nationwide — ask us for a delivery quote.
+              Can&apos;t make it in person? We ship trucks nationwide. Ask us for a delivery quote.
             </p>
 
             <dl className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC',
+    title: 'Sparta Motors · Used Commercial Trucks in Spartanburg, SC',
     description: DESCRIPTION,
     type: 'website',
   },

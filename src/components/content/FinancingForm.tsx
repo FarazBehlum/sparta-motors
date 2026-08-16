@@ -65,7 +65,7 @@ export function FinancingForm({ phone }: { phone?: string | null }) {
   if (submitted) {
     return (
       <SuccessCard
-        title="Thanks — we'll be in touch."
+        title="Thanks. We'll be in touch."
         message="We'll get your info in front of a commercial lender. Usually one business day for a first response."
         phone={phone}
       />
@@ -113,7 +113,7 @@ export function FinancingForm({ phone }: { phone?: string | null }) {
       <TextareaField
         id="fin-message"
         label="Message"
-        placeholder="Tell us anything relevant — trade-in, timeline, budget range…"
+        placeholder="Tell us anything relevant: trade-in, timeline, budget range"
         {...register('message')}
       />
       {errored && <ErrorBanner canCall={Boolean(phone)} />}

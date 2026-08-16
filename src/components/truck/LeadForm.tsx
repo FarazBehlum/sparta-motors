@@ -102,7 +102,7 @@ export function LeadForm({
       <div className="rounded-[10px] border border-chalk bg-white p-8 text-center">
         <CheckCircle2 className="mx-auto text-success" size={40} />
         <h3 className="mt-4 font-barlow text-2xl font-bold uppercase tracking-tight text-sparta-black">
-          Thanks — we&rsquo;ll be in touch soon.
+          Thanks. We&rsquo;ll be in touch soon.
         </h3>
         <p className="mt-2 font-inter text-sm text-iron">
           We usually reply within a few hours during business hours.

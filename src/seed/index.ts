@@ -73,7 +73,7 @@ async function seed() {
   const pages: Array<{ slug: 'home' | 'about' | 'financing' | 'parts' | 'contact'; title: string; heroLabel: string; heroTitle: string; heroSubtitle: string; metaDescription: string }> = [
     {
       slug: 'home',
-      title: 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC',
+      title: 'Sparta Motors · Used Commercial Trucks in Spartanburg, SC',
       heroLabel: 'SPARTA MOTORS',
       heroTitle: 'Work trucks\nthat work.',
       heroSubtitle: 'Used medium- and heavy-duty commercial trucks. Honest specs, real photos, a phone that gets answered.',
@@ -84,7 +84,7 @@ async function seed() {
       title: 'About Sparta Motors',
       heroLabel: 'ABOUT SPARTA MOTORS',
       heroTitle: 'A dealer built\nfor working businesses.',
-      heroSubtitle: 'Established 2018. We sell trucks that earn their keep — and we tell you the truth about every one.',
+      heroSubtitle: 'Established 2018. We sell trucks that earn their keep, and we tell you the truth about every one.',
       metaDescription: 'Sparta Motors is a used commercial truck dealer in Spartanburg, SC, serving small businesses since 2018.',
     },
     {
@@ -97,7 +97,7 @@ async function seed() {
     },
     {
       slug: 'parts',
-      title: 'Parts — Sparta Motors',
+      title: 'Parts · Sparta Motors',
       heroLabel: 'PARTS',
       heroTitle: 'Need parts?\nWe stock them.',
       heroSubtitle: 'Tested used OEM parts pulled from dismantled vehicles, shipped nationwide. Browse and buy through our online parts store.',

@@ -53,7 +53,7 @@ export async function generateMetadata({
   const truck = await getTruckBySlug(slug)
   if (!truck) return { title: 'Truck not found' }
   const name = truckName(truck)
-  const title = `${name} — Sparta Motors`
+  const title = `${name} · Sparta Motors`
   const description = `${name}. ${formatMileage(truck.mileage)}. ${bodyTypeLabel(truck.bodyType)}. ${formatPrice(truck.price)}. Spartanburg, SC.`
   // The truck's own photo makes the strongest social card. Relative URLs are
   // resolved against metadataBase (set in the root layout).

@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const call = settings.phone ? `Call ${formatPhone(settings.phone)} or email us.` : 'Call or email us.'
   return {
     title: 'Contact Sparta Motors',
-    description: `Contact Sparta Motors — used commercial truck dealer in Spartanburg, SC. ${call} Mon–Fri 8am–5pm.`,
+    description: `Contact Sparta Motors, a used commercial truck dealer in Spartanburg, SC. ${call} Mon–Fri 8am–5pm.`,
     alternates: { canonical: '/contact' },
   }
 }
@@ -45,7 +45,7 @@ export default async function ContactPage() {
         breadcrumb="Contact"
         label="Get in touch"
         title="Give us a call. Send us a note."
-        subtitle="Fastest way to get an answer is a phone call. If email works better, drop us a note — we usually respond within a few hours during business hours."
+        subtitle="Fastest way to get an answer is a phone call. If email works better, drop us a note. We usually respond within a few hours during business hours."
       />
 
       {/* Contact cards + full map */}
@@ -107,7 +107,7 @@ export default async function ContactPage() {
         <FormCTA
           tone="light"
           heading="General contact form"
-          description="For truck-specific inquiries, use the inquiry form on the truck's listing — we can respond faster with the truck already flagged. For anything else, this form works great."
+          description="For truck-specific inquiries, use the inquiry form on the truck's listing. We can respond faster with the truck already flagged. For anything else, this form works great."
           phone={phone}
           callLead="Urgent?"
         >

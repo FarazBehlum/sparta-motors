@@ -11,7 +11,7 @@ import { SITE_URL as siteUrl } from '@/lib/site'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC',
+    default: 'Sparta Motors · Used Commercial Trucks in Spartanburg, SC',
     template: '%s · Sparta Motors',
   },
   description:

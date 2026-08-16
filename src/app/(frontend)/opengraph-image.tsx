@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Sparta Motors — Used Commercial Trucks in Spartanburg, SC'
+export const alt = 'Sparta Motors · Used Commercial Trucks in Spartanburg, SC'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -58,7 +58,7 @@ export default function OpengraphImage() {
             Sparta Motors
           </div>
           <div style={{ display: 'flex', fontSize: 34, color: '#b4b2a9', marginTop: 24, maxWidth: 940 }}>
-            Used commercial trucks for working businesses — box trucks, reefers, day cabs, dump &amp; tow.
+            Used commercial trucks for working businesses: box trucks, reefers, day cabs, dump &amp; tow.
           </div>
         </div>
 

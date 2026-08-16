@@ -35,7 +35,7 @@ export function PageStub({
         </Button>
       </div>
       <p className="mt-10 font-mono text-[11px] uppercase tracking-widest text-concrete">
-        This page is scaffolded — full build in progress.
+        This page is scaffolded. Full build in progress.
       </p>
     </Container>
   )
