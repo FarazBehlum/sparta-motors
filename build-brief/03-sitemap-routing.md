@@ -22,10 +22,13 @@ Every URL on the site, what it renders, and what data it fetches. Uses Next.js A
 - **URLs:**
   - `/inventory/box-trucks`
   - `/inventory/reefers`
-  - `/inventory/day-cabs`
-  - `/inventory/flat-beds`
+  - `/inventory/landscapers`
+  - `/inventory/26ft-box-trucks`
   - `/inventory/dump-trucks`
   - `/inventory/tow-trucks`
+  - `/inventory/tank-trucks`
+  - `/inventory/garbage-trucks`
+  - `/inventory/specialty-trucks`
 - **Component:** `app/inventory/[category]/page.tsx` (dynamic route)
 - **Data:** Same as `/inventory` but pre-filtered by `bodyType`. Also loads a short SEO paragraph for the category.
 - **Rendering:** Server-side rendered

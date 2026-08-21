@@ -101,16 +101,16 @@ Below the hero. Horizontal band with 4 stats.
 
 ### 4. Shop by body type
 
-Grid of six category tiles. Uses the sticky-stacking motion pattern (see `04-design-system.md`, motion moment #2).
+Grid of nine category tiles. Uses the sticky-stacking motion pattern (see `04-design-system.md`, motion moment #2).
 
 - Section label: `◆ SHOP BY BODY TYPE`
 - Section title: `Find the right truck.`
-- Grid: 3 columns × 2 rows on desktop, 2 columns × 3 rows on mobile
+- Grid: 3 columns on desktop, 2 columns on mobile (9 categories)
 - Each tile: dark background (`#1A1A1A`), padding, category number (mono orange), category name (Barlow Condensed 700), truck count (mono Concrete)
 - Hover state: orange border appears, number shifts orange → white
 - Click routes to `/inventory/[category-slug]`
 
-**Category order:** Box Trucks, Reefers, Day Cabs, Flat Beds, Dump Trucks, Tow Trucks. Match the order in `03-sitemap-routing.md`.
+**Category order:** Box Trucks, Reefers, Landscapers, 26ft Box Trucks, Dump Trucks, Tow Trucks, Tank Trucks, Garbage Trucks, Specialty Trucks. Match the order in `03-sitemap-routing.md`.
 
 ### 5. Featured inventory
 
@@ -204,7 +204,7 @@ Deep dark background (`#0F0F0F`). 4-column grid on desktop, stacked on mobile.
 
 **Column 2 (Inventory):**
 - Section heading `◆ INVENTORY` (mono orange)
-- Links: Box Trucks / Reefers / Day Cabs / Dump Trucks / Tow Trucks
+- Links: Box Trucks / Reefers / Landscapers / Dump Trucks / Tow Trucks / Tank Trucks / Garbage Trucks / Specialty Trucks
 
 **Column 3 (Company):**
 - Section heading `◆ COMPANY` (mono orange)

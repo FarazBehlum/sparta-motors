@@ -71,6 +71,9 @@ const BODY_TYPE_LABELS: Record<string, string> = {
   '26ft-box-truck': '26ft Box Truck',
   'dump-truck': 'Dump Truck',
   'tow-truck': 'Tow Truck',
+  'tank-truck': 'Tank Truck',
+  'garbage-truck': 'Garbage Truck',
+  'specialty-truck': 'Specialty Truck',
 }
 
 export function bodyTypeLabel(bodyType: string): string {
@@ -85,6 +88,9 @@ export const CATEGORY_TO_BODY_TYPE: Record<string, string> = {
   '26ft-box-trucks': '26ft-box-truck',
   'dump-trucks': 'dump-truck',
   'tow-trucks': 'tow-truck',
+  'tank-trucks': 'tank-truck',
+  'garbage-trucks': 'garbage-truck',
+  'specialty-trucks': 'specialty-truck',
 }
 
 export const BODY_TYPE_TO_CATEGORY: Record<string, string> = Object.fromEntries(

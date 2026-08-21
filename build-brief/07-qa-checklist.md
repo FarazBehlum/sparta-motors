@@ -30,7 +30,7 @@ Verify by actually doing each end-to-end, on both desktop and mobile.
 
 - [ ] `/inventory/box-trucks` loads with the body-type filter pre-applied
 - [ ] SEO paragraph appears at the top
-- [ ] Same experience for all 6 category pages (reefers, day cabs, flat beds, dump trucks, tow trucks)
+- [ ] Same experience for all 9 category pages (box trucks, reefers, landscapers, 26ft box trucks, dump trucks, tow trucks, tank trucks, garbage trucks, specialty trucks)
 
 ### Form submissions
 

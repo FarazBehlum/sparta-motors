@@ -12,7 +12,7 @@ import { PartsCTA } from '@/components/home/PartsCTA'
 import { addressLines, coords } from '@/lib/location'
 
 const DESCRIPTION =
-  'Used commercial trucks for working businesses. Box trucks, reefers, day cabs, dump trucks, tow rigs. Spartanburg, SC. Est. 2018.'
+  'Used commercial trucks for working businesses. Box trucks, reefers, landscapers, dump, tow, tank, and garbage trucks. Spartanburg, SC. Est. 2018.'
 
 // Home keeps the layout's default (untemplated) title; only description + OG here.
 export const metadata: Metadata = {

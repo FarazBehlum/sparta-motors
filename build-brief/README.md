@@ -35,7 +35,7 @@ If you are the **project manager** during build: refer here whenever Claude Code
 
 - **[pages/home.md](./pages/home.md)** — Home page with the scroll-driven truck disassembly hero.
 - **[pages/truck-detail.md](./pages/truck-detail.md)** — Individual truck listing (`/trucks/[vin-slug]`). The money page — where conversion happens.
-- **[pages/inventory.md](./pages/inventory.md)** — Inventory browse (`/inventory`), plus 6 category pages (`/inventory/box-trucks`, `/inventory/reefers`, etc.).
+- **[pages/inventory.md](./pages/inventory.md)** — Inventory browse (`/inventory`), plus 9 category pages (`/inventory/box-trucks`, `/inventory/reefers`, etc.).
 - **[pages/financing.md](./pages/financing.md)** — Financing explainer and pre-qual form.
 - **[pages/fleet.md](./pages/fleet.md)** — Fleet & bulk sourcing.
 - **[pages/about.md](./pages/about.md)** — About Sparta Motors.

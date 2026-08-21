@@ -10,6 +10,9 @@ const INVENTORY_LINKS = [
   { label: 'Landscapers', href: '/inventory/landscapers' },
   { label: 'Dump Trucks', href: '/inventory/dump-trucks' },
   { label: 'Tow Trucks', href: '/inventory/tow-trucks' },
+  { label: 'Tank Trucks', href: '/inventory/tank-trucks' },
+  { label: 'Garbage Trucks', href: '/inventory/garbage-trucks' },
+  { label: 'Specialty Trucks', href: '/inventory/specialty-trucks' },
 ]
 
 const COMPANY_LINKS = [

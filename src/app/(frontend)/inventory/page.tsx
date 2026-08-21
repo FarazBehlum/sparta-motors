@@ -6,7 +6,7 @@ import type { RawParams } from '@/lib/trucks'
 export const metadata: Metadata = {
   title: 'Used Commercial Trucks for Sale',
   description:
-    'Browse used commercial trucks in Spartanburg, SC. Box trucks, reefers, day cabs, dump trucks, and more from Isuzu, Hino, Freightliner. Real mileage, honest specs, inspected.',
+    'Browse used commercial trucks in Spartanburg, SC. Box trucks, reefers, landscapers, dump, tow, and tank trucks from Isuzu, Hino, Freightliner. Inspected.',
   alternates: { canonical: '/inventory' },
 }
 

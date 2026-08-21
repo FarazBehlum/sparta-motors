@@ -58,7 +58,7 @@ export default function OpengraphImage() {
             Sparta Motors
           </div>
           <div style={{ display: 'flex', fontSize: 34, color: '#b4b2a9', marginTop: 24, maxWidth: 940 }}>
-            Used commercial trucks for working businesses: box trucks, reefers, day cabs, dump &amp; tow.
+            Used commercial trucks for working businesses: box trucks, reefers, landscapers, dump &amp; tank.
           </div>
         </div>
 

@@ -223,7 +223,7 @@ Motion should feel functional and crisp, not cinematic. All easing uses `cubic-b
 - Full spec in `integrations/hero-video.md`
 
 **2. Sticky-stacking (Shop by body type section).**
-- Each of the 6 category cards sticks at the top as the user scrolls
+- Each of the 9 category cards sticks at the top as the user scrolls
 - Cards behind scale down slightly (0.03 per card)
 - Card offset: 28px per card
 - Uses CSS `position: sticky` + a small JavaScript enhancer for the scale effect

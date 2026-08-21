@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: '%s · Sparta Motors',
   },
   description:
-    'Used medium- and heavy-duty commercial trucks for working businesses. Box trucks, reefers, day cabs, flatbeds, dump trucks, and tow trucks. Honest specs, real photos.',
+    'Used medium- and heavy-duty commercial trucks for working businesses. Box trucks, reefers, landscapers, dump, tow, and tank trucks. Honest specs, real photos.',
   openGraph: {
     type: 'website',
     siteName: 'Sparta Motors',

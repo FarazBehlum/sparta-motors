@@ -15,9 +15,12 @@ const CATEGORIES: { num: string; name: string; slug: string; body: string; image
   { num: '04', name: '26ft Box Trucks', slug: '26ft-box-trucks', body: '26ft-box-truck', image: '/categories/26ft-box-trucks.webp', pos: 'center' },
   { num: '05', name: 'Dump Trucks', slug: 'dump-trucks', body: 'dump-truck', image: '/categories/dump-trucks.webp', pos: 'center' },
   { num: '06', name: 'Tow Trucks', slug: 'tow-trucks', body: 'tow-truck', image: '/categories/tow-trucks.webp', pos: 'center' },
+  { num: '07', name: 'Tank Trucks', slug: 'tank-trucks', body: 'tank-truck', image: '/categories/tank-trucks.webp', pos: 'center' },
+  { num: '08', name: 'Garbage Trucks', slug: 'garbage-trucks', body: 'garbage-truck', image: '/categories/garbage-trucks.webp', pos: 'center' },
+  { num: '09', name: 'Specialty Trucks', slug: 'specialty-trucks', body: 'specialty-truck', image: '/categories/specialty-trucks.webp', pos: 'center' },
 ]
 
-/** "Shop by body type" — six dark category tiles linking to category pages. */
+/** "Shop by body type" — nine dark category tiles linking to category pages. */
 export function CategoryGrid({ counts }: { counts: Record<string, number> }) {
   return (
     <section className="bg-bone">

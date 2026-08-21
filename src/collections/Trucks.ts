@@ -32,6 +32,9 @@ const BODY_TYPE_OPTIONS = [
   { label: '26ft Box Truck', value: '26ft-box-truck' },
   { label: 'Dump Truck', value: 'dump-truck' },
   { label: 'Tow Truck', value: 'tow-truck' },
+  { label: 'Tank Truck', value: 'tank-truck' },
+  { label: 'Garbage Truck', value: 'garbage-truck' },
+  { label: 'Specialty Truck', value: 'specialty-truck' },
 ]
 
 async function nextStockNumber(req: PayloadRequest): Promise<string> {

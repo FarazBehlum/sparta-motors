@@ -28,6 +28,12 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
     'Dump trucks move dirt, gravel, and debris for construction and site work. Sparta Motors stocks used dumps from Kenworth, Peterbilt, and International with tight hydraulics and solid bodies, all inspected before listing.',
   'tow-trucks':
     'Tow and recovery trucks keep your fleet and your customers moving. Our used rollbacks and wreckers are inspected and road-ready, with honest hours and clear condition notes.',
+  'tank-trucks':
+    'Tank trucks move fuel, water, and liquid bulk for fuel dealers, contractors, and service operations. Sparta Motors stocks used tankers on Freightliner, International, and other proven chassis, with the pump and plumbing checked before the truck goes on the lot. Real mileage, real photos, clear condition notes.',
+  'garbage-trucks':
+    'Garbage trucks keep collection routes running for private haulers, municipalities, and waste operations. Our used rear loaders and refuse bodies sit on medium and heavy duty chassis, with the packer and hydraulics run before the truck is listed. Honest mileage and clear condition notes on every unit.',
+  'specialty-trucks':
+    'Specialty trucks cover the work a standard body cannot do: vacuum and septic units, service and utility bodies, and other purpose-built equipment. What we have here changes often, so if you need something specific, call us and we will tell you what is coming through. Every unit is inspected before it goes on the lot.',
 }
 
 function flattenParams(params: RawParams): Record<string, string> {

@@ -77,7 +77,7 @@ async function seed() {
       heroLabel: 'SPARTA MOTORS',
       heroTitle: 'Work trucks\nthat work.',
       heroSubtitle: 'Used medium- and heavy-duty commercial trucks. Honest specs, real photos, a phone that gets answered.',
-      metaDescription: 'Used commercial trucks for working businesses in Spartanburg, SC. Box trucks, reefers, day cabs, flatbeds, dump trucks, and tow trucks.',
+      metaDescription: 'Used commercial trucks for working businesses in Spartanburg, SC. Box trucks, reefers, landscapers, dump, tow, tank, and garbage trucks.',
     },
     {
       slug: 'about',

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const STATS: StripStat[] = [
   { label: 'Est.', value: '2018', desc: 'Spartanburg, SC' },
   { label: 'Trucks sold', value: '400+', desc: 'Small businesses served' },
-  { label: 'Body types', value: '06', desc: 'Box, reefer, day cab, dump, tow, flatbed' },
+  { label: 'Body types', value: '09', desc: 'Box, reefer, landscaper, dump, tow, tank, garbage + more' },
   { label: 'Brands', value: '08', desc: 'Isuzu, Hino, Freightliner, Nissan + more' },
 ]
 
