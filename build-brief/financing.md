@@ -16,8 +16,9 @@ Explains how Sparta helps customers finance a truck. Positioning: **Sparta is no
 2. Page header (dark, with "FINANCING" watermark)
 3. How it works (3-step process)
 4. What you'll need (document list + legal callout)
-5. Pre-qualification CTA + form
-6. Footer (site-wide)
+5. Financing application (embedded JotForm — the lender's credit application)
+6. "Rather talk first?" CTA + short inquiry form
+7. Footer (site-wide)
 
 ## Page header
 
@@ -72,19 +73,34 @@ Warm off-white background. Section pattern.
 
 This callout is important legally — Sparta must not represent itself as a lender or credit provider.
 
-## Section 3 — Pre-qualification CTA + form
+## Section 3 — Financing application (embedded JotForm)
+
+Light background. Standard section pattern.
+
+- Label: `◆ APPLY`
+- Title: `Financing application.`
+- Lead: explains that the form is the lender's own, carries their branding, and that Sparta never sees or stores the answers.
+
+**The form** — JotForm `231048325244146`, rendered by `components/content/JotFormEmbed.tsx`.
+
+- It is a long single-page **Business Credit Application** ("GSF Online App"): owner information for up to 3 owners, company information, financial information. It collects **Social Security numbers**.
+- Embedded as a **plain iframe with no JotForm script**. The submission posts straight from the iframe to JotForm over HTTPS — it never reaches our server, is never written to the `leads` collection, and never lands in `/admin`. That is deliberate given the SSNs involved.
+- Because there is no auto-resize script, the frame is a fixed height and scrolls internally. A visible "Open it in a new tab" fallback link sits underneath.
+- **Consequence to remember:** applications submitted here do NOT appear in the Leads inbox and do NOT fire an SMTP notification. They go wherever the JotForm account is configured to send them. Section 4 exists so there is still a path that produces a normal lead.
+
+## Section 4 — "Rather talk first?" CTA + short inquiry form
 
 Dark section (`#1A1A1A`, Bone text).
 
-- Label: `◆ START HERE`
-- Title: `Start pre-qualification.`
-- Lead: `Fill this out, and we'll get you in front of a lender who works with commercial buyers. Usually one business day for a first response.`
+- Label: `◆ NOT READY TO APPLY?`
+- Title: `Rather talk first?`
+- Lead: `A full credit application is a lot to fill out before you've even settled on a truck. If you'd rather ask questions first, leave us a note instead.`
 
 **CTA block** — dark card, two columns on desktop (info left, form right):
 
 **Left side:**
-- Section heading: `Pre-qualification form`
-- Description: `This is our standard inquiry form with financing pre-checked. Same as the form on any truck listing — we just skip the "truck of interest" if you don't have one picked yet.`
+- Section heading: `Quick financing question`
+- Description: positions this as the low-commitment path — reach out, talk through options, ask about a specific truck, without filling out the full application.
 - Below: `Prefer to talk to a person first? Call us — (864) 266-5347.`
 
 **Right side — the form:**

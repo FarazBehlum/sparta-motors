@@ -8,6 +8,11 @@ import { InfoGrid, type InfoItem } from '@/components/content/InfoGrid'
 import { Callout } from '@/components/content/Callout'
 import { FormCTA } from '@/components/content/FormCTA'
 import { FinancingForm } from '@/components/content/FinancingForm'
+import { JotFormEmbed } from '@/components/content/JotFormEmbed'
+
+// The lender's credit application, hosted on JotForm. Applicant data (including
+// SSNs) goes straight to them; it is deliberately not routed through /api/leads.
+const APPLICATION_FORM_ID = '231048325244146'
 
 export const metadata: Metadata = {
   title: 'Commercial Truck Financing',
@@ -25,7 +30,7 @@ const STEPS: Step[] = [
   {
     num: '02',
     title: 'Tell us about your business',
-    body: 'Fill out a short pre-qualification form. Business info, personal info, rough downpayment. Takes about 10 minutes.',
+    body: 'Fill out the credit application on this page. Business info, owner info, and financials. Set aside about 10 minutes.',
   },
   {
     num: '03',
@@ -97,15 +102,28 @@ export default async function FinancingPage() {
       </ContentSection>
 
       <ContentSection
+        tone="light"
+        label="Apply"
+        title="Financing application."
+        lead="This is the lender's own credit application, so it carries their name and branding rather than ours. Your answers go directly to them. Sparta Motors never sees or stores what you enter here."
+      >
+        <JotFormEmbed
+          formId={APPLICATION_FORM_ID}
+          title="Business credit application"
+          className="mt-10"
+        />
+      </ContentSection>
+
+      <ContentSection
         tone="dark"
-        label="Start here"
-        title="Start pre-qualification."
-        lead="Fill this out, and we'll get you in front of a lender who works with commercial buyers. Usually one business day for a first response."
+        label="Not ready to apply?"
+        title="Rather talk first?"
+        lead="A full credit application is a lot to fill out before you've even settled on a truck. If you'd rather ask questions first, leave us a note instead."
       >
         <FormCTA
           tone="dark"
-          heading="Pre-qualification form"
-          description={`This is our standard inquiry form with financing pre-checked. Same as the form on any truck listing, except we skip the "truck of interest" if you don't have one picked yet.`}
+          heading="Quick financing question"
+          description="Just enough for us to reach you. Use this if you want to talk through your options, get a rough idea of what you'd qualify for, or ask about financing a specific truck before you fill anything out."
           phone={phone}
         >
           <FinancingForm phone={phone} />
