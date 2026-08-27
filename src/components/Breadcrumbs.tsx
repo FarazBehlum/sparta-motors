@@ -26,7 +26,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 
   return (
     <div className="border-b border-chalk bg-warm-white">
-      <div className="mx-auto max-w-[1280px] px-5 md:px-10">
+      <div className="mx-auto max-w-[1600px] px-5 md:px-10">
         {/* Safety Orange rule anchoring the row. A solid block is exempt from
             text-contrast limits, so this carries the brand pop that bright
             orange can't carry at 12px on a light ground (2.58:1). */}

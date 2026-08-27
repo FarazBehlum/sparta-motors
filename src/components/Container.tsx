@@ -3,8 +3,8 @@ import React from 'react'
 type Width = 'content' | 'wide' | 'prose'
 
 const MAX_WIDTH: Record<Width, string> = {
-  content: 'max-w-[1280px]',
-  wide: 'max-w-[1400px]',
+  content: 'max-w-[1600px]',
+  wide: 'max-w-[1720px]',
   prose: 'max-w-[900px]',
 }
 

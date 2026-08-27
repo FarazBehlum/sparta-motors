@@ -83,7 +83,7 @@ export async function InventoryView({
         >
           Trucks
         </span>
-        <div className="relative mx-auto max-w-[1400px] px-5 py-12 md:px-10 md:py-16">
+        <div className="relative mx-auto max-w-[1720px] px-5 py-12 md:px-10 md:py-16">
           <nav className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wider text-concrete">
             <Link href="/" className="hover:text-bone">Home</Link>
             <ChevronRight size={12} aria-hidden="true" />
@@ -121,12 +121,12 @@ export async function InventoryView({
 
       {/* ---- Search bar ---- */}
       <div className="bg-charcoal">
-        <div className="mx-auto max-w-[1400px] px-5 py-4 md:px-10">
+        <div className="mx-auto max-w-[1720px] px-5 py-4 md:px-10">
           <InventorySearch query={query} filters={filters} />
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-5 py-10 md:px-10">
+      <div className="mx-auto max-w-[1720px] px-5 py-10 md:px-10">
         {categoryDescription && (
           <p className="mb-8 max-w-3xl font-inter text-sm leading-relaxed text-iron">
             {categoryDescription}

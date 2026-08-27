@@ -283,7 +283,7 @@ export default async function TruckDetailPage({ params }: { params: Promise<Para
         ]}
       />
 
-      <div className="mx-auto max-w-[1280px] px-5 py-8 md:px-10">
+      <div className="mx-auto max-w-[1600px] px-5 py-8 md:px-10">
         {/* minmax(0,1fr), not a bare 1fr: a bare 1fr floors the track at its
             content's min-content width, and the gallery thumbnail strip (one
             80px thumb per photo) is wider than the column on trucks with a lot

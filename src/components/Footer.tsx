@@ -54,7 +54,7 @@ export async function Footer() {
 
   return (
     <footer className="bg-[#0F0F0F] text-bone">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-5 py-14 md:grid-cols-4 md:px-10">
+      <div className="mx-auto grid max-w-[1720px] grid-cols-1 gap-10 px-5 py-14 md:grid-cols-4 md:px-10">
         {/* Brand */}
         <div>
           <Logo tone="dark" href={null} />
@@ -111,7 +111,7 @@ export async function Footer() {
       </div>
 
       <div className="border-t border-charcoal">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-5 py-5 font-mono text-[11px] uppercase tracking-wider text-iron md:flex-row md:items-center md:justify-between md:px-10">
+        <div className="mx-auto flex max-w-[1720px] flex-col gap-2 px-5 py-5 font-mono text-[11px] uppercase tracking-wider text-iron md:flex-row md:items-center md:justify-between md:px-10">
           <span>© {new Date().getFullYear()} Sparta Motors LLC</span>
           <span>{location}</span>
         </div>

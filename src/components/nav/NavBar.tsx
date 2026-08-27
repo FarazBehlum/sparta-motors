@@ -117,7 +117,7 @@ export function NavBar({
         ref={headerRef}
         className="sticky top-0 z-50 border-b border-charcoal bg-sparta-black text-bone"
       >
-      <nav className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 md:h-20 md:px-10">
+      <nav className="mx-auto flex h-16 max-w-[1720px] items-center justify-between px-5 md:h-20 md:px-10">
         <Logo tone="dark" size="lg" />
 
         {/* Desktop links */}
@@ -242,7 +242,7 @@ export function NavBar({
           already cover it. */}
       {(addressLines.length > 0 || email) && (
         <div className="hidden border-b border-charcoal bg-sparta-black text-bone md:block">
-          <div className="mx-auto max-w-[1400px] px-5 pb-4 pt-3 md:px-10">
+          <div className="mx-auto max-w-[1720px] px-5 pb-4 pt-3 md:px-10">
             <address className="font-inter text-sm not-italic leading-snug text-concrete">
               {addressLines.map((line) => (
                 <div key={line}>{line}</div>

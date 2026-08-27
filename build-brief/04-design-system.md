@@ -188,9 +188,13 @@ Section padding standard:
 
 | Context | Max width |
 |---|---|
-| Standard content | 1280px |
-| Wide layouts (inventory, home) | 1400px |
+| Standard content | 1600px |
+| Wide layouts (inventory, home) | 1720px |
 | Narrow prose (About paragraph) | 900px |
+
+Widened from the original 1280/1400px (2026-08-27, PM request) so less screen
+goes unused on wide monitors. Prose stays at 900px — line length, not screen
+width, drives that cap.
 
 ### Grid patterns
 
