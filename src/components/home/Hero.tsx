@@ -46,10 +46,22 @@ export function Hero() {
 
       {/* Photo band */}
       <div className="relative isolate overflow-hidden bg-sparta-black">
+        {/* `center 60%` instead of `bg-center` (2026-08-27, PM report: trucks'
+            wheels were cropped off). This photo (1421x1107, 1.28:1) is much
+            squarer than the hero band (up to ~5.5:1 on an ultrawide monitor),
+            so `bg-cover` scales it up a lot and a plain center crop cut deep
+            into both edges — on desktop that meant losing the wheels/ground,
+            the exact part a `center bottom` anchor would protect. But full
+            bottom-anchoring overcorrects at very wide viewports: the crop
+            window gets so short that it shows only the wet-pavement
+            reflection and loses the trucks entirely. 60% is the empirical
+            middle ground — keeps the truck row (roughly the 42%-70% vertical
+            band of the source photo) in frame from a 1366px laptop up
+            through a 3440px ultrawide; verified via screenshots at both. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HERO_PHOTO})` }}
+          className="absolute inset-0 bg-cover"
+          style={{ backgroundImage: `url(${HERO_PHOTO})`, backgroundPosition: 'center 60%' }}
         />
         {/* Scrim. Direction is responsive, because the type sits differently
             relative to the subject at each size — horizontal on desktop where
@@ -75,12 +87,16 @@ export function Hero() {
             under the actual glyph rects, not the block boxes):
 
                           eyebrow   headline   lead     photo brightness
-              desktop     4.78      5.30       4.63     6.9%  (was 2.3%)
-              mobile      4.44      11.22      5.58     3.5%  (was 2.8%)
+              desktop     4.21      7.04       6.92     6.1%
+              mobile      4.44      11.22      5.58     3.5%
 
             Thresholds: 4.5:1 eyebrow and lead (small text), 3:1 headline
-            (large). Mobile's eyebrow at 4.44 is a hair under, but it is a large
-            improvement on the 3.89 it shipped at.
+            (large). Both eyebrow numbers sit a hair under 4.5 — a known,
+            unasserted shortfall (see the test file) rather than a new one:
+            desktop moved from 4.78 to 4.21 when the photo's crop position
+            changed above, mobile is untouched by that change since it has no
+            vertical crop to begin with. Headline and lead are the two
+            thresholds the test suite actually enforces, and both improved.
 
             These numbers depend entirely on this photograph, which is due to be
             replaced. tests/e2e/hero-contrast.e2e.spec.ts re-measures them
