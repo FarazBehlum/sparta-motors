@@ -8,6 +8,21 @@ A ground-up replacement for the website of a used commercial truck dealer in Spa
 
 Worth a look if you are browsing the code: the [home page](https://sparta-motors.com), the [inventory browser](https://sparta-motors.com/inventory) and its filters, and any truck from that grid for the detail page — gallery, lightbox, specs, and inquiry form. Individual truck URLs are not linked here on purpose: sold listings retire themselves after seven days, so any link to one would eventually rot.
 
+![The Sparta Motors home page](screenshots/home-desktop.webp)
+
+| Inventory browser | Truck detail |
+| --- | --- |
+| ![The inventory browser, with body type, make, and year filters](screenshots/inventory-desktop.webp) | ![A truck detail page, with gallery and inquiry form](screenshots/truck-detail-desktop.webp) |
+
+<details>
+<summary><strong>Mobile</strong> — most of the audience arrives on a phone, and staff list trucks from one</summary>
+
+<img src="screenshots/home-mobile.webp" alt="The home page on a phone" width="320">
+
+</details>
+
+*Screenshots captured from the live site.*
+
 ---
 
 ## Table of contents
@@ -22,6 +37,7 @@ Worth a look if you are browsing the code: the [home page](https://sparta-motors
 - [Running it locally](#running-it-locally)
 - [Deploying](#deploying)
 - [What was deliberately not built](#what-was-deliberately-not-built)
+- [License](#license)
 
 ---
 
@@ -97,8 +113,10 @@ src/
   seed/            bootstrap seed (admin user, Settings, pages)
   proxy.ts         Next 16 middleware
 deploy/          production runbook, nginx config, PM2 config, backup script
+docs/            production readiness audit
 tests/           integration and end-to-end specs
 scripts/         brand asset and hero frame build scripts
+screenshots/     the images above, captured from the live site
 ```
 
 Roughly 13,000 lines of TypeScript across the application, and about 5,000 lines of design brief behind it.
@@ -172,6 +190,8 @@ npm run lint
 
 Integration tests cover the API surface and the sold-visibility rules, including the exact millisecond boundary of the 7-day grace period and every fail-open case. End-to-end specs cover the admin dashboard, public navigation, hero contrast, and sticky-element behaviour on truck pages.
 
+Beyond the automated suite, `docs/production-readiness-audit.html` is the pre-launch audit that was run against the site before DNS cutover — accessibility, performance, SEO, and security findings with their fixes.
+
 ---
 
 ## Running it locally
@@ -222,3 +242,7 @@ pm2 reload sparta
 ## Credits
 
 Built collaboratively: the project manager owned business decisions and direction, Claude handled architecture, design proposals, and implementation. Every decision of consequence is documented — the reasoning in `/build-brief/`, the tradeoffs in the commit history.
+
+## License
+
+[MIT](./LICENSE). The code is MIT-licensed; Sparta Motors' brand assets, photography, and business content are not.
