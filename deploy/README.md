@@ -59,11 +59,18 @@ Have these five things ready. Nothing below works without them.
    `~/.ssh/id_rsa.pub` is what this deployment uses.
 5. **Access to this git repo** from the server (a deploy key or a personal access token).
 
-> **Cost check:** server €5.49/mo + **€0.50/mo primary IPv4** (Hetzner unbundled
-> this — it is a separate line item, billed whether attached or not) = €5.99/mo
-> ≈ $6.50. Cloudflare $0, backups $0 (Cloudflare R2 free tier), uptime
-> monitoring $0. Total ≈$6.50/month — about a quarter of the $25 target, leaving
-> headroom for the Phase 1.5 analytics box.
+> **Cost check — an estimate to budget against, not a record of the bill.**
+> Every figure here was read off Hetzner's pricing page on **2026-08-11** and
+> has not been reconciled against an actual invoice. Hetzner moved CX pricing
+> twice in 2026. **Confirm at checkout and against the first invoice.**
+>
+> Server €5.49/mo + **€0.50/mo primary IPv4** (Hetzner unbundled this — it is a
+> separate line item, billed whether attached or not) = €5.99/mo ≈ $6.50.
+> Cloudflare $0, backups $0 (Cloudflare R2 free tier), uptime monitoring $0.
+>
+> **Not counted above:** domain registration, which is billed separately by the
+> registrar and renews annually. Add it before comparing against the $25/month
+> target.
 >
 > Billing is in EUR wherever you are. EU VAT should **not** apply to a US
 > billing address; if the checkout total is ~19% high, check the country under

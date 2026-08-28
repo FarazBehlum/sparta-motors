@@ -15,17 +15,23 @@ The chosen stack meets all three.
 | **Frontend framework** | Next.js (App Router) | Modern React with server-side rendering for SEO, image optimization, incremental static regeneration for inventory pages, and full-stack routing. Well-documented and Claude Code has strong familiarity. |
 | **CMS / Backend** | Payload CMS (self-hosted, TypeScript) | Open-source, self-hosted headless CMS with native draft/publish workflows, role-based access control, custom collections defined in TypeScript, and a mobile-responsive admin panel out of the box. |
 | **Database** | PostgreSQL (via Payload) | Payload supports Postgres natively. Handles Phase 1 easily and scales to Phase 2 e-commerce without a change. |
-| **Hosting** | Single small VPS (Hetzner CX22 or DigitalOcean $6 droplet) | Both frontend and backend run on the same box. Under $10/month. See "VPS provider decision" below. |
+| **Hosting** | Single small VPS (Hetzner) | Both frontend and backend run on the same box. **Superseded 2026-08-11 — `deploy/README.md` is authoritative for the exact instance and current pricing.** See "VPS provider decision" below. |
 | **CDN + DNS + SSL** | Cloudflare (free tier) | Free CDN, free SSL via Cloudflare Origin certificates, free DDoS protection, easy DNS management, page rules for 301 redirects (needed for Phase 2 sparta-parts.com redirect). |
 | **Email delivery** | SMTP through the existing Sparta business email | Zero added cost. Low volume (~20 leads per day at peak). If deliverability becomes a problem, swap to a service like Resend later — one-file change. |
 | **File / photo storage** | Local disk on the VPS, served through Next.js image optimization | Simplest option. Sparta will not accumulate enough photos in Phase 1 to need object storage. Phase 2 may migrate to S3-compatible storage (Cloudflare R2 is a free option). |
-| **Video (scroll hero)** | WebM served as a static asset, scrubbed via scroll | See `integrations/hero-video.md` for the ffmpeg pipeline that converts the 240-frame PNG sequence into a single ~500KB video. |
+| **Video (scroll hero)** | ~~WebM served as a static asset, scrubbed via scroll~~ | **Superseded 2026-08-07 — the scroll hero was removed.** It fought the scroll, delayed the content, and loaded slowly. Replaced by a static photo band plus a small animated SVG truck (`components/home/Hero.tsx` + `DrivingTruck.tsx`), taking the home page from ~6.9MB to under 700KB. `integrations/hero-video.md` describes a pipeline that no longer runs. |
 | **Maps** | Google Maps **embed** (iframe) | Client asked for Google — it's what customers recognise. Still free forever, no API key, no billing account, unlimited loads (the embed, *not* the Maps JavaScript API). Superseded Leaflet 2026-08-06; see `integrations/leaflet-map.md`. |
 | **Analytics** | Deferred to Phase 1.5 | Add after launch when there's real traffic to measure. Likely candidate: Plausible or Umami (both privacy-friendly and cheap). |
 
-**Estimated monthly total: $10-15.**
+**Monthly cost:** the project ceiling is $25/month and the build came in well under it. **Do not quote a figure from this doc** — hosting prices moved more than once during the build. `deploy/README.md` carries the current breakdown with the date it was last checked.
 
 ## VPS provider decision
+
+> **⚠️ SUPERSEDED 2026-08-11. Settled: Hetzner, Germany. `deploy/README.md` section "Before you start" is authoritative.** Three claims below turned out to be wrong once the server was actually purchased, and they are kept here only to show what changed:
+>
+> - **The instance is a CX23, not a CX22**, and the price is higher than the figure below — Hetzner raised CX pricing on 15 June 2026, and unbundled the primary IPv4 address into a separate line item.
+> - **Ashburn is not available for this instance line.** Hetzner's US regions only offer the pricier CPX and CCX lines; the cost-optimized CX line is Germany/Finland only. The equivalent US box costs several times as much, so the origin sits in Europe and eats ~100ms of latency on uncached requests.
+> - **The DigitalOcean option below would not have worked.** Its 1GB of RAM is under the 4GB floor the build needs, because the site compiles on the server. It runs the site fine but can fail mid-build.
 
 Two options are equally good for Phase 1. Pick one at build time based on preference.
 

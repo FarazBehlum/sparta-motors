@@ -1,8 +1,12 @@
 # Sparta Motors — Website Rebuild
 
-A ground-up replacement for [sparta-motors.com](https://sparta-motors.com), the site of a used commercial truck dealer in Spartanburg, SC. The old site was a dated WordPress/WooCommerce build with phone-quality photos and no real mobile experience. This repo holds the design brief that specified the replacement, the Next.js + Payload CMS application that implements it, and the runbook that deploys it.
+### → **[View the live site: sparta-motors.com](https://sparta-motors.com)** ←
 
-**Status: live in production.** The rebuild has served `sparta-motors.com` since August 2026.
+A ground-up replacement for the website of a used commercial truck dealer in Spartanburg, SC. The old site was a dated WordPress/WooCommerce build with phone-quality photos and no real mobile experience. This repo holds the design brief that specified the replacement, the Next.js + Payload CMS application that implements it, and the runbook that deploys it.
+
+**Status: live in production**, serving [sparta-motors.com](https://sparta-motors.com) since August 2026.
+
+Worth a look if you are browsing the code: the [home page](https://sparta-motors.com), the [inventory browser](https://sparta-motors.com/inventory) and its filters, and any truck from that grid for the detail page — gallery, lightbox, specs, and inquiry form. Individual truck URLs are not linked here on purpose: sold listings retire themselves after seven days, so any link to one would eventually rot.
 
 ---
 
@@ -13,7 +17,7 @@ A ground-up replacement for [sparta-motors.com](https://sparta-motors.com), the 
 - [Repo map](#repo-map)
 - [How this was built](#how-this-was-built)
 - [Engineering decisions worth reading](#engineering-decisions-worth-reading)
-- [Infrastructure and cost](#infrastructure-and-cost)
+- [Infrastructure](#infrastructure)
 - [Testing](#testing)
 - [Running it locally](#running-it-locally)
 - [Deploying](#deploying)
@@ -145,19 +149,16 @@ A few choices in here were not obvious, and the reasoning matters more than the 
 
 ---
 
-## Infrastructure and cost
+## Infrastructure
 
-The project had a hard ceiling of $25/month in ongoing costs. It runs at roughly **$6.50/month**:
+A single small Hetzner VPS running Ubuntu, with nginx in front of the Next.js process under PM2, PostgreSQL on the same box, and Cloudflare handling DNS and edge caching. Running on one server was a deliberate constraint — the whole project was built to a tight monthly hosting budget, and everything from the in-process rate limiter to compiling the site on the server follows from that.
 
-| Item | Cost |
-| --- | --- |
-| Hetzner CX23 (2 vCPU, 4 GB, 40 GB, 20 TB traffic) | €5.49/mo |
-| Primary IPv4 address (unbundled, billed separately) | €0.50/mo |
-| Cloudflare | $0 |
-| Backups | $0 |
-| Uptime monitoring | $0 |
+Two consequences worth knowing:
 
-Hetzner's US regions only offer instance types that would have cost around $43/month for comparable specs, so the server sits in Europe. `deploy/README.md` documents the full comparison, along with SSH hardening, firewall and fail2ban setup, Postgres, nginx, PM2, TLS, nightly backups with a tested restore, launch-day steps, and a rollback procedure.
+- **The origin sits in Europe, not the US.** Hetzner's US regions only offer their pricier instance lines, and the cost-optimized line this runs on is Germany/Finland only. The tradeoff is roughly 100ms extra latency on requests that actually reach the origin — filtered inventory browsing and `/admin`. Cloudflare edge-caches the statically rendered pages, so ordinary visitors landing on home, about, contact, and category pages are unaffected.
+- **RAM is sized for building, not serving.** The site compiles on the server, which needs meaningfully more memory than serving it does. A smaller box runs the site fine but can fail mid-build.
+
+`deploy/README.md` is the full runbook: server sizing and current pricing, SSH hardening, firewall and fail2ban, Postgres, nginx, PM2, TLS, nightly backups with a tested restore, launch-day steps, and rollback.
 
 ---
 
