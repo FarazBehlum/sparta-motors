@@ -12,6 +12,8 @@ test.describe('Admin Panel', () => {
   let page: Page
 
   test.beforeAll(async ({ browser }) => {
+    // A fresh isolated server must initialize Payload and compile the admin UI.
+    test.setTimeout(180_000)
     await seedTestUser()
 
     const context = await browser.newContext()

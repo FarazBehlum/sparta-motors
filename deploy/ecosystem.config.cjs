@@ -18,7 +18,7 @@ module.exports = {
       // would sit in the process tree as a middleman that swallows signals, so
       // `pm2 reload` wouldn't shut the app down cleanly.
       script: './node_modules/next/dist/bin/next',
-      args: 'start -p 3000',
+      args: 'start -H 127.0.0.1 -p 3000',
 
       // One process. The site is a handful of pages backed by Postgres on the
       // same box; cluster mode would multiply DB connections for no gain, and

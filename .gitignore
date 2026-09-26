@@ -51,3 +51,5 @@ next-env.d.ts
 # Raw category-image source material — the shipped versions live in
 # public/categories/ as processed .webp.
 /Vehical Type Images/
+
+.test-media/

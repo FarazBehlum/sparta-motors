@@ -317,6 +317,13 @@ $ sudo nginx -t && sudo systemctl reload nginx
 
 `nginx -t` must say "syntax is ok" before you reload.
 
+The application listens only on `127.0.0.1:3000` (see the PM2 config). Keep that
+binding: nginx must be the entry point for public traffic. Each proxy location
+overwrites `CF-Connecting-IP` with nginx's verified `$remote_addr`, so callers
+connecting directly to the origin cannot choose their application rate-limit key.
+When applying this change to an existing server, install the updated nginx config,
+run `sudo nginx -t`, reload nginx, and restart PM2 using the updated ecosystem config.
+
 ### 3.3 Cloudflare settings
 
 - **DNS:** `A` record for the apex domain → server IP, proxy **on** (orange cloud).

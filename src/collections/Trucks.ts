@@ -596,6 +596,17 @@ export const Trucks: CollectionConfig = {
     ],
     beforeChange: [
       async ({ data, req, operation, originalDoc }) => {
+        // Collection access checks the existing row, not the requested state.
+        // Enforce the employee workflow on both creates and updates here.
+        if (req.user?.role === 'employee') {
+          const status = data.status ?? originalDoc?.status ?? 'draft'
+          if (status !== 'draft' && status !== 'pending-review') {
+            throw new APIError('Only admins can publish or archive trucks.', 403, undefined, true)
+          }
+          // Ownership is server-controlled for employees, including API writes.
+          data.assignedEmployee = operation === 'create' ? req.user.id : originalDoc?.assignedEmployee
+        }
+
         // VIN format validation
         if (data.vin && !isValidVin(data.vin)) {
           throw new APIError(

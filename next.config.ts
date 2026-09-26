@@ -27,6 +27,11 @@ const remoteImagePatterns = (() => {
 })()
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Browser tests start a disposable server; avoid a large persistent cache
+    // that can exhaust disk space while compiling Payload's admin UI.
+    turbopackFileSystemCacheForDev: process.env.SPARTA_E2E !== '1',
+  },
   trailingSlash: false,
   // The Fleet feature was retired and replaced by Parts. Permanently redirect the
   // old URL so existing links / search results land on the new page.

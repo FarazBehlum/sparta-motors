@@ -183,10 +183,17 @@ Two consequences worth knowing:
 ## Testing
 
 ```bash
-npm run test:int    # Vitest — 12 tests
+npm run test:int    # Vitest — business rules and database access controls
 npm run test:e2e    # Playwright
 npm run lint
 ```
+
+Database and browser tests require `TEST_DATABASE_URL` pointing to a dedicated local
+PostgreSQL database whose name ends in `_test` (for example `sparta_motors_test`).
+Create that database first and set the variable in `.env` or the shell. Tests override
+`DATABASE_URL`, disable notification email, and store uploads in `.test-media/`.
+Browser tests start their own server; stop any development server on port 3000 first.
+To run only the database-independent sold rules: `npx vitest run tests/int/sold-visibility.int.spec.ts`.
 
 Integration tests cover the API surface and the sold-visibility rules, including the exact millisecond boundary of the 7-day grace period and every fail-open case. End-to-end specs cover the admin dashboard, public navigation, hero contrast, and sticky-element behaviour on truck pages.
 
@@ -196,7 +203,7 @@ Beyond the automated suite, `docs/production-readiness-audit.html` is the pre-la
 
 ## Running it locally
 
-Requires Node 18.20+ (20.9+ recommended; production runs 22 LTS) and a local PostgreSQL database.
+Requires Node 20.9+ (production runs 22 LTS) and a local PostgreSQL database.
 
 ```bash
 npm install

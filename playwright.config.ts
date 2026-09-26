@@ -5,6 +5,9 @@ import { defineConfig, devices } from '@playwright/test'
  * https://github.com/motdotla/dotenv
  */
 import 'dotenv/config'
+import { configureTestDatabase } from './tests/helpers/testDatabase'
+
+configureTestDatabase()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -34,8 +37,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev',
-    reuseExistingServer: true,
+    command: 'npm run dev',
+    env: { SPARTA_E2E: '1' },
+    timeout: 180000,
+    reuseExistingServer: false,
     url: 'http://localhost:3000',
   },
 })

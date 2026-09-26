@@ -113,7 +113,7 @@ export async function InventoryView({
             <div className="flex gap-10">
               <Stat label="Showing" value={trucks.length} />
               <Stat label="In stock" value={total} />
-              <Stat label="Body types" value="06" />
+              <Stat label="Body types" value={String(Object.keys(CATEGORY_TO_BODY_TYPE).length).padStart(2, '0')} />
             </div>
           </div>
         </div>
