@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/test'
 
 test.describe('Frontend', () => {
+  test('unknown inventory category stays 404 behind an HTTPS proxy', async ({ request }) => {
+    const response = await request.get('http://127.0.0.1:3000/inventory/not-a-category', {
+      headers: { 'x-forwarded-proto': 'https' },
+    })
+    expect(response.status()).toBe(404)
+    expect(await response.text()).toMatch(/not found/i)
+  })
+
   test('home page renders the Sparta Motors shell', async ({ page }) => {
     await page.goto('http://localhost:3000')
 

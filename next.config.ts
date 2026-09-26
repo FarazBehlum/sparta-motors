@@ -27,6 +27,10 @@ const remoteImagePatterns = (() => {
 })()
 
 const nextConfig: NextConfig = {
+  // Preserve 127.0.0.1 in internal rewrites behind nginx. Normalizing it to
+  // localhost makes Next treat the rewrite as an external HTTPS request to
+  // the HTTP-only app port when X-Forwarded-Proto is https.
+  skipProxyUrlNormalize: true,
   experimental: {
     // Browser tests start a disposable server; avoid a large persistent cache
     // that can exhaust disk space while compiling Payload's admin UI.
