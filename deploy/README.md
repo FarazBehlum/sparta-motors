@@ -307,6 +307,13 @@ Then set **SSL/TLS → Overview → Full (strict)**.
 
 ### 3.2 nginx
 
+**Existing production server (verified 2026-09-26):** the enabled site is
+`/etc/nginx/sites-available/sparta-production`. It uses Cloudflare in DNS-only
+mode and Let's Encrypt certificates. Preserve that configuration when updating
+the live site; the installation commands below are for a new proxied deployment.
+The visitor-IP fix is `proxy_set_header CF-Connecting-IP $remote_addr;` in each
+of its four proxy locations, followed by `nginx -t` and a reload.
+
 ```bash
 $ sudo cp /var/www/sparta-motors/deploy/nginx.conf /etc/nginx/sites-available/sparta-motors
 $ sudo sed -i 's/REPLACE_DOMAIN/yourdomain.com/g' /etc/nginx/sites-available/sparta-motors
@@ -321,8 +328,9 @@ The application listens only on `127.0.0.1:3000` (see the PM2 config). Keep that
 binding: nginx must be the entry point for public traffic. Each proxy location
 overwrites `CF-Connecting-IP` with nginx's verified `$remote_addr`, so callers
 connecting directly to the origin cannot choose their application rate-limit key.
-When applying this change to an existing server, install the updated nginx config,
-run `sudo nginx -t`, reload nginx, and restart PM2 using the updated ecosystem config.
+When applying this change to an existing server, update its active nginx config
+while preserving its TLS and proxy settings, run `sudo nginx -t`, reload nginx,
+and restart PM2 using the updated ecosystem config.
 
 ### 3.3 Cloudflare settings
 
