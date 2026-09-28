@@ -592,7 +592,7 @@ export const Trucks: CollectionConfig = {
   ],
   hooks: {
     beforeOperation: [({ args, operation }) => {
-      if ((operation === 'find' || operation === 'count') && 'where' in args && args.where) {
+      if ((operation === 'read' || operation === 'count') && 'where' in args && args.where) {
         args.where = normalizeTruckSearch(args.where, Trucks.fields)
       }
       return args

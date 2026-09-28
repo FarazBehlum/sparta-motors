@@ -4,9 +4,11 @@ import type { Field, Where } from 'payload'
 // memory, then let the database filter using the corresponding enum values.
 export function normalizeTruckSearch(where: Where, fields: Field[]): Where {
   const selects = new Map<string, { label: string; value: string }[]>()
+  const numbers = new Set<string>()
   function collect(items: Field[], prefix = '') {
     for (const field of items) {
       const path = 'name' in field ? `${prefix}${field.name}` : prefix
+      if (field.type === 'number') numbers.add(path)
       if (field.type === 'select') {
         selects.set(path, field.options.map((option) => typeof option === 'string'
           ? { label: option, value: option }
@@ -23,6 +25,11 @@ export function normalizeTruckSearch(where: Where, fields: Field[]): Where {
     return Object.fromEntries(Object.entries(query).map(([key, condition]) => {
       if ((key === 'and' || key === 'or') && Array.isArray(condition)) return [key, condition.map(visit)]
       const options = selects.get(key)
+      if (numbers.has(key) && condition && typeof condition === 'object' && 'like' in condition && typeof condition.like === 'string') {
+        const value = Number(condition.like.trim().replace(/,/g, ''))
+        const { like: _like, ...rest } = condition
+        return [key, { ...rest, in: condition.like.trim() && Number.isFinite(value) ? [value] : [] }]
+      }
       if (options && condition && typeof condition === 'object' && 'like' in condition && typeof condition.like === 'string') {
         const words = condition.like.toLowerCase().split(/\s+/).filter(Boolean)
         const matches = options.filter(({ label, value }) => words.every((word) =>
