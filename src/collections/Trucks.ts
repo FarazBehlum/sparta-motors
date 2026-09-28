@@ -5,6 +5,7 @@ import { isValidVin, normalizeVin } from '../lib/vin'
 import { makeLabel } from '../lib/format'
 import { truckSlug } from '../lib/slug'
 import { parseVideoUrl } from '../lib/video'
+import { normalizeTruckSearch } from '../lib/truck-search'
 import { sendEmail } from '../lib/email/mailer'
 import {
   draftPublishedEmail,
@@ -83,7 +84,14 @@ export const Trucks: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'stockNumber', 'status', 'availability', 'price', 'mileage'],
     group: 'Inventory',
-    listSearchableFields: ['model', 'vin', 'stockNumber'],
+    listSearchableFields: [
+      'listingTitle', 'year', 'make', 'model', 'trim', 'vin', 'stockNumber',
+      'description', 'bodyType', 'engine', 'transmission', 'drivetrain',
+      'fuelType', 'payloadClass', 'gvwr', 'mileage', 'price', 'owners',
+      'condition', 'titleStatus', 'status', 'availability',
+      'inspection.inspectedBy', 'inspection.summary',
+      'inspection.points.area', 'inspection.points.rating', 'inspection.points.note',
+    ],
   },
   access: {
     create: isAdminOrEmployee,
@@ -583,6 +591,12 @@ export const Trucks: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeOperation: [({ args, operation }) => {
+      if ((operation === 'find' || operation === 'count') && 'where' in args && args.where) {
+        args.where = normalizeTruckSearch(args.where, Trucks.fields)
+      }
+      return args
+    }],
     beforeValidate: [
       ({ data }) => {
         // VIN is optional. Normalize when provided; store NULL (not '') when blank
